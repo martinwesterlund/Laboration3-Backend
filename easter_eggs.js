@@ -20,13 +20,45 @@ app.use('/costumer', costumers_eggs)
 
 let url = `mongodb+srv://labb3admin:labb3@labb3-r7qod.mongodb.net/test`
 
+//Get all easter eggs
+app.get('/', (req, res) => {
+    mongodbClient.connect(url, {
+        useUnifiedTopology: true
+    }, (err, client) => {
+        if (err) throw err
+        let db = client.db('Laboration3')
+        findDocument(db, null, (result) => {
+            client.close()
+            res.json(result)
+        })
+    })
+})
+
+//Get one easter egg
+app.get('/:eggId', (req, res) => {
+    mongodbClient.connect(url, {
+        useUnifiedTopology: true
+    }, (err, client) => {
+        if (err) throw err
+        let db = client.db('Laboration3')
+        if (ObjectId.isValid(req.params.eggId)) {
+            findDocument(db, req.params.eggId, (result) => {
+                client.close()
+                res.json(result)
+            })
+        }
+    })
+})
+
+
+
 const findDocument = function (db, eggId = null, callback) {
     const collection = db.collection('easter_eggs');
 
     let searchquery = eggId == null ? {} : {
         _id: new ObjectId(eggId)
     }
-    // Find some documents
+
     collection.find(searchquery).toArray(function (err, docs) {
         if (err) throw err
         callback(docs);
