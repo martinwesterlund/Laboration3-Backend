@@ -13,7 +13,7 @@ app.use(express.urlencoded({
 
 let url = `mongodb+srv://labb3admin:labb3@labb3-r7qod.mongodb.net/test`
 
-const findDocument = function (db, bookid = null, callback) {
+const findDocument = function (db, eggId = null, callback) {
     const collection = db.collection('easter_eggs');
 
     let searchquery = eggId == null ? {} : {
