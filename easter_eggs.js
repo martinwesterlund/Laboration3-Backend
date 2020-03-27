@@ -2,12 +2,18 @@ const candy_producers = require('./sql/candy_producers.js')
 const costumers_eggs = require('./sql/costumers_eggs.js')
 
 const express = require('express')
+const url = require('url')
+const bodyParser = require('body-parser')
+const app = express()
+const server = require('http').Server(app)
+const io = require('socket.io')(server)
 
 const mongodbClient = require('mongodb').MongoClient
 let ObjectId = require('mongodb').ObjectId // Behövs för att söka efter _id.
-const bodyParser = require('body-parser')
-const app = express()
+let mongoUrl = `mongodb+srv://labb3admin:labb3@labb3-r7qod.mongodb.net/test`
+
 app.use(bodyParser.json())
+app.use(express.static('./public'))
 
 
 app.use(express.urlencoded({
@@ -18,11 +24,38 @@ app.use('/producer', candy_producers)
 app.use('/costumer', costumers_eggs)
 
 
-let url = `mongodb+srv://labb3admin:labb3@labb3-r7qod.mongodb.net/test`
+
+
+
+io.on('connection', (socket) => {
+    // Välkomst meddelande vid upprättande av kontakt
+    socket.emit('hello', { hello: 'Hello!!'})
+    console.log("A new connection is established")
+
+    
+    })
+    
+app.get('/producer', (req, res) => {
+
+    // let username = url.parse(req.url, true).query.username
+    // let password = url.parse(req.url, true).query.password
+
+    // if (username === 'Berra' && password === 'lol') {
+        res.sendFile(__dirname + '/public/producer.html')
+})
+app.get('/consumer', (req, res) => {
+
+    // let username = url.parse(req.url, true).query.username
+    // let password = url.parse(req.url, true).query.password
+
+    // if (username === 'Berra' && password === 'lol') {
+        res.sendFile(__dirname + '/public/consumer.html')
+})
+
 
 //Get all easter eggs
-app.get('/', (req, res) => {
-    mongodbClient.connect(url, {
+app.get('/eggs', (req, res) => {
+    mongodbClient.connect(mongoUrl, {
         useUnifiedTopology: true
     }, (err, client) => {
         if (err) throw err
@@ -35,8 +68,8 @@ app.get('/', (req, res) => {
 })
 
 //Get one easter egg
-app.get('/:eggId', (req, res) => {
-    mongodbClient.connect(url, {
+app.get('/eggs/:eggId', (req, res) => {
+    mongodbClient.connect(mongoUrl, {
         useUnifiedTopology: true
     }, (err, client) => {
         if (err) throw err
@@ -65,6 +98,6 @@ const findDocument = function (db, eggId = null, callback) {
     });
 }
 
-app.listen(8081, () => {
+server.listen(8081, () => {
     console.log("MongoDB på 8081")
 })
