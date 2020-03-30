@@ -15,14 +15,34 @@ app.use(express.urlencoded({
 }))
 
 
-app.use('/eggs', easterEggs)
+app.use('/eggs', easterEggs.router)
 app.use('/producer', candy_producers)
 app.use('/costumer', costumers_eggs)
 
 io.on('connection', (socket) => {
-    // Välkomst meddelande vid upprättande av kontakt
-    socket.emit('hello', { hello: 'Hello!!' })
-    console.log("A new connection is established")
+    
+
+    let eggdata = easterEggs.getEggs() 
+
+        console.log(eggdata)
+        socket.emit('onEnter', eggdata)
+    
+         // Välkomst meddelande vid upprättande av kontakt
+        console.log("A new connection is established")
+
+
+    
+})
+
+io.on("deleteEgg", (id) => {
+
+    
+    let done = easterEggs.deleteEgg(id)
+    let eggdata = easterEggs.getEggs()
+    if (done) {
+        io.emit('EggDeleted', eggdata)
+    }
+
 })
 
 app.get('/producer', (req, res) => {

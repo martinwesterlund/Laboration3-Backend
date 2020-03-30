@@ -6,10 +6,25 @@ const bodyParser = require('body-parser')
 let ObjectId = require('mongodb').ObjectId // Behövs för att söka efter _id.
 let mongoUrl = `mongodb+srv://labb3admin:labb3@labb3-r7qod.mongodb.net/test`
 
-router.route('/')
 
-    //Get all easter eggs
-    .get((req, res) => {
+function deleteEgg(id) {
+
+    mongodbClient.connect(mongoUrl, {
+        useUnifiedTopology: true
+    }, (err, client) => {
+        if (err) throw err
+        let db = client.db('Laboration3')
+        if(ObjectId.isValid(id)){
+            findAndDeleteDocument(db, id, (result) => {
+                client.close()
+            return true
+            })
+        }
+    })
+}
+
+function getEggs() {
+
         mongodbClient.connect(mongoUrl, {
             useUnifiedTopology: true
         }, (err, client) => {
@@ -17,9 +32,31 @@ router.route('/')
             let db = client.db('Laboration3')
             findDocument(db, null, (result) => {
                 client.close()
-                res.json(result)
+    
+                return result 
+    
             })
         })
+
+ 
+}
+
+
+router.route('/')
+
+    // //Get all easter eggs
+    .get((req, res) => {
+        // mongodbClient.connect(mongoUrl, {
+        //     useUnifiedTopology: true
+        // }, (err, client) => {
+        //     if (err) throw err
+        //     let db = client.db('Laboration3')
+        //     findDocument(db, null, (result) => {
+        //         client.close()
+                // res.json(result)
+                res.sendFile("eggs.html", {root: './public'})
+        //     })
+        // })
     })
 
     //Create new egg
@@ -152,4 +189,4 @@ const findAndDeleteDocument = function(db, eggId, callback) {
 
 
 
-module.exports = router
+module.exports = {router, deleteEgg, getEggs}

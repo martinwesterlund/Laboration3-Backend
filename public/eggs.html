@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Välkommen till påskäggsköparsidan!</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            socket = io('http://localhost:8081');
+            socket.on('onEnter', (eggs) => {
+                console.log('Connected to server')
+                createList(eggs)
+            })
+            socket.on('EggDeleted', () => {
+                console.log('An egg has been deleted')
+                createList(eggs)
+
+            })
+        })
+
+        function createList(eggs){
+            console.log(eggs)
+            let a = document.getElementById("egg")
+            for( let i = 0; i < eggs.length; i++){
+
+                let oneEgg = document.createElement("section")
+                oneEgg.setAttribute("id", eggs[i]._id)
+                let deleteEgg = document.createElement("button")
+                deleteEgg.setAttribute("innerHTML", "Delete egg")
+                deleteEgg.setAttribute("onclick", delEgg(eggs[i]._id))
+                let name = document.createElement("div")
+                name.setAttribute("innerHTML", eggs[i].name)    
+                let candy = document.createElement("div")
+                candy.setAttribute("innerHTML", eggs[i].candy)
+                let totalPrice = document.createElement("div")
+                totalPrice.setAttribute("innerHTML", eggs[i].totalPrice)
+                let goto = document.createElement("a")
+                goto.setAttribute("innerHTML", "Show egg")
+                goto.setAttribute("href", "localhost:8081/eggs/" + eggs[i]._id)
+                oneEgg.appendChild(deleteEgg)
+                oneEgg.appendChild(name)
+                oneEgg.appendChild(candy)
+                oneEgg.appendChild(totalPrice)
+                oneEgg.appendChild(goto)
+                a.appendChild(oneEgg)
+
+            }
+
+        }
+        function delEgg(id){
+
+            socket.emit("deleteEgg", id)
+        }
+
+    </script>
+</head>
+<body>
+    <h1>Hej och välkommen till egglistan!</h1>
+
+    <section class="egg">
+        
+        
+    </section>
+    <button >Gå till konsument sidan</button>
+</body>
+</html>
