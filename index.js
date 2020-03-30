@@ -19,19 +19,19 @@ app.use('/eggs', easterEggs.router)
 app.use('/producer', candy_producers)
 app.use('/costumer', costumers_eggs)
 
+async function test(socket){
+    let eggdata = await easterEggs.getEggs() 
+    console.log(eggdata)
+    socket.emit('onEnter', eggdata)
+
+}
+
 io.on('connection', (socket) => {
     
+    test(socket)
+    // Välkomst meddelande vid upprättande av kontakt
+    console.log("A new connection is established")
 
-    let eggdata = easterEggs.getEggs() 
-
-        console.log(eggdata)
-        socket.emit('onEnter', eggdata)
-    
-         // Välkomst meddelande vid upprättande av kontakt
-        console.log("A new connection is established")
-
-
-    
 })
 
 io.on("deleteEgg", (id) => {

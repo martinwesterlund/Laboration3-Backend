@@ -23,21 +23,30 @@ function deleteEgg(id) {
     })
 }
 
-function getEggs() {
+async function getEggs() {
 
-        mongodbClient.connect(mongoUrl, {
-            useUnifiedTopology: true
-        }, (err, client) => {
-            if (err) throw err
-            let db = client.db('Laboration3')
-            findDocument(db, null, (result) => {
-                client.close()
-    
-                return result 
-    
+        return new Promise((resolve, reject) => {
+
+            mongodbClient.connect(mongoUrl, {
+                useUnifiedTopology: true
+            }, (err, client) => {
+                if (!err) {
+                let db = client.db('Laboration3')
+                findDocument(db, null, (result) => {
+                    console.log(result)
+                    client.close()
+        
+                    resolve(result)
+                }) 
+                } else {
+                    reject(err)
+                }
+                
             })
-        })
+    
 
+        })
+        
  
 }
 
