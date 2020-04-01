@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,51 +25,48 @@
             })
         })
 
-        function createList(eggs){
+        function createList(eggs) {
             console.log(eggs)
-            // let a = document.getElementByid("egg")
 
-            for( let i = 0; i < eggs.length; i++){
+
+            for (let i = 0; i < eggs.length; i++) {
 
                 let oneEgg = document.createElement("section")
                 oneEgg.setAttribute("id", eggs[i]._id)
-                
+
 
                 let deleteEgg = document.createElement("button")
-                deleteEgg.setAttribute("innerHTML", "Delete egg")
-                deleteEgg.setAttribute("onclick", delEgg(eggs[i]._id))
+                deleteEgg.innerHTML = "Delete egg"
+                deleteEgg.setAttribute("onclick", `delEgg(${eggs[i]._id})`)
                 oneEgg.appendChild(deleteEgg)
 
                 let name = document.createElement("div")
-                name.setAttribute("innerHtml", eggs[i].name)  
-                name.innerText = eggs[i].name
+                name.innerHTML = eggs[i].name
                 oneEgg.appendChild(name)
-               
-                let candy
-                for( q = 0; 0 < eggs[i].candy[q].length; q++ ) {
 
-                    candy[q] = document.createElement("div")
-                    candy.setAttribute("innerHTML", eggs[i].candy[q].amount)
-                    candy.innerText = eggs[i].candy[q].amount
-                    oneEgg.appendChild(candy[q])
+                for (let q = 0; q < eggs[i].candy.length; q++) {
+
+                    let candy = document.createElement("div")
+
+                    candy.innerHTML = eggs[i].candy[q].amount
+                    // candy.innerText = eggs[i].candy[q].amount
+                    oneEgg.appendChild(candy)
 
                 }
 
-                let totalPrice = document.createElement("div")
-                totalPrice.setAttribute("innerHTML", eggs[i].candy[q].amount)
-                totalPrice.innerText = eggs[i].candy[q].amount
-                oneEgg.appendChild(totalPrice)
+                // let totalPrice = document.createElement("div")
+                // totalPrice.innerHTML = eggs[i].candy[q].amount
+                // // totalPrice.innerText = eggs[i].candy[q].amount
+                // oneEgg.appendChild(totalPrice)
 
                 let getanEgg = document.createElement("button")
-                getanEgg.setAttribute("innerHTML", "get egg")
-                getanEgg.addEventListener("click", getEgg(eggs[i]._id))
+                getanEgg.innerHTML = "Go to egg"
+                getanEgg.setAttribute("onclick", `getEgg(${eggs[i]._id})`)
                 oneEgg.appendChild(getanEgg)
-                oneEgg.appendChild(getanEgg)
-                
-                
+
                 document.getElementById("egg").appendChild(oneEgg)
-                
-                
+
+
 
             }
 
@@ -79,20 +77,22 @@
             socket.emit("getEgg", id)
 
         }
-        function delEgg(id){
+        function delEgg(id) {
 
             socket.emit("deleteEgg", id)
         }
 
     </script>
 </head>
+
 <body>
     <h1>Hej och välkommen till egglistan!</h1>
 
     <section id="egg">
-        
-        
+
+
     </section>
-    <button >Gå till konsument sidan</button>
+    <button>Gå till konsument sidan</button>
 </body>
+
 </html>
