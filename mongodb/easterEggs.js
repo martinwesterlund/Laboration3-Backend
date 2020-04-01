@@ -41,14 +41,32 @@ async function getEggs() {
                 } else {
                     reject(err)
                 }
-                
             })
-    
-
         })
-        
- 
 }
+
+async function getEgg(id) {
+
+    return new Promise((resolve, reject) => {
+
+        mongodbClient.connect(mongoUrl, {
+            useUnifiedTopology: true
+        }, (err, client) => {
+            if (!err) {
+            let db = client.db('Laboration3')
+            findDocument(db, id, (result) => {
+                console.log(result)
+                client.close()
+    
+                resolve(result)
+            }) 
+            } else {
+                reject(err)
+            }
+        })
+    })
+}
+
 
 
 router.route('/')
@@ -101,6 +119,7 @@ router.route('/:eggId')
 
     //Get one easter egg
     .get((req, res) => {
+        console.log(req.params.eggId)
         mongodbClient.connect(mongoUrl, {
             useUnifiedTopology: true
         }, (err, client) => {
@@ -198,4 +217,4 @@ const findAndDeleteDocument = function(db, eggId, callback) {
 
 
 
-module.exports = {router, deleteEgg, getEggs}
+module.exports = {router, deleteEgg, getEggs, getEgg}

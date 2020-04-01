@@ -23,15 +23,20 @@ async function test(socket){
     let eggdata = await easterEggs.getEggs() 
     console.log(eggdata)
     socket.emit('onEnter', eggdata)
-
 }
 
+async function getEgg(id){
+    console.log("now here!")
+    let eggdata = await easterEggs.getEgg(id) 
+    console.log(eggdata)
+    socket.emit('Egg', eggdata)
+}
+
+
 io.on('connection', (socket) => {
-    
     test(socket)
     // Välkomst meddelande vid upprättande av kontakt
     console.log("A new connection is established")
-
 })
 
 io.on("deleteEgg", (id) => {
@@ -44,6 +49,13 @@ io.on("deleteEgg", (id) => {
     }
 
 })
+
+io.on("getEgg", ( id) => {
+    console.log("here we are!")
+    getEgg(id)
+})
+
+
 
 app.get('/producer', (req, res) => {
 
