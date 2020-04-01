@@ -16,8 +16,14 @@ app.use(express.urlencoded({
 
 
 app.use('/eggs', easterEggs.router)
-app.use('/producer', candy_producers)
+app.use('/producer', candy_producers.router)
 app.use('/costumer', costumers_eggs)
+
+async function getCandiesFromProducer(socket){
+    let producerCandies = await candy_producers.getCandies(2)
+    console.log(producerCandies)
+    socket.emit('onProducerEnter', producerCandies)
+}
 
 async function test(socket){
     let eggdata = await easterEggs.getEggs() 
@@ -35,6 +41,7 @@ async function getEgg(id){
 
 io.on('connection', (socket) => {
     test(socket)
+    getCandiesFromProducer(socket)
     // Välkomst meddelande vid upprättande av kontakt
     console.log("A new connection is established")
 })
