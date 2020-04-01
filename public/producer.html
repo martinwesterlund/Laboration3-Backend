@@ -1,11 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tillverkarsidan</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            socket = io('http://localhost:8081');
+            socket.on('onProducerEnter', (candies) => {
+                console.log('Connected to server from Producer page')
+                createList(candies)
+            })
+        })
+
+        function createList(candies) {
+            console.log(candies)
+            let producer = document.getElementById('producerCandies')
+            producerName.innerHTML = candies[0].Producer
+            for (let i = 0; i < candies.length; i++) {
+
+                //Skapa en sektion per godissort
+                let oneCandy = document.createElement('section')
+                oneCandy.setAttribute('id', candies[i].ID)
+
+                //Skapa en "ta bort godis"-knapp
+                let deleteCandy = document.createElement('button')
+                deleteCandy.innerHTML = "Delete candy"
+                deleteCandy.setAttribute('onclick', `delCandy(${candies[i].ID})`)
+                oneCandy.appendChild(deleteCandy)
+
+                //Namn på godissorten
+                let candy = document.createElement('div')
+                candy.innerHTML = candies[i].Candy
+                oneCandy.appendChild(candy)
+
+                //Kategori
+                let category = document.createElement('div')
+                category.innerHTML = candies[i].Category
+                oneCandy.appendChild(category)
+
+                //Färg
+                let color = document.createElement('div')
+                color.innerHTML = candies[i].Color
+                oneCandy.appendChild(color)
+
+                //Pris
+                let price = document.createElement('div')
+                price.innerHTML = candies[i].Price
+                oneCandy.appendChild(price)
+
+                //Saldo
+                let balance = document.createElement('div')
+                balance.innerHTML = candies[i].Balance
+                oneCandy.appendChild(balance)
+                
+                //Godisavskiljare
+                let separation = document.createElement('div')
+                separation.innerHTML = "-----------------------------------"
+                oneCandy.appendChild(separation)
+
+                producer.appendChild(oneCandy)
+            }
+
+        }
+    </script>
 </head>
+
 <body>
     <h1>Hej och välkommen till producentsidan</h1>
+    <h2 id='producerName'></h2>
+    <section id="producerCandies"></section>
 </body>
+
 </html>
