@@ -51,6 +51,15 @@
                 price.innerHTML = candies[i].Price
                 oneCandy.appendChild(price)
 
+                //Saldo
+                let balance = document.createElement('div')
+                balance.innerHTML = candies[i].Balance
+                oneCandy.appendChild(balance)
+                
+                //Godisavskiljare
+                let separation = document.createElement('div')
+                separation.innerHTML = "-----------------------------------"
+                oneCandy.appendChild(separation)
 
                 producer.appendChild(oneCandy)
             }

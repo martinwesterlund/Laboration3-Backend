@@ -11,7 +11,7 @@ async function getCandies(pId) {
     return new Promise((resolve, reject) => {
         pool((err, connection) => {
             connection.query(
-                `SELECT candy.id AS ID, candy.name AS "Candy", candy.category AS "Category", candy.color AS "Color", producers.name as "Producer", candy_producers.price_per_unit AS "Price" 
+                `SELECT candy.id AS ID, candy.name AS "Candy", candy.category AS "Category", candy.color AS "Color", producers.name as "Producer", candy_producers.price_per_unit AS "Price", candy_producers.balance AS "Balance" 
                 FROM candy
                 LEFT JOIN candy_producers ON candy.id = candy_producers.candy_id
                 LEFT JOIN producers on producers.id = candy_producers.producer_id
@@ -25,65 +25,88 @@ async function getCandies(pId) {
     })
 }
 
+async function getAllCandy() {
+    return new Promise((resolve, reject) => {
+        pool((err, connection) => {
+            connection.query(
+                `SELECT candy.id AS ID, candy.name AS "Candy", candy.category AS "Category", candy.color AS "Color", producers.name as "Producer", candy_producers.price_per_unit AS "Price" 
+                FROM candy
+                LEFT JOIN candy_producers ON candy.id = candy_producers.candy_id
+                LEFT JOIN producers on producers.id = candy_producers.producer_id
+                WHERE 1`, (error, result, fields) => {
+                connection.release()
+                if (error) throw reject(error)
+                resolve(result)
+            });
+
+        })
+    })
+}
+
 
 // ------------------------ Producer table ------------------------------------------
 
 // Add a new one producer
-router.route('/new')
+// router.route('/new')
 
-    .post((req, res, next) => {
-        pool((err, connection) => {
-            connection.query(`INSERT INTO producers (name, address) VALUES ( ?, ?)`, [req.body.name, req.body.address], (error, result, fields) => {
-                connection.release()
-                if (error) throw error
-                res.send("Added new producer")
-            })
-        })
-    })
+//     .post((req, res, next) => {
+//         pool((err, connection) => {
+//             connection.query(`INSERT INTO producers (name, address) VALUES ( ?, ?)`, [req.body.name, req.body.address], (error, result, fields) => {
+//                 connection.release()
+//                 if (error) throw error
+//                 res.send("Added new producer")
+//             })
+//         })
+//     })
 
 // CRUD on one producer 
-router.route('/:id')
+// router.route('/:id')
 
-    .get((req, res, next) => {
-        pool((err, connection) => {
-            connection.query(`SELECT * FROM producers WHERE id = ` + connection.escape(req.params.id), (error, result, fields) => {
-                connection.release()
-                if (error) throw error
-                res.json(result)
-            })
-        })
-    })
+//     .get((req, res, next) => {
+//         pool((err, connection) => {
+//             connection.query(`SELECT * FROM producers WHERE id = ` + connection.escape(req.params.id), (error, result, fields) => {
+//                 connection.release()
+//                 if (error) throw error
+//                 res.json(result)
+//             })
+//         })
+//     })
 
-    .put((req, res, post) => {
-        pool((err, connection) => {
+//     .put((req, res, post) => {
+//         pool((err, connection) => {
 
-            connection.query("UPDATE producers SET `name` = ?, `address` = ? WHERE id = " + connection.escape(req.params.id),
-                [req.body.name, req.body.address], (error, result, fields) => {
-                    connection.release()
-                    if (error) throw error
-                    res.send("Updated producer with id: " + req.params.id + " with following values => Name: " + req.body.name + ", Address: " + req.body.address)
-                })
-        })
-    })
+//             connection.query("UPDATE producers SET `name` = ?, `address` = ? WHERE id = " + connection.escape(req.params.id),
+//                 [req.body.name, req.body.address], (error, result, fields) => {
+//                     connection.release()
+//                     if (error) throw error
+//                     res.send("Updated producer with id: " + req.params.id + " with following values => Name: " + req.body.name + ", Address: " + req.body.address)
+//                 })
+//         })
+//     })
 
-    .delete((req, res, next) => {
-        pool((err, connection) => {
-            connection.query(`DELETE FROM producers WHERE id = ` + connection.escape(req.params.id), (error, result, fields) => {
-                connection.release()
-                if (error) throw error
-                res.send("Deleted producer: " + req.params.id)
+//     .delete((req, res, next) => {
+//         pool((err, connection) => {
+//             connection.query(`DELETE FROM producers WHERE id = ` + connection.escape(req.params.id), (error, result, fields) => {
+//                 connection.release()
+//                 if (error) throw error
+//                 res.send("Deleted producer: " + req.params.id)
 
-            })
-        })
-    })
+//             })
+//         })
+//     })
 
 
 // ------------------------- Candy table ---------------------------------
 
 
-router.route('/')
+router.route('/producer')
     .get((req, res) => {
         res.sendFile('producer.html', { root: './public' })
+    })
+
+router.route('/customer')
+    .get((req, res) => {
+        res.sendFile('customer.html', { root: './public' })
     })
 
 // Add a new candy
@@ -192,4 +215,4 @@ router.route('/junction/:id')
 
 
 
-module.exports = { router, getCandies }
+module.exports = { router, getCandies, getAllCandy }

@@ -1,5 +1,5 @@
 const candy_producers = require('./sql/candy_producers.js')
-const costumers_eggs = require('./sql/costumers_eggs.js')
+const customers_eggs = require('./sql/customers_eggs.js')
 const easterEggs = require('./mongodb/easterEggs.js')
 
 const express = require('express')
@@ -16,25 +16,30 @@ app.use(express.urlencoded({
 
 
 app.use('/eggs', easterEggs.router)
-app.use('/producer', candy_producers.router)
-app.use('/costumer', costumers_eggs)
+app.use('/', candy_producers.router)
 
 async function getCandiesFromProducer(socket){
     let producerCandies = await candy_producers.getCandies(2)
-    console.log(producerCandies)
+    // console.log(producerCandies)
     socket.emit('onProducerEnter', producerCandies)
+}
+
+async function getAllCandy(socket){
+    let allProducersCandy = await candy_producers.getAllCandy()
+    // console.log(allProducersCandy)
+    socket.emit('onCustomerEnter', allProducersCandy)
 }
 
 async function test(socket){
     let eggdata = await easterEggs.getEggs() 
-    console.log(eggdata)
+    // console.log(eggdata)
     socket.emit('onEnter', eggdata)
 }
 
 async function getEgg(id){
     console.log("now here!")
     let eggdata = await easterEggs.getEgg(id) 
-    console.log(eggdata)
+    // console.log(eggdata)
     socket.emit('Egg', eggdata)
 }
 
@@ -42,6 +47,7 @@ async function getEgg(id){
 io.on('connection', (socket) => {
     test(socket)
     getCandiesFromProducer(socket)
+    getAllCandy(socket)
     // Välkomst meddelande vid upprättande av kontakt
     console.log("A new connection is established")
 })
@@ -64,22 +70,22 @@ io.on("getEgg", ( id) => {
 
 
 
-app.get('/producer', (req, res) => {
+// app.get('/producer', (req, res) => {
 
-    // let username = url.parse(req.url, true).query.username
-    // let password = url.parse(req.url, true).query.password
+//     // let username = url.parse(req.url, true).query.username
+//     // let password = url.parse(req.url, true).query.password
 
-    // if (username === 'Berra' && password === 'lol') {
-    res.sendFile(__dirname + '/public/producer.html')
-})
-app.get('/consumer', (req, res) => {
+//     // if (username === 'Berra' && password === 'lol') {
+//     res.sendFile(__dirname + '/public/producer.html')
+// })
+// app.get('/consumer', (req, res) => {
 
-    // let username = url.parse(req.url, true).query.username
-    // let password = url.parse(req.url, true).query.password
+//     // let username = url.parse(req.url, true).query.username
+//     // let password = url.parse(req.url, true).query.password
 
-    // if (username === 'Berra' && password === 'lol') {
-    res.sendFile(__dirname + '/public/consumer.html')
-})
+//     // if (username === 'Berra' && password === 'lol') {
+//     res.sendFile(__dirname + '/public/consumer.html')
+// })
 
 
 server.listen(8081, () => {
