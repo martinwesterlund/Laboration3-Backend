@@ -33,7 +33,6 @@ async function getEggs() {
                 if (!err) {
                 let db = client.db('Laboration3')
                 findDocument(db, null, (result) => {
-                    console.log(result)
                     client.close()
         
                     resolve(result)
@@ -45,7 +44,9 @@ async function getEggs() {
         })
 }
 
-async function getEgg(id) {
+
+
+async function getEggMongo(id) {
 
     return new Promise((resolve, reject) => {
 
@@ -217,4 +218,4 @@ const findAndDeleteDocument = function(db, eggId, callback) {
 
 
 
-module.exports = {router, deleteEgg, getEggs, getEgg}
+module.exports = {router, deleteEgg, getEggs, getEggMongo}
