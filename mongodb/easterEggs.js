@@ -33,7 +33,7 @@ async function getEggs() {
                 if (!err) {
                 let db = client.db('Laboration3')
                 findDocument(db, null, (result) => {
-                    console.log(result)
+                    // console.log(result)
                     client.close()
         
                     resolve(result)
