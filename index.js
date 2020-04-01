@@ -17,7 +17,7 @@ app.use(express.urlencoded({
 
 app.use('/eggs', easterEggs.router)
 app.use('/producer', candy_producers.router)
-app.use('/costumer', customers_eggs.router)
+app.use('/customer', customers_eggs.router)
 app.use('/', candy_producers.router)
 
 async function getAllEggs(socket){
@@ -49,6 +49,11 @@ async function getEgg(id){
     socket.emit('Egg', eggdata)
 }
 
+async function getFilteredList(socket, id){
+    let filteredList = await candy_producers.getCandies(id)
+    socket.emit('onCustomerEnter', filteredList)
+}
+
 
 io.on('connection', (socket) => {
     getAllEggs(socket)
@@ -59,6 +64,9 @@ io.on('connection', (socket) => {
     // Välkomst meddelande vid upprättande av kontakt
     console.log("A new connection is established")
 
+    socket.on('getFilteredCandyList', (id) => {
+        getFilteredList(socket, id)
+    })
 
     socket.on('getEgg', (id) => {
         console.log("here we are!")

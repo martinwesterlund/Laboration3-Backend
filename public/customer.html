@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
         document.addEventListener("DOMContentLoaded", () => {
             socket = io('http://localhost:8081');
             socket.on('onCustomerEnter', (allProducersCandy) => {
+                
                 console.log('Connected to server from Customer page')
                 createList(allProducersCandy)
             })
@@ -17,13 +19,15 @@
         function createList(allProducersCandy) {
             console.log(allProducersCandy)
 
-            let candyList = document.getElementById('candyList')
 
-            for(let i= 0; i < allProducersCandy.length; i++){
+            let candyList = document.getElementById('candyList')
+            candyList.innerHTML = ''
+
+            for (let i = 0; i < allProducersCandy.length; i++) {
                 //Skapa en sektion per gosissort
                 let oneCandy = document.createElement('section')
                 oneCandy.setAttribute('id', allProducersCandy[i].ID)
-                
+
                 //Namn på godissorten
                 let candyName = document.createElement('div')
                 candyName.innerHTML = allProducersCandy[i].Candy
@@ -54,7 +58,7 @@
                 remove.innerHTML = '-'
                 remove.setAttribute('onclick', `removeCandy(${allProducersCandy[i].ID})`)
                 oneCandy.appendChild(remove)
-                
+
                 //Lägg till +
                 let add = document.createElement('button')
                 add.innerHTML = '+'
@@ -70,13 +74,28 @@
             }
 
         }
+
+        function updateList(){
+            let id = document.getElementById('producer').value
+            socket.emit('getFilteredCandyList', id)
+        }
     </script>
 </head>
+
 <body>
     <h1>Hej och välkommen till consumer!</h1>
     <h2 id='customerName'></h2>
+    <select id="producer" onchange="updateList()">
+        <option value="0">All producers</option>
+        <option value="1">Malaco</option>
+        <option value="2">Fazer</option>
+        <option value="3">Cloetta</option>
+        <option value="4">Bassets</option>
+    </select>
+    <div>-----------------------------------</div>
     <section id='candyList'></section>
-    
-    <button >Gå till konsument sidan</button>
+
+    <button>Gå till konsument sidan</button>
 </body>
+
 </html>
