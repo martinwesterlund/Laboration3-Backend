@@ -17,43 +17,49 @@ app.use(express.urlencoded({
 
 app.use('/eggs', easterEggs.router)
 app.use('/producer', candy_producers)
-app.use('/costumer', costumers_eggs)
+app.use('/costumer', costumers_eggs.router)
 
-async function test(socket){
-    let eggdata = await easterEggs.getEggs() 
-    console.log(eggdata)
+async function getAllEggs(socket){
+    
+    let eggdata = {}
+    eggdata.mongo = await easterEggs.getEggs() 
+    eggdata.Sql = await costumers_eggs.getEggSql(eggdata.mongo) 
     socket.emit('onEnter', eggdata)
 }
 
 async function getEgg(id){
-    console.log("now here!")
-    let eggdata = await easterEggs.getEgg(id) 
-    console.log(eggdata)
+    let eggdata = {}
+
+    eggdata.Mongo = await easterEggs.getEggMongo(id) 
+    eggdata.Sql = await costumers_eggs.getEggSql(eggdata.Mongo) 
     socket.emit('Egg', eggdata)
 }
 
 
 io.on('connection', (socket) => {
-    test(socket)
+    getAllEggs(socket)
     // Välkomst meddelande vid upprättande av kontakt
     console.log("A new connection is established")
-})
 
-io.on("deleteEgg", (id) => {
+
+    socket.on('getEgg', (id) => {
+        console.log("here we are!")
+        getEgg(id)
+    })
 
     
-    let done = easterEggs.deleteEgg(id)
-    let eggdata = easterEggs.getEggs()
-    if (done) {
-        io.emit('EggDeleted', eggdata)
-    }
+    socket.on("deleteEgg", (id) => {
 
+        let done = easterEggs.deleteEgg(id)
+        let eggdata = easterEggs.getEggs()
+        if (done) {
+            io.emit('EggDeleted', eggdata)
+        }
+    })
 })
 
-io.on("getEgg", ( id) => {
-    console.log("here we are!")
-    getEgg(id)
-})
+
+
 
 
 

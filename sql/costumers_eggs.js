@@ -76,6 +76,52 @@ router.route('/egg/new')
         })
     })
 
+
+async function getEggSql(eggdata) {
+
+    let data = []
+    let candy = []
+    let candydata = {}
+   
+        for( i = 0; i < eggdata.length; i++) {
+            
+            for ( q = 0; q < eggdata[i].candy.length; q++) {
+
+                candydata =  await getEggSqlQuery(eggdata, i, q) 
+                candy[q] = {...candydata}
+            }
+            data[i] = candy.slice()
+            
+        }
+        return data
+
+}
+async function getEggSqlQuery(eggdata, i, q) {
+    let data = {}
+ 
+    return new Promise((resolve, reject) => {
+        
+        pool((err, connection) => {
+
+                connection.query(`SELECT * FROM candy WHERE id = ` + eggdata[i].candy[q].candy_producers_id, (error, result, fields) => {
+    
+                if (error) throw error
+                connection.release()
+                    data.id = result[0].id
+                    data.name = result[0].name
+                    data.category = result[0].category
+                    data.color = result[0].color
+
+                resolve(data)
+            })
+
+        })
+          
+    })
+}
+    
+    
+
 // CRUD on one Easter egg 
 router.route('/egg/:id')
 
@@ -115,4 +161,4 @@ router.route('/egg/:id')
 
 
 
-module.exports = router
+module.exports = {router, getEggSql}

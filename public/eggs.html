@@ -27,29 +27,30 @@
 
         function createList(eggs) {
             console.log(eggs)
+            console.log(eggs.Sql[0][0].name)
 
 
-            for (let i = 0; i < eggs.length; i++) {
-
+            for (let i = 0; i < eggs.mongo.length; i++) {
                 let oneEgg = document.createElement("section")
-                oneEgg.setAttribute("id", eggs[i]._id)
+                oneEgg.setAttribute("id", eggs.mongo[i]._id)
+                
 
 
                 let deleteEgg = document.createElement("button")
                 deleteEgg.innerHTML = "Delete egg"
-                deleteEgg.setAttribute("onclick", `delEgg(${eggs[i]._id})`)
+                deleteEgg.setAttribute("onclick", `delEgg(${eggs.mongo[i]._id})`)
                 oneEgg.appendChild(deleteEgg)
 
                 let name = document.createElement("div")
-                name.innerHTML = eggs[i].name
+                name.innerHTML = eggs.mongo[i].name
                 oneEgg.appendChild(name)
 
-                for (let q = 0; q < eggs[i].candy.length; q++) {
+                for (let q = 0; q < eggs.mongo[i].candy.length; q++) {
 
                     let candy = document.createElement("div")
 
-                    candy.innerHTML = eggs[i].candy[q].amount
-                    // candy.innerText = eggs[i].candy[q].amount
+                    candy.innerHTML = eggs.Sql[i][q].name + ' ' + eggs.mongo[i].candy[q].amount + ' st'
+                    // candy.innerText = eggs.mongo[i].candy[q].amount
                     oneEgg.appendChild(candy)
 
                 }
@@ -61,7 +62,9 @@
 
                 let getanEgg = document.createElement("button")
                 getanEgg.innerHTML = "Go to egg"
-                getanEgg.setAttribute("onclick", `getEgg(${eggs[i]._id})`)
+                getanEgg.addEventListener("click", () => {
+                    getEgg(eggs.mongo[i]._id)
+                })
                 oneEgg.appendChild(getanEgg)
 
                 document.getElementById("egg").appendChild(oneEgg)
@@ -72,7 +75,7 @@
 
         }
         function getEgg(id) {
-            console.log("Sendiserar lite")
+            console.log("Sendiserar lite " + id)
 
             socket.emit("getEgg", id)
 
