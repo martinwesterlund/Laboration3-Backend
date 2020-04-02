@@ -7,7 +7,7 @@ const bodyParser = require('body-parser')
 const router = express.Router()
 
 
-async function getCandies(pId) {
+async function getProducersCandy(pId) {
     return new Promise((resolve, reject) => {
         pool((err, connection) => {
             connection.query(
@@ -215,4 +215,4 @@ router.route('/junction/:id')
 
 
 
-module.exports = { router, getCandies, getAllCandy }
+module.exports = { router, getProducersCandy, getAllCandy }

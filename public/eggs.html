@@ -4,6 +4,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .loader {
+            border: 10px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 10px solid #3498db;
+            width: 50px;
+            height: 50px;
+            -webkit-animation: spin 2s linear infinite;
+            /* Safari */
+            animation: spin 2s linear infinite;
+        }
+
+        /* Safari */
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
     <title>Dina påskägg</title>
     <script src="/socket.io/socket.io.js"></script>
     <script>
@@ -41,7 +74,7 @@
                 oneEgg.appendChild(name)
 
                 for (let q = 0; q < eggs.mongo[i].candy.length; q++) {
-                    
+
                     let candy = document.createElement("div")
 
                     candy.innerHTML = eggs.Sql[i][q].name + ' ' + eggs.mongo[i].candy[q].amount + ' st'
@@ -61,7 +94,7 @@
                     location.href = "http://localhost:8081/eggs/" + eggs.mongo[i]._id
                 })
                 oneEgg.appendChild(getanEgg)
-
+                document.getElementById('loader').innerHTML = ''
                 document.getElementById("egg").appendChild(oneEgg)
 
 
@@ -85,6 +118,9 @@
 
 <body>
     <h1>Här har du dina aktuella påskägg</h1>
+    <div id="loader">
+        <div class="loader"></div>
+    </div>
 
     <section id="egg">
 
