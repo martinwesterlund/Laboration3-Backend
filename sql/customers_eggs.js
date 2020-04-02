@@ -77,7 +77,7 @@ router.route('/egg/new')
     })
 
 
-async function getEggSql(eggdata) {
+async function getEggsSql(eggdata) {
 
     let data = []
     let candy = []
@@ -87,7 +87,7 @@ async function getEggSql(eggdata) {
             
             for ( q = 0; q < eggdata[i].candy.length; q++) {
 
-                candydata =  await getEggSqlQuery(eggdata, i, q) 
+                candydata =  await getEggsSqlQuery(eggdata, i, q) 
                 candy[q] = {...candydata}
             }
             data[i] = candy.slice()
@@ -96,14 +96,17 @@ async function getEggSql(eggdata) {
         return data
 
 }
-async function getEggSqlQuery(eggdata, i, q) {
+
+async function getEggsSqlQuery(eggdata, i, q) {
     let data = {}
  
     return new Promise((resolve, reject) => {
         
         pool((err, connection) => {
 
-                connection.query(`SELECT * FROM candy WHERE id = ` + eggdata[i].candy[q].candy_producers_id, (error, result, fields) => {
+                connection.query(`SELECT * FROM candy 
+                                JOIN candy_producers ON candy.id = candy_producers.candy_id
+                                WHERE candy.id = ` + eggdata[i].candy[q].candy_producers_id, (error, result, fields) => {
     
                 if (error) throw error
                 connection.release()
@@ -111,6 +114,7 @@ async function getEggSqlQuery(eggdata, i, q) {
                     data.name = result[0].name
                     data.category = result[0].category
                     data.color = result[0].color
+                    data.price_per_unit = result[0].price_per_unit
 
                 resolve(data)
             })
@@ -119,7 +123,6 @@ async function getEggSqlQuery(eggdata, i, q) {
           
     })
 }
-    
     
 
 // CRUD on one Easter egg 
@@ -161,4 +164,4 @@ router.route('/egg/:id')
 
 
 
-module.exports = {router, getEggSql}
+module.exports = {router, getEggsSql}

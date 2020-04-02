@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Välkommen till påskäggsköparsidan!</title>
+    <title>Dina påskägg</title>
     <script src="/socket.io/socket.io.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -13,11 +13,7 @@
                 console.log('Connected to server')
                 createList(eggs)
             })
-            socket.on('EggDeleted', () => {
-                console.log('An egg has been deleted')
-                createList(eggs)
 
-            })
             socket.on('Egg', (egg) => {
                 console.log('Egg incomming!!')
                 createList(egg)
@@ -27,17 +23,16 @@
 
         function createList(eggs) {
             console.log(eggs)
-            console.log(eggs.Sql[0][0].name)
 
 
             for (let i = 0; i < eggs.mongo.length; i++) {
                 let oneEgg = document.createElement("section")
                 oneEgg.setAttribute("id", eggs.mongo[i]._id)
-                
+                let totalPriceCandy = 0
 
 
                 let deleteEgg = document.createElement("button")
-                deleteEgg.innerHTML = "Delete egg"
+                deleteEgg.innerHTML = "Radera ägg"
                 deleteEgg.setAttribute("onclick", `delEgg(${eggs.mongo[i]._id})`)
                 oneEgg.appendChild(deleteEgg)
 
@@ -46,24 +41,24 @@
                 oneEgg.appendChild(name)
 
                 for (let q = 0; q < eggs.mongo[i].candy.length; q++) {
-
+                    
                     let candy = document.createElement("div")
 
                     candy.innerHTML = eggs.Sql[i][q].name + ' ' + eggs.mongo[i].candy[q].amount + ' st'
-                    // candy.innerText = eggs.mongo[i].candy[q].amount
+                    totalPriceCandy = (eggs.Sql[i][q].price_per_unit * eggs.mongo[i].candy[q].amount) + totalPriceCandy
                     oneEgg.appendChild(candy)
 
                 }
 
-                // let totalPrice = document.createElement("div")
-                // totalPrice.innerHTML = eggs[i].candy[q].amount
-                // // totalPrice.innerText = eggs[i].candy[q].amount
-                // oneEgg.appendChild(totalPrice)
+                let totalPrice = document.createElement("div")
+                totalPrice.innerHTML = "Pris för detta ägg: " + totalPriceCandy + " kr"
+                oneEgg.appendChild(totalPrice)
 
                 let getanEgg = document.createElement("button")
-                getanEgg.innerHTML = "Go to egg"
+                getanEgg.innerHTML = "Gå till ägg"
                 getanEgg.addEventListener("click", () => {
-                    getEgg(eggs.mongo[i]._id)
+                    //getEgg(eggs.mongo[i]._id)
+                    location.href = "http://localhost:8081/eggs/" + eggs.mongo[i]._id
                 })
                 oneEgg.appendChild(getanEgg)
 
@@ -89,13 +84,12 @@
 </head>
 
 <body>
-    <h1>Hej och välkommen till egglistan!</h1>
+    <h1>Här har du dina aktuella påskägg</h1>
 
     <section id="egg">
 
 
     </section>
-    <button>Gå till konsument sidan</button>
 </body>
 
 </html>

@@ -120,19 +120,7 @@ router.route('/:eggId')
 
     //Get one easter egg
     .get((req, res) => {
-        console.log(req.params.eggId)
-        mongodbClient.connect(mongoUrl, {
-            useUnifiedTopology: true
-        }, (err, client) => {
-            if (err) throw err
-            let db = client.db('Laboration3')
-            if (ObjectId.isValid(req.params.eggId)) {
-                findDocument(db, req.params.eggId, (result) => {
-                    client.close()
-                    res.json(result)
-                })
-            }
-        })
+        res.sendFile("egg.html", {root: './public'})
     })
 
     //Delete one easter egg

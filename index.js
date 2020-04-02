@@ -24,10 +24,22 @@ async function getAllEggs(socket){
     
     let eggdata = {}
     eggdata.mongo = await easterEggs.getEggs() 
-    eggdata.Sql = await customers_eggs.getEggSql(eggdata.mongo) 
+    eggdata.Sql = await customers_eggs.getEggsSql(eggdata.mongo) 
     socket.emit('Egg', eggdata)
 
 }
+
+// async function getEgg(socket, id){
+//     let eggdata = {}
+
+//     eggdata.mongo = await easterEggs.getEggMongo(id) 
+//     console.log("here!")
+//     console.log(eggdata.candy)
+//     eggdata.Sql = await customers_eggs.getEggsSql(eggdata.mongo) 
+  
+//     socket.emit('OneEgg', eggdata)
+// }
+
 
 async function getCandiesFromProducer(socket){
     let producerCandies = await candy_producers.getCandies(2)
@@ -41,13 +53,7 @@ async function getAllCandy(socket){
     socket.emit('onCustomerEnter', allProducersCandy)
 }
 
-async function getEgg(id){
-    let eggdata = {}
 
-    eggdata.Mongo = await easterEggs.getEggMongo(id) 
-    eggdata.Sql = await costumers_eggs.getEggSql(eggdata.Mongo) 
-    socket.emit('Egg', eggdata)
-}
 
 async function getFilteredList(socket, id){
     let filteredList = await candy_producers.getCandies(id)
@@ -69,8 +75,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on('getEgg', (id) => {
-        console.log("here we are!")
-        getEgg(id)
+        getEgg(socket, id)
     })
 
     
