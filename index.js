@@ -23,54 +23,46 @@ app.use('/', candy_producers.router)
 
 
 //Funktioner till Eggs
-async function getAllEggs(socket){
-    
+async function getAllEggs(socket) {
     let eggdata = {}
     eggdata.mongo = await easterEggs.getEggs()
-    
-    eggdata.Sql = await customers_eggs.getEggsSql(eggdata.mongo) 
-
-    
+    eggdata.Sql = await customers_eggs.getEggsSql(eggdata.mongo)
     socket.emit('Egg', eggdata)
-
 }
 
 
 //Funktioner till Producer
-async function getCandiesFromProducer(socket, id){
+async function getCandiesFromProducer(socket, id) {
     let producerCandies = await candy_producers.getProducersCandy(id)
     // console.log(producerCandies)
     socket.emit('onProducerEnter', producerCandies)
 }
 
 //Funktioner till Customer
-async function getAllCandy(socket){
-    
+async function getAllCandy(socket) {
     let mongo = await easterEggs.getEggMongo("5e7b2a4c30cc881860bee94f")
     let candyData = await candy_producers.getPivotCandy(mongo[0].candy)
-    
     socket.emit('showAllCandy', candyData)
 }
 
-
-async function getFilteredList(socket, id){
-    if(id == 0){
+async function getFilteredList(socket, id) {
+    if (id == 0) {
         getAllCandy(socket)
     }
-    else{
-    let mongo = await easterEggs.getEggMongo("5e7b2a4c30cc881860bee94f")
-    let filteredList = await candy_producers.getFilteredCandy(mongo[0].candy, id)
-    socket.emit('showFilteredList', filteredList)
+    else {
+        let mongo = await easterEggs.getEggMongo("5e7b2a4c30cc881860bee94f")
+        let filteredList = await candy_producers.getFilteredCandy(mongo[0].candy, id)
+        socket.emit('showFilteredList', filteredList)
     }
-    
 }
 
+//Socket stuff
 
 io.on('connection', (socket) => {
     socket.emit('onConnection', 'Connected to server')
-    
-    
-    
+
+
+
     // getAllEggs(socket)
 
     // //Denna ska skicka med socket + inloggad producers id (2 är bara som exempel)
@@ -85,10 +77,10 @@ io.on('connection', (socket) => {
     })
 
     socket.on('getEgg', (id) => {
-        getEgg(socket, id)
+        getAllEggs(socket, id)
     })
 
-    
+
     socket.on("deleteEgg", (id) => {
 
         let done = easterEggs.deleteEgg(id)
@@ -108,29 +100,29 @@ io.on('connection', (socket) => {
 
     })
     socket.on('loginProducer', (loginData) => {
-        
+
         loginProducer(loginData, socket)
-        
+
     })
 
 })
 
-async function loginCustomer(loginData, socket){
-    try{
+async function loginCustomer(loginData, socket) {
+    try {
         let data = await auth.loginCustomer(loginData)
-        console.log(data)  
-        socket.emit('LoggedInAsCustomer', data)  
+        console.log(data)
+        socket.emit('LoggedInAsCustomer', data)
     } catch (err) {
         console.log(err)
         socket.emit('LoggedInAsCustomer', err)
     }
 
 }
-async function loginProducer(loginData, socket){
-    try{
+async function loginProducer(loginData, socket) {
+    try {
         let data = await auth.loginProducer(loginData)
-        console.log(data)  
-        socket.emit('LoggedInAsProducer', data)  
+        console.log("Data: " + data)
+        socket.emit('LoggedInAsProducer', data)
     } catch (err) {
         console.log(err)
         socket.emit('LoggedInAsProducer', err)

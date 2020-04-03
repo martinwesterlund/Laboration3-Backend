@@ -12,13 +12,13 @@
                 console.log('Connected to server')
             })
             socket.on('LoggedInAsCustomer', (data) => {
-                console.log(data)
+                console.log("data: " + data)
                 sessionStorage.setItem('userLoggedIn', data.id)
                 window.location.href = 'http://localhost:8081/eggs/'
 
             })
             socket.on('LoggedInAsProducer', (data) => {
-                console.log(data)
+                console.log("Data: " + data)
                 sessionStorage.setItem('userLoggedIn', data.id)
                 window.location.href = 'http://localhost:8081/producer/'
             })

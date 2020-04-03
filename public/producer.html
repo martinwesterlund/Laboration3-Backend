@@ -17,7 +17,7 @@
                 if (session !== null ){
                     console.log("we are here")
 
-                    //createList(candies)
+                    // createList(candies)
 
                 } else {
                     let name = document.getElementById('producerName')
@@ -44,14 +44,14 @@
         }
 
         function createList(candies) {
-            console.log(candies)
+            console.log('Är jag här?')
             let producer = document.getElementById('producerCandies')
             producerName.innerHTML = candies[0].Producer
             for (let i = 0; i < candies.length; i++) {
 
                 //Skapa en sektion per godissort
                 let oneCandy = document.createElement('section')
-                oneCandy.setAttribute('id', candies[i].ID)
+                oneCandy.setAttribute('id', candies[i].id)
 
                 //Skapa en "ta bort godis"-knapp
                 let deleteCandy = document.createElement('button')
