@@ -11,7 +11,7 @@ async function getProducersCandy(pId) {
     return new Promise((resolve, reject) => {
         pool((err, connection) => {
             connection.query(
-                `SELECT candy.id AS ID, candy.name AS "Candy", candy.category AS "Category", candy.color AS "Color", producers.name as "Producer", candy_producers.price_per_unit AS "Price", candy_producers.balance AS "Balance" 
+                `SELECT candy.id AS "id", candy.name AS "name", candy.category AS "category", candy.color AS "color", producers.name as "producer", candy_producers.price_per_unit AS "price", candy_producers.balance as "balance"  
                 FROM candy
                 LEFT JOIN candy_producers ON candy.id = candy_producers.candy_id
                 LEFT JOIN producers on producers.id = candy_producers.producer_id
@@ -25,11 +25,36 @@ async function getProducersCandy(pId) {
     })
 }
 
-async function getAllCandy() {
+async function getFilteredCandy(mongoData, id){
+    let candyData = {}
+    candyData.mongo = mongoData
+    candyData.sql = await getProducersCandy(id)
+    
+    return candyData
+
+}
+
+async function getPivotCandy(mongoData, id){
+    
+    let candyData = {}
+    candyData.mongo = mongoData
+    if(id == undefined || id == 0){
+        candyData.sql = await getSqlCandy()
+    }
+    else{
+        candyData.sql = await getProducersCandy(id)
+    }
+    
+    
+    return candyData
+
+}
+
+async function getSqlCandy(){
     return new Promise((resolve, reject) => {
         pool((err, connection) => {
             connection.query(
-                `SELECT candy.id AS ID, candy.name AS "Candy", candy.category AS "Category", candy.color AS "Color", producers.name as "Producer", candy_producers.price_per_unit AS "Price" 
+                `SELECT candy.id AS "id", candy.name AS "name", candy.category AS "category", candy.color AS "color", producers.name as "producer", candy_producers.price_per_unit AS "price", candy_producers.balance as "balance"  
                 FROM candy
                 LEFT JOIN candy_producers ON candy.id = candy_producers.candy_id
                 LEFT JOIN producers on producers.id = candy_producers.producer_id
@@ -42,6 +67,26 @@ async function getAllCandy() {
         })
     })
 }
+
+// async function getAllCandy(mongoData) {
+
+//     // console.log("från async: " + mongoData)
+//     return new Promise((resolve, reject) => {
+//         pool((err, connection) => {
+//             connection.query(
+//                 `SELECT candy.id AS ID, candy.name AS "Candy", candy.category AS "Category", candy.color AS "Color", producers.name as "Producer", candy_producers.price_per_unit AS "Price" 
+//                 FROM candy
+//                 LEFT JOIN candy_producers ON candy.id = candy_producers.candy_id
+//                 LEFT JOIN producers on producers.id = candy_producers.producer_id
+//                 WHERE 1`, (error, result, fields) => {
+//                 connection.release()
+//                 if (error) throw reject(error)
+//                 resolve(result)
+//             });
+
+//         })
+//     })
+// }
 
 
 // ------------------------ Producer table ------------------------------------------
@@ -215,4 +260,4 @@ router.route('/junction/:id')
 
 
 
-module.exports = { router, getProducersCandy, getAllCandy }
+module.exports = { router, getProducersCandy, getPivotCandy, getFilteredCandy }

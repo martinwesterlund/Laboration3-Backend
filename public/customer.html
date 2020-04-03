@@ -4,78 +4,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        button{
+            margin: 0px 10px;
+        }
+        .loader {
+            border: 10px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 10px solid #3498db;
+            width: 50px;
+            height: 50px;
+            -webkit-animation: spin 2s linear infinite;
+            /* Safari */
+            animation: spin 2s linear infinite;
+        }
+
+        /* Safari */
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
     <title>Välkommen till påskäggsköparsidan!</title>
     <script src="/socket.io/socket.io.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             socket = io('http://localhost:8081');
-            socket.on('onCustomerEnter', (allProducersCandy) => {
-                
+            socket.on('showFilteredList', (filteredData) => {
+
                 console.log('Connected to server from Customer page')
-                createList(allProducersCandy)
+                createList(filteredData)
+            })
+            socket.on('showAllCandy', (candyData) => {
+                console.log('Connected to server from Customer page2')
+                createList(candyData)
             })
         })
 
-        function createList(allProducersCandy) {
-            console.log(allProducersCandy)
-
-
+        function createList(candyData) {
+            console.log(candyData.mongo)
+            console.log(candyData.sql)
             let candyList = document.getElementById('candyList')
             candyList.innerHTML = ''
 
-            for (let i = 0; i < allProducersCandy.length; i++) {
-                //Skapa en sektion per gosissort
+            for (let i = 0; i < candyData.sql.length; i++) {
+
+                //En godiswrapper
                 let oneCandy = document.createElement('section')
-                oneCandy.setAttribute('id', allProducersCandy[i].ID)
+                oneCandy.setAttribute('id', candyData.sql[i].id)
 
-                //Namn på godissorten
+                //Namn
                 let candyName = document.createElement('div')
-                candyName.innerHTML = allProducersCandy[i].Candy
+                candyName.innerHTML = candyData.sql[i].name
                 oneCandy.appendChild(candyName)
-
-                //Producent
-                let producerName = document.createElement('div')
-                producerName.innerHTML = allProducersCandy[i].Producer
-                oneCandy.appendChild(producerName)
-
+                
                 //Kategori
                 let category = document.createElement('div')
-                category.innerHTML = `Category: ${allProducersCandy[i].Category}`
+                category.innerHTML = candyData.sql[i].category
                 oneCandy.appendChild(category)
 
                 //Färg
                 let color = document.createElement('div')
-                color.innerHTML = `Color: ${allProducersCandy[i].Color}`
+                color.innerHTML = candyData.sql[i].color
                 oneCandy.appendChild(color)
 
-                //Pris
-                let price = document.createElement('div')
-                price.innerHTML = `Price: ${allProducersCandy[i].Price}`
-                oneCandy.appendChild(price)
+                //Producent
+                let producer = document.createElement('div')
+                producer.innerHTML = candyData.sql[i].producer
+                oneCandy.appendChild(producer)
 
                 //Ta bort -
                 let remove = document.createElement('button')
                 remove.innerHTML = '-'
-                remove.setAttribute('onclick', `removeCandy(${allProducersCandy[i].ID})`)
+                remove.setAttribute('onclick', `removeCandy(${candyData.sql[i].id})`)
                 oneCandy.appendChild(remove)
+
+                //Antal
+                let amount = document.createElement('span')
+                amount.innerHTML = 'Antal : 0 '
+                for (let j = 0; j < candyData.mongo.length; j++) {
+                    
+                    if (candyData.sql[i].id == candyData.mongo[j].candy_producers_id) {
+                        amount.innerHTML = 'Antal : ' + candyData.mongo[j].amount
+                    }
+                    
+                }
+                oneCandy.appendChild(amount)
 
                 //Lägg till +
                 let add = document.createElement('button')
                 add.innerHTML = '+'
-                add.setAttribute('onclick', `addCandy(${allProducersCandy[i].ID})`)
+                add.setAttribute('onclick', `addCandy(${candyData.sql[i].id})`)
                 oneCandy.appendChild(add)
+
+                //Saldo
+                let balance = document.createElement('div')
+                balance.innerHTML = 'Balance: ' + candyData.sql[i].balance
+                oneCandy.appendChild(balance)
 
                 //Godisavskiljare
                 let separation = document.createElement('div')
                 separation.innerHTML = "-----------------------------------"
                 oneCandy.appendChild(separation)
-
+                document.getElementById('loader').innerHTML = ''
                 candyList.appendChild(oneCandy)
             }
-
         }
 
-        function updateList(){
+        function updateList() {
             let id = document.getElementById('producer').value
             socket.emit('getFilteredCandyList', id)
         }
@@ -85,6 +136,7 @@
 <body>
     <h1>Hej och välkommen till customer-sidan!</h1>
     <h2 id='customerName'></h2>
+    
     <select id="producer" onchange="updateList()">
         <option value="0">All producers</option>
         <option value="1">Malaco</option>
@@ -92,6 +144,9 @@
         <option value="3">Cloetta</option>
         <option value="4">Bassets</option>
     </select>
+    <div id="loader">
+        <div class="loader"></div>
+    </div>
     <div>-----------------------------------</div>
     <section id='candyList'></section>
 
