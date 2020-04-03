@@ -34,17 +34,10 @@ async function getFilteredCandy(mongoData, id){
 
 }
 
-async function getPivotCandy(mongoData, id){
-    
+async function getPivotCandy(mongoData){
     let candyData = {}
     candyData.mongo = mongoData
-    if(id == undefined || id == 0){
-        candyData.sql = await getSqlCandy()
-    }
-    else{
-        candyData.sql = await getProducersCandy(id)
-    }
-    
+    candyData.sql = await getSqlCandy()
     
     return candyData
 

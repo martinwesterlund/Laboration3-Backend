@@ -57,7 +57,6 @@ async function getFilteredList(socket, id) {
 }
 
 //Socket stuff
-
 io.on('connection', (socket) => {
     socket.emit('onConnection', 'Connected to server')
 

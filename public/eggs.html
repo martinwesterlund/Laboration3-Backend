@@ -125,8 +125,8 @@
                 let getanEgg = document.createElement("button")
                 getanEgg.innerHTML = "Gå till ägg"
                 getanEgg.addEventListener("click", () => {
-                    //getEgg(eggs.mongo[i]._id)
-                    location.href = "http://localhost:8081/eggs/" + eggs.mongo[i]._id
+                    getEgg(eggs.mongo[i]._id)
+                    // location.href = "http://localhost:8081/eggs/" + eggs.mongo[i]._id
                 })
                 oneEgg.appendChild(getanEgg)
                 document.getElementById('loader').innerHTML = ''
