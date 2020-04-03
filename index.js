@@ -68,11 +68,15 @@ async function getFilteredList(socket, id){
 
 
 io.on('connection', (socket) => {
-    getAllEggs(socket)
+    socket.emit('onConnection', 'Connected to server')
+    
+    
+    
+    // getAllEggs(socket)
 
-    //Denna ska skicka med socket + inloggad producers id (2 är bara som exempel)
-    getCandiesFromProducer(socket, 2)
-    getAllCandy(socket)
+    // //Denna ska skicka med socket + inloggad producers id (2 är bara som exempel)
+    // getCandiesFromProducer(socket, 2)
+    // getAllCandy(socket)
 
     // Välkomst meddelande vid upprättande av kontakt
     console.log("A new connection is established")
@@ -100,43 +104,40 @@ io.on('connection', (socket) => {
 
     socket.on('loginCustomer', (loginData) => {
 
-        login(loginData)
+        loginCustomer(loginData, socket)
+
 
     })
     socket.on('loginProducer', (loginData) => {
-        console.log(loginData)
+        
+        loginProducer(loginData, socket)
         
     })
 
 })
 
-async function login(loginData){
-
-    let data = await auth.loginCustomer(loginData)
-    console.log(data)
+async function loginCustomer(loginData, socket){
+    try{
+        let data = await auth.loginCustomer(loginData)
+        console.log(data)  
+        socket.emit('LoggedInAsCustomer', data)  
+    } catch (err) {
+        console.log(err)
+        socket.emit('LoggedInAsCustomer', err)
+    }
 
 }
+async function loginProducer(loginData, socket){
+    try{
+        let data = await auth.loginProducer(loginData)
+        console.log(data)  
+        socket.emit('LoggedInAsProducer', data)  
+    } catch (err) {
+        console.log(err)
+        socket.emit('LoggedInAsProducer', err)
+    }
 
-
-
-
-// app.get('/producer', (req, res) => {
-
-//     // let username = url.parse(req.url, true).query.username
-//     // let password = url.parse(req.url, true).query.password
-
-//     // if (username === 'Berra' && password === 'lol') {
-//     res.sendFile(__dirname + '/public/producer.html')
-// })
-// app.get('/consumer', (req, res) => {
-
-//     // let username = url.parse(req.url, true).query.username
-//     // let password = url.parse(req.url, true).query.password
-
-//     // if (username === 'Berra' && password === 'lol') {
-//     res.sendFile(__dirname + '/public/consumer.html')
-// })
-
+}
 
 server.listen(8081, () => {
     console.log("MongoDB på 8081")

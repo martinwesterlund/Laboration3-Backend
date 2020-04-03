@@ -9,11 +9,39 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             socket = io('http://localhost:8081');
+            socket.on('onConnection', (data) => {
+                console.log(data)
+                let session = sessionStorage.getItem('userLoggedIn')
+                console.log(session)
+
+                if (session !== null ){
+                    console.log("we are here")
+
+                    //createList(candies)
+
+                } else {
+                    let name = document.getElementById('producerName')
+                    let candy = document.getElementById('producerCandies')
+                    h1.innerHTML = "Du är inte inloggad din n00b!"
+                    name.remove()  
+                    candy.remove()                    
+                }
+                
+            })
+
             socket.on('onProducerEnter', (candies) => {
                 console.log('Connected to server from Producer page')
                 createList(candies)
             })
         })
+        function logOut(){
+            try{
+                sessionStorage.removeItem('userLoggedIn')
+                window.location.href = 'http://localhost:8081/'
+            } catch (err) {
+                console.log(err)
+            }
+        }
 
         function createList(candies) {
             console.log(candies)
@@ -69,9 +97,10 @@
 </head>
 
 <body>
-    <h1>Hej och välkommen till producentsidan</h1>
+    <h1 id= "h1">Hej och välkommen till producentsidan</h1>
     <h2 id='producerName'></h2>
     <section id="producerCandies"></section>
+    <input type="button" onclick="logOut()" value="Logout!">
 </body>
 
 </html>

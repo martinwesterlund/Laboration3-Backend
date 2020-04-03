@@ -7,9 +7,20 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            socket = io('http://localhost:8081');
+            socket = io('http://localhost:8081')
             socket.on('hello', (data) => {
                 console.log('Connected to server')
+            })
+            socket.on('LoggedInAsCustomer', (data) => {
+                console.log(data)
+                sessionStorage.setItem('userLoggedIn', data.id)
+                window.location.href = 'http://localhost:8081/eggs/'
+
+            })
+            socket.on('LoggedInAsProducer', (data) => {
+                console.log(data)
+                sessionStorage.setItem('userLoggedIn', data.id)
+                window.location.href = 'http://localhost:8081/producer/'
             })
         })
         

@@ -41,18 +41,53 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            socket = io('http://localhost:8081');
-            socket.on('onEnter', (eggs) => {
-                console.log('Connected to server')
-                createList(eggs)
-            })
+            socket = io('http://localhost:8081')
+            socket.on('onConnection', (data) => {
+                console.log(data)
+                let session = sessionStorage.getItem('userLoggedIn')
+                console.log(session)
 
+                if (session !== null ){
+                    console.log("we are here")
+
+                    getEgg(session)
+
+                } else {
+                    let egg = document.getElementById('egg')
+                    let load = document.getElementById('loader')
+                    h1.innerHTML = "Du är inte inloggad din n00b!"
+                    egg.remove()  
+                    load.remove()                    
+                }
+                
+            })
+            // Gets one egg 
             socket.on('Egg', (egg) => {
                 console.log('Egg incomming!!')
                 createList(egg)
 
             })
         })
+
+        function getEgg(id) {
+            console.log("Sendiserar lite " + id)
+
+            socket.emit("getEgg", id)
+
+        }
+        function delEgg(id) {
+
+            socket.emit("deleteEgg", id)
+        }
+
+        function logOut(){
+            try{
+                sessionStorage.removeItem('userLoggedIn')
+                window.location.href = 'http://localhost:8081/'
+            } catch (err) {
+                console.log(err)
+            }
+        }
 
         function createList(eggs) {
             console.log(eggs)
@@ -102,22 +137,12 @@
             }
 
         }
-        function getEgg(id) {
-            console.log("Sendiserar lite " + id)
-
-            socket.emit("getEgg", id)
-
-        }
-        function delEgg(id) {
-
-            socket.emit("deleteEgg", id)
-        }
 
     </script>
 </head>
 
 <body>
-    <h1>Här har du dina aktuella påskägg</h1>
+    <h1 id="h1">Här har du dina aktuella påskägg</h1>
     <div id="loader">
         <div class="loader"></div>
     </div>
@@ -126,6 +151,7 @@
 
 
     </section>
+    <input type="button" onclick="logOut()" value="Logout!">
 </body>
 
 </html>
