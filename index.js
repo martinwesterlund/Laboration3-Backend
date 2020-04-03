@@ -45,25 +45,24 @@ async function getCandiesFromProducer(socket, id){
 
 //Funktioner till Customer
 async function getAllCandy(socket){
-    // Martin håller på här och testar sig fram
-    // let candyData = {}
-
-    // candyData.mongo = await easterEggs.getEggMongo("5e7b2a4c30cc881860bee94f")
-    // candyData.sql = await candy_producers.getAllCandy()
-
-    // //För att få tag på första godisens Producer ID
-    // console.log('Mongo data är: ' + candyData.mongo[0].candy[0].candy_producers_id)
-
-
-
-    let allProducersCandy = await candy_producers.getAllCandy()
-    socket.emit('onCustomerEnter', allProducersCandy)
+    
+    let mongo = await easterEggs.getEggMongo("5e7b2a4c30cc881860bee94f")
+    let candyData = await candy_producers.getPivotCandy(mongo[0].candy)
+    
+    socket.emit('showAllCandy', candyData)
 }
 
 
 async function getFilteredList(socket, id){
-    let filteredList = await candy_producers.getProducersCandy(id)
-    socket.emit('onCustomerEnter', filteredList)
+    if(id == 0){
+        getAllCandy(socket)
+    }
+    else{
+    let mongo = await easterEggs.getEggMongo("5e7b2a4c30cc881860bee94f")
+    let filteredList = await candy_producers.getFilteredCandy(mongo[0].candy, id)
+    socket.emit('showFilteredList', filteredList)
+    }
+    
 }
 
 
