@@ -12,11 +12,47 @@
                 console.log('Connected to server')
             })
         })
+        
+        function loginCustomer() {
 
+          let loginData = {}
+          loginData.username =  document.getElementById("userNameCustomer").value
+          loginData.password =  document.getElementById("passwordCustomer").value
+          console.log(loginData)
+
+          socket.emit('loginCustomer', loginData)
+        }
+        function loginProducer() {
+        
+          let loginData = {}
+          loginData.username =  document.getElementById("userNameProducer").value
+          loginData.password =  document.getElementById("passwordProducer").value
+          console.log(loginData)
+          socket.emit('loginProducer', loginData)
+        }
     </script>
 </head>
 <body>
     <h1>Hej och välkommen till påskäggsköparsidan!</h1>
-    <button >Gå till konsument sidan</button>
+    <h2>Logga in och gör nått vettigt med ditt liv!</h2>
+    
+    <section>
+        <h3>Log in as a customer</h3>
+
+        Username: <input type="text" id="userNameCustomer"><br><br>
+        Password : <input type="text" id="passwordCustomer"><br><br>
+        <input type="button" onclick="loginCustomer()" value="Submit">
+
+    </section>
+
+    <section>
+        <h3>Log in as a producer</h3>
+
+        Username: <input type="text" id="userNameProducer"><br><br>
+        Password : <input type="text" id="passwordProducer"><br><br>
+        <input type="button" onclick="loginProducer()" value="Submit">
+
+    </section>
+
 </body>
 </html>

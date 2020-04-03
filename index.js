@@ -1,6 +1,7 @@
 const candy_producers = require('./sql/candy_producers.js')
 const customers_eggs = require('./sql/customers_eggs.js')
 const easterEggs = require('./mongodb/easterEggs.js')
+const auth = require('./sql/auth.js')
 
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -28,17 +29,6 @@ async function getAllEggs(socket){
     socket.emit('Egg', eggdata)
 
 }
-
-// async function getEgg(socket, id){
-//     let eggdata = {}
-
-//     eggdata.mongo = await easterEggs.getEggMongo(id) 
-//     console.log("here!")
-//     console.log(eggdata.candy)
-//     eggdata.Sql = await customers_eggs.getEggsSql(eggdata.mongo) 
-  
-//     socket.emit('OneEgg', eggdata)
-// }
 
 
 async function getCandiesFromProducer(socket){
@@ -87,9 +77,28 @@ io.on('connection', (socket) => {
             io.emit('EggDeleted', eggdata)
         }
     })
+
+
+    // Authentication stuff
+
+    socket.on('loginCustomer', (loginData) => {
+
+        login(loginData)
+
+    })
+    socket.on('loginProducer', (loginData) => {
+        console.log(loginData)
+        
+    })
+
 })
 
+async function login(loginData){
 
+    let data = await auth.loginCustomer(loginData)
+    console.log(data)
+
+}
 
 
 
