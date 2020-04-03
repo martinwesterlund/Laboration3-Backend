@@ -56,9 +56,9 @@ async function getEggMongo(id) {
             if (!err) {
             let db = client.db('Laboration3')
             findDocument(db, id, (result) => {
-                console.log(result)
+                
                 client.close()
-    
+                // console.log(result)
                 resolve(result)
             }) 
             } else {
