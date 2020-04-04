@@ -137,9 +137,13 @@ async function getMongoIds(id) {
     
                 if (error) throw error
                 connection.release()
+                if(result.length < 1) {
+                    data = 0
+                } else {
                     for (let i = 0; i < result.length; i++ ){
                         data[i] = result[i].mongo_id
                     }
+                }
                 resolve(data)
             })
 

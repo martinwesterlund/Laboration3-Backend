@@ -50,11 +50,7 @@
                 if (id !== null ){
                     console.log("we are here")
 
-<<<<<<< HEAD
                     getEggs(id)
-=======
-                    getEggs(session)
->>>>>>> e08e0dc0f41e46750875acfe45860eb6766e1e87
 
                 } else {
                     let egg = document.getElementById('egg')
@@ -76,21 +72,25 @@
             // Gets one egg 
             socket.on('Eggs', (egg) => {
                 console.log('Eggs incomming!!')
-                createList(egg)
+                if (egg === "You have no eggs") {
+                    let egg = document.getElementById('egg')
+                    let load = document.getElementById('loader')
+                    h1.innerHTML = "You have no eggs!"
+                    egg.remove()  
+                    load.remove()                  
+                } else {
+                    createList(egg)
+                }
+               
 
             })
         })
 
         function getEggs(id) {
-<<<<<<< HEAD
             console.log("Getting eggs for user " + id)
 
             socket.emit("getEggs", id)
 
-=======
-            console.log("Sendiserar lite " + id)
-            socket.emit("getEgg", id)
->>>>>>> e08e0dc0f41e46750875acfe45860eb6766e1e87
         }
 
         // function showEgg(id){
@@ -149,15 +149,10 @@
                 let getanEgg = document.createElement("button")
                 getanEgg.innerHTML = "Gå till ägg"
                 getanEgg.addEventListener("click", () => {
-<<<<<<< HEAD
-                    getEgg(eggs.mongo[i][0]._id)
-                    // location.href = "http://localhost:8081/eggs/" + eggs.mongo[i]._id
-=======
-                    sessionStorage.setItem('mongoId', eggs.mongo[i]._id)
+                    sessionStorage.setItem('mongoId', eggs.mongo[i][0]._id)
                     // showEgg(eggs.mongo[i]._id)
                     location.href = "http://localhost:8081/customer"
                     // console.log('båda har körts')
->>>>>>> e08e0dc0f41e46750875acfe45860eb6766e1e87
                 })
                 oneEgg.appendChild(getanEgg)
                 document.getElementById('loader').innerHTML = ''

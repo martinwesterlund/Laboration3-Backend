@@ -28,14 +28,17 @@ async function getAllEggs(socket, id) {
     let mongo = []
 
     eggdata.mongoIds = await customers_eggs.getMongoIds(id)
+    if (eggdata.mongoIds === 0) {
+        socket.emit('Eggs', "You have no eggs")
+    } else {
+        for( let i = 0; i < eggdata.mongoIds.length; i++ ){
+        mongo[i] = await easterEggs.getEggMongo(eggdata.mongoIds[i])
+        }
+        eggdata.mongo = mongo
 
-    for( let i = 0; i < eggdata.mongoIds.length; i++ ){
-       mongo[i] = await easterEggs.getEggMongo(eggdata.mongoIds[i])
+        eggdata.Sql = await customers_eggs.getEggsSql(eggdata)
+        socket.emit('Eggs', eggdata)
     }
-    eggdata.mongo = mongo
-
-    eggdata.Sql = await customers_eggs.getEggsSql(eggdata)
-    socket.emit('Eggs', eggdata)
 }
 
 
