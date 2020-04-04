@@ -155,7 +155,7 @@
 
         function updateList() {
             let id = document.getElementById('producer').value
-            socket.emit('getFilteredCandyList', id)
+            socket.emit('getFilteredCandyList', id, sessionStorage.getItem('mongoId'))
         }
     </script>
 </head>
