@@ -17,7 +17,7 @@
                 if (session !== null ){
                     console.log("we are here")
 
-                    // createList(candies)
+                    getList(session)
 
                 } else {
                     let name = document.getElementById('producerName')
@@ -43,10 +43,14 @@
             }
         }
 
+        function getList(id){
+            socket.emit('getProducerView', id)
+        }
+
         function createList(candies) {
-            console.log('Är jag här?')
+            console.log(candies)
             let producer = document.getElementById('producerCandies')
-            producerName.innerHTML = candies[0].Producer
+            producerName.innerHTML = candies[0].producer
             for (let i = 0; i < candies.length; i++) {
 
                 //Skapa en sektion per godissort
@@ -61,27 +65,27 @@
 
                 //Namn på godissorten
                 let candy = document.createElement('div')
-                candy.innerHTML = candies[i].Candy
+                candy.innerHTML = candies[i].name
                 oneCandy.appendChild(candy)
 
                 //Kategori
                 let category = document.createElement('div')
-                category.innerHTML = candies[i].Category
+                category.innerHTML = candies[i].category
                 oneCandy.appendChild(category)
 
                 //Färg
                 let color = document.createElement('div')
-                color.innerHTML = candies[i].Color
+                color.innerHTML = candies[i].color
                 oneCandy.appendChild(color)
 
                 //Pris
                 let price = document.createElement('div')
-                price.innerHTML = candies[i].Price
+                price.innerHTML = candies[i].price
                 oneCandy.appendChild(price)
 
                 //Saldo
                 let balance = document.createElement('div')
-                balance.innerHTML = candies[i].Balance
+                balance.innerHTML = candies[i].balance
                 oneCandy.appendChild(balance)
                 
                 //Godisavskiljare

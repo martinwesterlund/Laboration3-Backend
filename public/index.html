@@ -15,12 +15,14 @@
                 console.log("data: " + data)
                 sessionStorage.setItem('userLoggedIn', data.id)
                 window.location.href = 'http://localhost:8081/eggs/'
+                
 
             })
             socket.on('LoggedInAsProducer', (data) => {
                 console.log("Data: " + data)
                 sessionStorage.setItem('userLoggedIn', data.id)
                 window.location.href = 'http://localhost:8081/producer/'
+                // socket.emit('getProducerView', data.id)
             })
         })
         
@@ -51,7 +53,7 @@
         <h3>Log in as a customer</h3>
 
         Username: <input type="text" id="userNameCustomer"><br><br>
-        Password : <input type="text" id="passwordCustomer"><br><br>
+        Password : <input type="password" id="passwordCustomer"><br><br>
         <input type="button" onclick="loginCustomer()" value="Submit">
 
     </section>
@@ -60,7 +62,7 @@
         <h3>Log in as a producer</h3>
 
         Username: <input type="text" id="userNameProducer"><br><br>
-        Password : <input type="text" id="passwordProducer"><br><br>
+        Password : <input type="password" id="passwordProducer"><br><br>
         <input type="button" onclick="loginProducer()" value="Submit">
 
     </section>

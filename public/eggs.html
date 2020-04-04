@@ -50,7 +50,7 @@
                 if (session !== null ){
                     console.log("we are here")
 
-                    getEgg(session)
+                    getEggs(session)
 
                 } else {
                     let egg = document.getElementById('egg')
@@ -61,6 +61,14 @@
                 }
                 
             })
+
+            socket.on('LoggedInAsCustomer', (data) => {
+                console.log("data: " + data)
+                
+                window.location.href = 'http://localhost:8081/customer'
+                
+
+            })
             // Gets one egg 
             socket.on('Egg', (egg) => {
                 console.log('Egg incomming!!')
@@ -69,12 +77,17 @@
             })
         })
 
-        function getEgg(id) {
+        function getEggs(id) {
             console.log("Sendiserar lite " + id)
-
             socket.emit("getEgg", id)
-
         }
+
+        // function showEgg(id){
+        //     // window.location.href = 'http://localhost:8081/customer'
+        //     socket.emit('showEgg', id)
+        //     console.log('båda har körts hääääär')
+        // }
+
         function delEgg(id) {
 
             socket.emit("deleteEgg", id)
@@ -125,8 +138,10 @@
                 let getanEgg = document.createElement("button")
                 getanEgg.innerHTML = "Gå till ägg"
                 getanEgg.addEventListener("click", () => {
-                    getEgg(eggs.mongo[i]._id)
-                    // location.href = "http://localhost:8081/eggs/" + eggs.mongo[i]._id
+                    sessionStorage.setItem('mongoId', eggs.mongo[i]._id)
+                    // showEgg(eggs.mongo[i]._id)
+                    location.href = "http://localhost:8081/customer"
+                    // console.log('båda har körts')
                 })
                 oneEgg.appendChild(getanEgg)
                 document.getElementById('loader').innerHTML = ''

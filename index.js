@@ -34,14 +34,17 @@ async function getAllEggs(socket) {
 //Funktioner till Producer
 async function getCandiesFromProducer(socket, id) {
     let producerCandies = await candy_producers.getProducersCandy(id)
-    // console.log(producerCandies)
+    console.log('Id är ' + id)
+    console.log('Datan är : ' + producerCandies)
     socket.emit('onProducerEnter', producerCandies)
 }
 
 //Funktioner till Customer
-async function getAllCandy(socket) {
-    let mongo = await easterEggs.getEggMongo("5e7b2a4c30cc881860bee94f")
+async function getAllCandy(socket, id) {
+    let mongo = await easterEggs.getEggMongo(id)
+    
     let candyData = await candy_producers.getPivotCandy(mongo[0].candy)
+    console.log(candyData)
     socket.emit('showAllCandy', candyData)
 }
 
@@ -50,7 +53,7 @@ async function getFilteredList(socket, id) {
         getAllCandy(socket)
     }
     else {
-        let mongo = await easterEggs.getEggMongo("5e7b2a4c30cc881860bee94f")
+        let mongo = await easterEggs.getEggMongo(id)
         let filteredList = await candy_producers.getFilteredCandy(mongo[0].candy, id)
         socket.emit('showFilteredList', filteredList)
     }
@@ -71,6 +74,11 @@ io.on('connection', (socket) => {
     // Välkomst meddelande vid upprättande av kontakt
     console.log("A new connection is established")
 
+    socket.on('getProducerView', (id) => {
+        console.log('ID på efterfrågad producer är: ' + id)
+        getCandiesFromProducer(socket, id)
+    })
+
     socket.on('getFilteredCandyList', (id) => {
         getFilteredList(socket, id)
     })
@@ -79,6 +87,10 @@ io.on('connection', (socket) => {
         getAllEggs(socket, id)
     })
 
+    socket.on('showEgg', (id) => {
+        console.log('Mongo id är ' + id)
+        getAllCandy(socket, id)
+    })
 
     socket.on("deleteEgg", (id) => {
 
@@ -110,6 +122,7 @@ async function loginCustomer(loginData, socket) {
     try {
         let data = await auth.loginCustomer(loginData)
         console.log(data)
+
         socket.emit('LoggedInAsCustomer', data)
     } catch (err) {
         console.log(err)
@@ -120,7 +133,7 @@ async function loginCustomer(loginData, socket) {
 async function loginProducer(loginData, socket) {
     try {
         let data = await auth.loginProducer(loginData)
-        console.log("Data: " + data)
+        console.log(data)
         socket.emit('LoggedInAsProducer', data)
     } catch (err) {
         console.log(err)
