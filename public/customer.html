@@ -67,9 +67,9 @@
                 }
             })
 
-            socket.on('showAllCandy', (candyData) => {
+            socket.on('showAllCandy', (candyData, sortBy) => {
                 console.log('Connected to server from Customer page2')
-                createList(candyData)
+                createList(candyData, sortBy)
             })
 
             socket.on('showFilteredList', (filteredData) => {
@@ -84,7 +84,7 @@
             socket.emit('showEgg', '5e7b2a4c30cc881860bee94f')
         }
 
-        function createList(candyData) {
+        function createList(candyData, sortBy) {
             console.log(candyData.mongo)
             console.log(candyData.sql)
             let candyList = document.getElementById('candyList')
@@ -119,6 +119,11 @@
                     let producer = document.createElement('div')
                     producer.innerHTML = candyData.sql[i].producer
                     oneCandy.appendChild(producer)
+
+                    //Price
+                    let price = document.createElement('div')
+                    price.innerHTML = `Price: ${candyData.sql[i].price}`
+                    oneCandy.appendChild(price)
 
                     //Ta bort -
                     let remove = document.createElement('button')
@@ -165,7 +170,8 @@
             document.getElementById('loader').innerHTML = '<div class="loader"></div>'
             let producerId = document.getElementById('producer').value
             let category = document.getElementById('category').value
-            socket.emit('getFilteredCandyList', producerId, category, sessionStorage.getItem('mongoId'))
+            let sortBy = document.getElementById('sortBy').value
+            socket.emit('getFilteredCandyList', producerId, category, sortBy, sessionStorage.getItem('mongoId'))
         }
     </script>
 </head>
@@ -189,6 +195,13 @@
         <option value="liquorice">Liquorices</option>
         <option value="marshmallow">Marshmallows</option>
         <option value="toffee">Toffees</option>
+    </select>
+    <div>Sort by: </div>
+    <select id="sortBy" onchange="updateList()">
+        <option value="candy1">Name A-Z</option>
+        <option value="candy2">Name Z-A</option>
+        <option value="price1">Price - lowest first</option>
+        <option value="price2">Price - highest first</option>
     </select>
     <div id="loader">
         <div class="loader"></div>
