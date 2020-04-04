@@ -15,12 +15,14 @@
                 console.log("data: " + data)
                 sessionStorage.setItem('userLoggedIn', data.id)
                 window.location.href = 'http://localhost:8081/eggs/'
+                
 
             })
             socket.on('LoggedInAsProducer', (data) => {
                 console.log("Data: " + data)
                 sessionStorage.setItem('userLoggedIn', data.id)
                 window.location.href = 'http://localhost:8081/producer/'
+                // socket.emit('getProducerView', data.id)
             })
         })
         
