@@ -7,21 +7,43 @@ const bodyParser = require('body-parser')
 const router = express.Router()
 
 
-async function getProducersCandy(pId, category) {
+async function getProducersCandy(pId, category, sortBy) {
     return new Promise((resolve, reject) => {
         pool((err, connection) => {
             let whereClause = `WHERE producer_id = ${pId}`
-            if(pId != 0 && (category != 0 && category != undefined)){
+            if (pId == 0 && category == 0){
+                whereClause = 'WHERE 1'
+            } else if (pId != 0 && (category != 0 && category != undefined)) {
                 whereClause = `WHERE producer_id = ${pId} AND category = "${category}"`
-            } else if(pId == 0 && category != 0){
+            } else if (pId == 0 && category != 0) {
                 whereClause = `WHERE category = "${category}"`
+            }
+            
+
+            let sortByClause
+            switch (sortBy) {
+                case undefined:
+                    sortByClause = 'candy.name'
+                    break
+                case 'candy1':
+                    sortByClause = 'candy.name'
+                    break
+                case 'candy2':
+                    sortByClause = 'candy.name DESC'
+                    break
+                case 'price1':
+                    sortByClause = 'candy_producers.price_per_unit'
+                    break
+                case 'price2':
+                    sortByClause = 'candy_producers.price_per_unit DESC'
             }
             console.log(whereClause)
             connection.query(
                 `SELECT candy.id AS "id", candy.name AS "name", candy.category AS "category", candy.color AS "color", producers.name as "producer", candy_producers.price_per_unit AS "price", candy_producers.balance as "balance"  
                 FROM candy
                 LEFT JOIN candy_producers ON candy.id = candy_producers.candy_id
-                LEFT JOIN producers on producers.id = candy_producers.producer_id ${whereClause}`, (error, result, fields) => {
+                LEFT JOIN producers on producers.id = candy_producers.producer_id 
+                ${whereClause} ORDER BY ${sortByClause}`, (error, result, fields) => {
                 connection.release()
                 if (error) throw reject(error)
                 resolve(result)
@@ -31,35 +53,49 @@ async function getProducersCandy(pId, category) {
     })
 }
 
-async function getFilteredCandy(mongoData, id, category){
+async function getFilteredCandy(mongoData, id, category, sortBy) {
     let candyData = {}
     candyData.mongo = mongoData
-    console.log(id + ' ------ ' + category)
-    candyData.sql = await getProducersCandy(id, category)
-    
+    console.log(id + ' ------ ' + category + '------' + sortBy)
+    candyData.sql = await getProducersCandy(id, category, sortBy)
+
     console.log(candyData.sql)
     return candyData
 
 }
 
-async function getPivotCandy(mongoData){
+async function getPivotCandy(mongoData, sortBy) {
     let candyData = {}
     candyData.mongo = mongoData
-    candyData.sql = await getSqlCandy()
-    
+    candyData.sql = await getSqlCandy(sortBy)
+
     return candyData
 
 }
 
-async function getSqlCandy(){
+async function getSqlCandy(sortBy) {
     return new Promise((resolve, reject) => {
         pool((err, connection) => {
+            let sortByClause = 'candy.name'
+            switch (sortBy) {
+                case 'candy1':
+                    sortByClause = 'candy.name'
+                    break
+                case 'candy2':
+                    sortByClause = 'candy.name DESC'
+                    break
+                case 'price1':
+                    sortByClause = 'candy_producers.price_per_unit'
+                    break
+                case 'price2':
+                    sortByClause = 'candy_producers.price_per_unit DESC'
+            }
             connection.query(
                 `SELECT candy.id AS "id", candy.name AS "name", candy.category AS "category", candy.color AS "color", producers.name as "producer", candy_producers.price_per_unit AS "price", candy_producers.balance as "balance"  
                 FROM candy
                 LEFT JOIN candy_producers ON candy.id = candy_producers.candy_id
                 LEFT JOIN producers on producers.id = candy_producers.producer_id
-                WHERE 1`, (error, result, fields) => {
+                WHERE 1 ORDER BY ${sortByClause}`, (error, result, fields) => {
                 connection.release()
                 if (error) throw reject(error)
                 resolve(result)
@@ -76,18 +112,18 @@ async function addNewCandySort(newCandyData) {
                 // connection.release()
                 if (error) throw error
                 let candyId = result.insertId
-                
+
                 connection.query(`INSERT INTO candy_producers (candy_id, producer_id, price_per_unit, balance) VALUES ( ?, ?, ?, ?)`, [candyId, newCandyData.id, newCandyData.price, newCandyData.amount], (error, result, fields) => {
                     connection.release()
                     if (error) throw reject(error)
                     resolve(true)
 
-        
+
                 })
 
             })
         })
-    })   
+    })
 }
 
 async function deleteCandySort(id) {
@@ -96,7 +132,7 @@ async function deleteCandySort(id) {
             connection.query(`DELETE FROM candy WHERE id = ` + connection.escape(id), (error, result, fields) => {
                 // connection.release()
                 if (error) throw error
-                                
+
                 connection.query(`DELETE FROM candy_producers WHERE candy_id = ` + connection.escape(id), (error, result, fields) => {
                     connection.release()
                     if (error) throw reject(error)
@@ -106,7 +142,7 @@ async function deleteCandySort(id) {
 
             })
         })
-    })   
+    })
 }
 async function updateCandySort(candyInfo) {
     return new Promise((resolve, reject) => {
@@ -222,7 +258,7 @@ router.route('/customer')
 // router.route('/candy/new')
 
 //     .post((req, res, next) => {
-       
+
 //     })
 
 // CRUD on one sort of candy 

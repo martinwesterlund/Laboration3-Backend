@@ -79,14 +79,14 @@ async function getAllCandy(socket, id) {
     socket.emit('showAllCandy', candyData)
 }
 
-async function getFilteredList(socket, id, category, mongoId) {
-    if (id == 0 && category == 0) {
-        getAllCandy(socket, mongoId)
+async function getFilteredList(socket, id, category, sortBy, mongoId) {
+    if (id == 0 && category == 0 && sortBy == 'candy1') {
+        getAllCandy(socket, mongoId, sortBy)
     }
     else {
         let mongo = await easterEggs.getEggMongo(mongoId)
         console.log(`id är ${id} och category är ${category}`)
-        let filteredList = await candy_producers.getFilteredCandy(mongo[0].candy, id, category)
+        let filteredList = await candy_producers.getFilteredCandy(mongo[0].candy, id, category, sortBy)
         socket.emit('showFilteredList', filteredList)
     }
 }
@@ -136,8 +136,8 @@ io.on('connection', (socket) => {
         console.log('Mongo id är ' + id)
         getAllCandy(socket, id)
     })
-    socket.on('getFilteredCandyList', (producerId, category, mongoId) => {
-        getFilteredList(socket, producerId, category, mongoId)
+    socket.on('getFilteredCandyList', (producerId, category, sortBy, mongoId) => {
+        getFilteredList(socket, producerId, category, sortBy, mongoId)
     })
 
     // socket.on('getFilteredCandyList', (id, mongoId) => {
