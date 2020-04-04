@@ -61,6 +61,12 @@ async function deleteCandySort(socket, id){
     let done = await candy_producers.deleteCandySort(id.candy)
     getCandiesFromProducer(socket, id.producer)
 }
+async function updateCandySort(socket, candyInfo){
+    console.log(candyInfo)
+
+    let done = await candy_producers.updateCandySort(candyInfo)
+    getCandiesFromProducer(socket, candyInfo.producerid)
+}
 
 
 
@@ -110,6 +116,11 @@ io.on('connection', (socket) => {
     socket.on('deleteCandySort', (id) => {
 
         deleteCandySort(socket, id)
+    })
+    socket.on('updateCandySort', (candyinfo) => {
+
+        updateCandySort(socket, candyinfo)
+
     })
 
 

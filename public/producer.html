@@ -5,8 +5,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tillverkarsidan</title>
+    <style>
+        /* The Modal */
+        .modal {
+        display: none;
+        position: fixed; 
+        z-index: 1; 
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto; 
+        background-color: rgba(0,0,0,0.4); 
+        }
+
+        /* Modal Content/Box */
+        .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto; 
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%; 
+        }
+
+    </style>
+
+
     <script src="/socket.io/socket.io.js"></script>
     <script>
+        let candiesLocal
         document.addEventListener("DOMContentLoaded", () => {
             socket = io('http://localhost:8081');
             socket.on('onConnection', (data) => {
@@ -31,6 +58,7 @@
 
             socket.on('onProducerEnter', (candies) => {
                 console.log('Connected to server from Producer page')
+                candiesLocal = candies
                 createList(candies)
             })
         })
@@ -65,6 +93,57 @@
             console.log(id)
             socket.emit('deleteCandySort', id)
         }
+        let candyInfo = {}
+        function updateCandy(candyId){
+            
+            candyInfo.candyid = candyId
+            candyInfo.producerid = sessionStorage.getItem('userLoggedIn')
+            let modal = document.getElementById("updateModal")
+
+            for(let i = 0; i < candiesLocal.length; i++ ){
+
+                if ( candyId === candiesLocal[i].id) {
+
+                    candyInfo.name = candiesLocal[i].name
+                    candyInfo.category = candiesLocal[i].category
+                    candyInfo.color = candiesLocal[i].color
+                    candyInfo.price = candiesLocal[i].price
+                    candyInfo.balance = candiesLocal[i].balance
+                    break
+                }
+            }
+            document.getElementById('nameModal').value =  candyInfo.name
+            document.getElementById('categoryModal').value =  candyInfo.category
+            document.getElementById('colorModal').value =  candyInfo.color
+            document.getElementById('priceModal').value =  candyInfo.price
+            document.getElementById('balanceModal').value =  candyInfo.balance
+            modal.style.display = "block"
+            
+           
+
+
+        }
+
+        function updateCandyModal(candyinfo){
+            let modal = document.getElementById("updateModal")
+            candyInfo.name = document.getElementById('nameModal').value 
+            candyInfo.category = document.getElementById('categoryModal').value
+            candyInfo.color = document.getElementById('colorModal').value
+            candyInfo.price = document.getElementById('priceModal').value
+            candyInfo.balance = document.getElementById('balanceModal').value
+
+            socket.emit('updateCandySort', candyInfo)
+            modal.style.display = "none"
+
+        }
+        
+
+        // window.onclick = (event) => {
+        //     if (event.target == modal) {
+        //         modal.style.display = "none";
+        //     }
+        // }
+
 
         function createList(candies) {
             console.log(candies)
@@ -84,6 +163,12 @@
                 deleteCandy.innerHTML = "Delete candy"
                 deleteCandy.setAttribute('onclick', `deleteCandy(${candies[i].id})`)
                 oneCandy.appendChild(deleteCandy)
+
+                 //Skapa en "updatera godis"-knapp
+                let updateCandy = document.createElement('button')
+                updateCandy.innerHTML = "Update candy"
+                updateCandy.setAttribute('onclick', `updateCandy(${candies[i].id})`)
+                oneCandy.appendChild(updateCandy)
 
                 //Namn på godissorten
                 let candy = document.createElement('div')
@@ -157,6 +242,39 @@
     <input type="button" onclick="logOut()" value="Logout!">
 
 
+
+    <!-- Modal för att ändra en godis, because resons -->
+    <div id="updateModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">  
+            <h3>Uppdatera godis!</h3>
+            <input type="text" id="nameModal">
+            <select type="text" id="categoryModal" value='chocolate'>
+                <option value="chocolate">Chocolate</option>
+                <option value="Liquorice">Liquorice</option>
+                <option value="Marshmallow">Marshmallow</option>
+                <option value="Toffee">Toffee</option>
+                <option value="Bar">Bar</option>
+                <option value="Lollipop">Lollipop</option>
+            </select>
+            <select type="text" id="colorModal">   
+                <option value="red">red</option>
+                <option value="blue">blue</option>
+                <option value="green">green</option>
+                <option value="brown">brown</option>
+                <option value="black">black</option>
+                <option value="white">white</option>
+                <option value="yellow">yellow</option>
+                <option value="pink">pink</option>
+                <option value="various">various</option>
+            </select>
+            <input type="number" id="balanceModal">
+            <input type="number" id="priceModal">
+            <input type="button" onclick="updateCandyModal()" value="Spara">
+        </div>
+      
+      </div>
 </body>
 
 </html>

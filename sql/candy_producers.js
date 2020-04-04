@@ -108,6 +108,28 @@ async function deleteCandySort(id) {
         })
     })   
 }
+async function updateCandySort(candyInfo) {
+    return new Promise((resolve, reject) => {
+        pool((err, connection) => {
+
+            connection.query("UPDATE candy SET `name` = ?, `category` = ?, `color` = ? WHERE id = " + connection.escape(candyInfo.candyid),
+                [candyInfo.name, candyInfo.category, candyInfo.color], (error, result, fields) => {
+                    if (error) throw error
+
+                    connection.query("UPDATE candy_producers SET `price_per_unit` = ?, `balance` = ? WHERE candy_id = " + connection.escape(candyInfo.candyid),
+                        [candyInfo.price, candyInfo.balance], (error, result, fields) => {
+                        connection.release()
+                    if (error) throw reject(error)
+
+                    resolve(true)  
+                })  
+            })
+        })
+    })   
+}
+
+
+
 
 
 // async function getAllCandy(mongoData) {
@@ -296,4 +318,4 @@ router.route('/junction/:id')
 
 
 
-module.exports = { router, getProducersCandy, getPivotCandy, getFilteredCandy, addNewCandySort, deleteCandySort }
+module.exports = { router, getProducersCandy, getPivotCandy, getFilteredCandy, addNewCandySort, deleteCandySort, updateCandySort }
