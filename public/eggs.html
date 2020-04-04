@@ -44,13 +44,13 @@
             socket = io('http://localhost:8081')
             socket.on('onConnection', (data) => {
                 console.log(data)
-                let session = sessionStorage.getItem('userLoggedIn')
-                console.log(session)
+                let id = sessionStorage.getItem('userLoggedIn')
+                console.log(id)
 
-                if (session !== null ){
+                if (id !== null ){
                     console.log("we are here")
 
-                    getEgg(session)
+                    getEggs(id)
 
                 } else {
                     let egg = document.getElementById('egg')
@@ -62,17 +62,17 @@
                 
             })
             // Gets one egg 
-            socket.on('Egg', (egg) => {
-                console.log('Egg incomming!!')
+            socket.on('Eggs', (egg) => {
+                console.log('Eggs incomming!!')
                 createList(egg)
 
             })
         })
 
-        function getEgg(id) {
-            console.log("Sendiserar lite " + id)
+        function getEggs(id) {
+            console.log("Getting eggs for user " + id)
 
-            socket.emit("getEgg", id)
+            socket.emit("getEggs", id)
 
         }
         function delEgg(id) {
@@ -95,25 +95,25 @@
 
             for (let i = 0; i < eggs.mongo.length; i++) {
                 let oneEgg = document.createElement("section")
-                oneEgg.setAttribute("id", eggs.mongo[i]._id)
+                oneEgg.setAttribute("id", eggs.mongo[i][0]._id)
                 let totalPriceCandy = 0
 
 
                 let deleteEgg = document.createElement("button")
                 deleteEgg.innerHTML = "Radera ägg"
-                deleteEgg.setAttribute("onclick", `delEgg(${eggs.mongo[i]._id})`)
+                deleteEgg.setAttribute("onclick", `delEgg(${eggs.mongo[i][0]._id})`)
                 oneEgg.appendChild(deleteEgg)
 
                 let name = document.createElement("div")
-                name.innerHTML = eggs.mongo[i].name
+                name.innerHTML = eggs.mongo[i][0].name
                 oneEgg.appendChild(name)
 
-                for (let q = 0; q < eggs.mongo[i].candy.length; q++) {
+                for (let q = 0; q < eggs.mongo[i][0].candy.length; q++) {
 
                     let candy = document.createElement("div")
 
-                    candy.innerHTML = eggs.Sql[i][q].name + ' ' + eggs.mongo[i].candy[q].amount + ' st'
-                    totalPriceCandy = (eggs.Sql[i][q].price_per_unit * eggs.mongo[i].candy[q].amount) + totalPriceCandy
+                    candy.innerHTML = eggs.Sql[i][q].name + ' ' + eggs.mongo[i][0].candy[q].amount + ' st'
+                    totalPriceCandy = (eggs.Sql[i][q].price_per_unit * eggs.mongo[i][0].candy[q].amount) + totalPriceCandy
                     oneEgg.appendChild(candy)
 
                 }
@@ -125,7 +125,7 @@
                 let getanEgg = document.createElement("button")
                 getanEgg.innerHTML = "Gå till ägg"
                 getanEgg.addEventListener("click", () => {
-                    getEgg(eggs.mongo[i]._id)
+                    getEgg(eggs.mongo[i][0]._id)
                     // location.href = "http://localhost:8081/eggs/" + eggs.mongo[i]._id
                 })
                 oneEgg.appendChild(getanEgg)

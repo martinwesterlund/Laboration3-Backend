@@ -83,15 +83,15 @@ async function getEggsSql(eggdata) {
     let candy = []
     let candydata = {}
    
-        for(let i = 0; i < eggdata.length; i++) {
-            
-            for (let q = 0; q < eggdata[i].candy.length; q++) {
 
-                candydata =  await getEggsSqlQuery(eggdata, i, q) 
+        for(let i = 0; i < eggdata.mongo.length; i++) {
+            
+            for (let q = 0; q < eggdata.mongo[i][0].candy.length; q++) {
+
+                candydata =  await getEggsSqlQuery(eggdata.mongo, i, q) 
                 candy[q] = {...candydata}
             }
             data[i] = candy.slice()
-            
         }
         return data
 
@@ -106,7 +106,7 @@ async function getEggsSqlQuery(eggdata, i, q) {
 
                 connection.query(`SELECT * FROM candy 
                                 JOIN candy_producers ON candy.id = candy_producers.candy_id
-                                WHERE candy.id = ` + eggdata[i].candy[q].candy_producers_id, (error, result, fields) => {
+                                WHERE candy.id = ` + eggdata[i][0].candy[q].candy_producers_id, (error, result, fields) => {
     
                 if (error) throw error
                 connection.release()
@@ -115,7 +115,6 @@ async function getEggsSqlQuery(eggdata, i, q) {
                     data.category = result[0].category
                     data.color = result[0].color
                     data.price_per_unit = result[0].price_per_unit
-
                 resolve(data)
             })
 
@@ -124,6 +123,34 @@ async function getEggsSqlQuery(eggdata, i, q) {
     })
 }
     
+
+// Get MongoID:s for all eggs with customer id of *
+
+async function getMongoIds(id) {
+    let data = []
+ 
+    return new Promise((resolve, reject) => {
+        
+        pool((err, connection) => {
+
+                connection.query(`SELECT * FROM easter_eggs WHERE customer_id = ` + connection.escape(id), (error, result, fields) => {
+    
+                if (error) throw error
+                connection.release()
+                    for (let i = 0; i < result.length; i++ ){
+                        data[i] = result[i].mongo_id
+                    }
+                resolve(data)
+            })
+
+        })
+          
+    })
+}
+    
+
+
+
 
 // CRUD on one Easter egg 
 router.route('/egg/:id')
@@ -164,4 +191,4 @@ router.route('/egg/:id')
 
 
 
-module.exports = {router, getEggsSql}
+module.exports = {router, getEggsSql, getMongoIds}

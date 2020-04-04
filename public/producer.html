@@ -11,10 +11,10 @@
             socket = io('http://localhost:8081');
             socket.on('onConnection', (data) => {
                 console.log(data)
-                let session = sessionStorage.getItem('userLoggedIn')
-                console.log(session)
+                let id = idStorage.getItem('userLoggedIn')
+                console.log(id)
 
-                if (session !== null ){
+                if (id !== null ){
                     console.log("we are here")
 
                     // createList(candies)
