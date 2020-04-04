@@ -7,15 +7,21 @@ const bodyParser = require('body-parser')
 const router = express.Router()
 
 
-async function getProducersCandy(pId) {
+async function getProducersCandy(pId, category) {
     return new Promise((resolve, reject) => {
         pool((err, connection) => {
+            let whereClause = `WHERE producer_id = ${pId}`
+            if(pId != 0 && (category != 0 && category != undefined)){
+                whereClause = `WHERE producer_id = ${pId} AND category = "${category}"`
+            } else if(pId == 0 && category != 0){
+                whereClause = `WHERE category = "${category}"`
+            }
+            console.log(whereClause)
             connection.query(
                 `SELECT candy.id AS "id", candy.name AS "name", candy.category AS "category", candy.color AS "color", producers.name as "producer", candy_producers.price_per_unit AS "price", candy_producers.balance as "balance"  
                 FROM candy
                 LEFT JOIN candy_producers ON candy.id = candy_producers.candy_id
-                LEFT JOIN producers on producers.id = candy_producers.producer_id
-                WHERE producer_id = ${pId}`, (error, result, fields) => {
+                LEFT JOIN producers on producers.id = candy_producers.producer_id ${whereClause}`, (error, result, fields) => {
                 connection.release()
                 if (error) throw reject(error)
                 resolve(result)
@@ -25,11 +31,13 @@ async function getProducersCandy(pId) {
     })
 }
 
-async function getFilteredCandy(mongoData, id){
+async function getFilteredCandy(mongoData, id, category){
     let candyData = {}
     candyData.mongo = mongoData
-    candyData.sql = await getProducersCandy(id)
+    console.log(id + ' ------ ' + category)
+    candyData.sql = await getProducersCandy(id, category)
     
+    console.log(candyData.sql)
     return candyData
 
 }
