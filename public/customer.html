@@ -5,9 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        button{
+        button {
             margin: 0px 10px;
         }
+
         .loader {
             border: 10px solid #f3f3f3;
             border-radius: 50%;
@@ -50,19 +51,19 @@
                 let session = sessionStorage.getItem('userLoggedIn')
                 console.log(session)
 
-                if (session !== null ){
+                if (session !== null) {
                     console.log("we are here")
-                    
+
                     socket.emit('showEgg', sessionStorage.getItem('mongoId'))
 
-                    
+
 
                 } else {
                     let candyList = document.getElementById('candyList')
                     let load = document.getElementById('loader')
                     h1.innerHTML = "Du är inte inloggad din n00b!"
-                    candyList.remove()  
-                    load.remove()                    
+                    candyList.remove()
+                    load.remove()
                 }
             })
 
@@ -76,10 +77,10 @@
                 console.log('Connected to server from Customer page')
                 createList(filteredData)
             })
-            
+
         })
 
-        function showOnlyOneEgg(id){
+        function showOnlyOneEgg(id) {
             socket.emit('showEgg', '5e7b2a4c30cc881860bee94f')
         }
 
@@ -88,74 +89,83 @@
             console.log(candyData.sql)
             let candyList = document.getElementById('candyList')
             candyList.innerHTML = ''
-
-            for (let i = 0; i < candyData.sql.length; i++) {
-
-                //En godiswrapper
-                let oneCandy = document.createElement('section')
-                oneCandy.setAttribute('id', candyData.sql[i].id)
-
-                //Namn
-                let candyName = document.createElement('div')
-                candyName.innerHTML = candyData.sql[i].name
-                oneCandy.appendChild(candyName)
-                
-                //Kategori
-                let category = document.createElement('div')
-                category.innerHTML = candyData.sql[i].category
-                oneCandy.appendChild(category)
-
-                //Färg
-                let color = document.createElement('div')
-                color.innerHTML = candyData.sql[i].color
-                oneCandy.appendChild(color)
-
-                //Producent
-                let producer = document.createElement('div')
-                producer.innerHTML = candyData.sql[i].producer
-                oneCandy.appendChild(producer)
-
-                //Ta bort -
-                let remove = document.createElement('button')
-                remove.innerHTML = '-'
-                remove.setAttribute('onclick', `removeCandy(${candyData.sql[i].id})`)
-                oneCandy.appendChild(remove)
-
-                //Antal
-                let amount = document.createElement('span')
-                amount.innerHTML = 'Antal : 0 '
-                for (let j = 0; j < candyData.mongo.length; j++) {
-                    
-                    if (candyData.sql[i].id == candyData.mongo[j].candy_producers_id) {
-                        amount.innerHTML = 'Antal : ' + candyData.mongo[j].amount
-                    }
-                    
-                }
-                oneCandy.appendChild(amount)
-
-                //Lägg till +
-                let add = document.createElement('button')
-                add.innerHTML = '+'
-                add.setAttribute('onclick', `addCandy(${candyData.sql[i].id})`)
-                oneCandy.appendChild(add)
-
-                //Saldo
-                let balance = document.createElement('div')
-                balance.innerHTML = 'Balance: ' + candyData.sql[i].balance
-                oneCandy.appendChild(balance)
-
-                //Godisavskiljare
-                let separation = document.createElement('div')
-                separation.innerHTML = "-----------------------------------"
-                oneCandy.appendChild(separation)
+            if (candyData.sql.length < 1) {
+                candyList.innerHTML = 'No candies found with this filter'
                 document.getElementById('loader').innerHTML = ''
-                candyList.appendChild(oneCandy)
+            } else {
+
+                for (let i = 0; i < candyData.sql.length; i++) {
+
+                    //En godiswrapper
+                    let oneCandy = document.createElement('section')
+                    oneCandy.setAttribute('id', candyData.sql[i].id)
+
+                    //Namn
+                    let candyName = document.createElement('div')
+                    candyName.innerHTML = candyData.sql[i].name
+                    oneCandy.appendChild(candyName)
+
+                    //Kategori
+                    let category = document.createElement('div')
+                    category.innerHTML = candyData.sql[i].category
+                    oneCandy.appendChild(category)
+
+                    //Färg
+                    let color = document.createElement('div')
+                    color.innerHTML = candyData.sql[i].color
+                    oneCandy.appendChild(color)
+
+                    //Producent
+                    let producer = document.createElement('div')
+                    producer.innerHTML = candyData.sql[i].producer
+                    oneCandy.appendChild(producer)
+
+                    //Ta bort -
+                    let remove = document.createElement('button')
+                    remove.innerHTML = '-'
+                    remove.setAttribute('onclick', `removeCandy(${candyData.sql[i].id})`)
+                    oneCandy.appendChild(remove)
+
+                    //Antal
+                    let amount = document.createElement('span')
+                    amount.innerHTML = 'Amount : 0 '
+                    for (let j = 0; j < candyData.mongo.length; j++) {
+
+                        if (candyData.sql[i].id == candyData.mongo[j].candy_producers_id) {
+                            amount.innerHTML = 'Amount : ' + candyData.mongo[j].amount
+                        }
+
+                    }
+                    oneCandy.appendChild(amount)
+
+                    //Lägg till +
+                    let add = document.createElement('button')
+                    add.innerHTML = '+'
+                    add.setAttribute('onclick', `addCandy(${candyData.sql[i].id})`)
+                    oneCandy.appendChild(add)
+
+                    //Saldo
+                    let balance = document.createElement('div')
+                    balance.innerHTML = 'Balance: ' + candyData.sql[i].balance
+                    oneCandy.appendChild(balance)
+
+                    //Godisavskiljare
+                    let separation = document.createElement('div')
+                    separation.innerHTML = "-----------------------------------"
+                    oneCandy.appendChild(separation)
+
+                    document.getElementById('loader').innerHTML = ''
+                    candyList.appendChild(oneCandy)
+                }
             }
         }
 
         function updateList() {
-            let id = document.getElementById('producer').value
-            socket.emit('getFilteredCandyList', id, sessionStorage.getItem('mongoId'))
+            document.getElementById('candyList').innerHTML = ''
+            document.getElementById('loader').innerHTML = '<div class="loader"></div>'
+            let producerId = document.getElementById('producer').value
+            let category = document.getElementById('category').value
+            socket.emit('getFilteredCandyList', producerId, category, sessionStorage.getItem('mongoId'))
         }
     </script>
 </head>
@@ -163,13 +173,22 @@
 <body>
     <h1>Hej och välkommen till customer-sidan!</h1>
     <h2 id='customerName'></h2>
-    
+
     <select id="producer" onchange="updateList()">
         <option value="0">All producers</option>
         <option value="1">Malaco</option>
         <option value="2">Fazer</option>
         <option value="3">Cloetta</option>
         <option value="4">Bassets</option>
+    </select>
+    <select id="category" onchange="updateList()">
+        <option value="0">All categories</option>
+        <option value="bar">Bars</option>
+        <option value="lollipop">Lollipops</option>
+        <option value="chocolate">Chocolates</option>
+        <option value="liquorice">Liquorices</option>
+        <option value="marshmallow">Marshmallows</option>
+        <option value="toffee">Toffees</option>
     </select>
     <div id="loader">
         <div class="loader"></div>
