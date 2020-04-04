@@ -11,13 +11,13 @@
             socket = io('http://localhost:8081');
             socket.on('onConnection', (data) => {
                 console.log(data)
-                let id = idStorage.getItem('userLoggedIn')
+                let id = sessionStorage.getItem('userLoggedIn')
                 console.log(id)
 
                 if (id !== null ){
                     console.log("we are here")
 
-                    getList(session)
+                    getList(id)
 
                 } else {
                     let name = document.getElementById('producerName')
@@ -42,14 +42,36 @@
                 console.log(err)
             }
         }
+        function addNewCandySort() {
+            let newCandyData = {}
+            newCandyData.id = sessionStorage.getItem('userLoggedIn')
+            newCandyData.name = document.getElementById('name').value
+            newCandyData.category = document.getElementById('category').value
+            newCandyData.color = document.getElementById('color').value
+            newCandyData.amount = document.getElementById('amount').value
+            newCandyData.price = document.getElementById('price').value
+            console.log(newCandyData)
+
+            socket.emit('addnewCandySort', newCandyData)
+        }
 
         function getList(id){
             socket.emit('getProducerView', id)
+        }
+        function deleteCandy(candyId){
+            let id = {}
+            id.candy = candyId
+            id.producer = sessionStorage.getItem('userLoggedIn')
+            console.log(id)
+            socket.emit('deleteCandySort', id)
         }
 
         function createList(candies) {
             console.log(candies)
             let producer = document.getElementById('producerCandies')
+            while ( producer.firstChild ) {
+                producer.removeChild( producer.lastChild )
+            }
             producerName.innerHTML = candies[0].producer
             for (let i = 0; i < candies.length; i++) {
 
@@ -60,7 +82,7 @@
                 //Skapa en "ta bort godis"-knapp
                 let deleteCandy = document.createElement('button')
                 deleteCandy.innerHTML = "Delete candy"
-                deleteCandy.setAttribute('onclick', `delCandy(${candies[i].ID})`)
+                deleteCandy.setAttribute('onclick', `deleteCandy(${candies[i].id})`)
                 oneCandy.appendChild(deleteCandy)
 
                 //Namn på godissorten
@@ -104,7 +126,37 @@
     <h1 id= "h1">Hej och välkommen till producentsidan</h1>
     <h2 id='producerName'></h2>
     <section id="producerCandies"></section>
+    <section id='addNewCandySort'>
+        <h3>Lägg till en ny godis!</h3>
+        <input type="text" id="name" value='namn'>
+        <select type="text" id="category" value='chocolate'>
+            <option value="chocolate">Chocolate</option>
+            <option value="Liquorice">Liquorice</option>
+            <option value="Marshmallow">Marshmallow</option>
+            <option value="Toffee">Toffee</option>
+            <option value="Bar">Bar</option>
+            <option value="Lollipop">Lollipop</option>
+        
+        
+        </select>
+        <select type="text" id="color" value='red'>
+            <option value="red">red</option>
+            <option value="blue">blue</option>
+            <option value="green">green</option>
+            <option value="brown">brown</option>
+            <option value="black">black</option>
+            <option value="white">white</option>
+            <option value="yellow">yellow</option>
+            <option value="pink">pink</option>
+            <option value="various">various</option>
+        </select>
+        <input type="number" id="amount" value='10'>
+        <input type="number" id="price" value='5'>
+        <input type="button" onclick="addNewCandySort()" value="Add New Candy">
+    </section>
     <input type="button" onclick="logOut()" value="Logout!">
+
+
 </body>
 
 </html>

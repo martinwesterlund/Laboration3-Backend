@@ -61,6 +61,47 @@ async function getSqlCandy(){
     })
 }
 
+async function addNewCandySort(newCandyData) {
+    return new Promise((resolve, reject) => {
+        pool((err, connection) => {
+            connection.query(`INSERT INTO candy (name, category, color) VALUES ( ?, ?, ?)`, [newCandyData.name, newCandyData.category, newCandyData.color], (error, result, fields) => {
+                // connection.release()
+                if (error) throw error
+                let candyId = result.insertId
+                
+                connection.query(`INSERT INTO candy_producers (candy_id, producer_id, price_per_unit, balance) VALUES ( ?, ?, ?, ?)`, [candyId, newCandyData.id, newCandyData.price, newCandyData.amount], (error, result, fields) => {
+                    connection.release()
+                    if (error) throw reject(error)
+                    resolve(true)
+
+        
+                })
+
+            })
+        })
+    })   
+}
+
+async function deleteCandySort(id) {
+    return new Promise((resolve, reject) => {
+        pool((err, connection) => {
+            connection.query(`DELETE FROM candy WHERE id = ` + connection.escape(id), (error, result, fields) => {
+                // connection.release()
+                if (error) throw error
+                                
+                connection.query(`DELETE FROM candy_producers WHERE candy_id = ` + connection.escape(id), (error, result, fields) => {
+                    connection.release()
+                    if (error) throw reject(error)
+                    resolve(true)
+
+                })
+
+            })
+        })
+    })   
+}
+
+
 // async function getAllCandy(mongoData) {
 
 //     // console.log("från async: " + mongoData)
@@ -147,18 +188,12 @@ router.route('/customer')
         res.sendFile('customer.html', { root: './public' })
     })
 
-// Add a new candy
-router.route('/candy/new')
+// // Add a new candy
+// router.route('/candy/new')
 
-    .post((req, res, next) => {
-        pool((err, connection) => {
-            connection.query(`INSERT INTO candy (name, category, color) VALUES ( ?, ?, ?)`, [req.body.name, req.body.category, req.body.color], (error, result, fields) => {
-                connection.release()
-                if (error) throw error
-                res.send("Added a new candy")
-            })
-        })
-    })
+//     .post((req, res, next) => {
+       
+//     })
 
 // CRUD on one sort of candy 
 router.route('/candy/:id')
@@ -253,4 +288,4 @@ router.route('/junction/:id')
 
 
 
-module.exports = { router, getProducersCandy, getPivotCandy, getFilteredCandy }
+module.exports = { router, getProducersCandy, getPivotCandy, getFilteredCandy, addNewCandySort, deleteCandySort }

@@ -43,12 +43,26 @@ async function getAllEggs(socket, id) {
 
 
 //Funktioner till Producer
+
 async function getCandiesFromProducer(socket, id) {
     let producerCandies = await candy_producers.getProducersCandy(id)
     console.log('Id är ' + id)
     console.log('Datan är : ' + producerCandies)
     socket.emit('onProducerEnter', producerCandies)
 }
+
+async function addCandySort(socket, newCandyData){
+
+    let done = await candy_producers.addNewCandySort(newCandyData)
+    getCandiesFromProducer(socket, newCandyData.id)
+}
+async function deleteCandySort(socket, id){
+
+    let done = await candy_producers.deleteCandySort(id.candy)
+    getCandiesFromProducer(socket, id.producer)
+}
+
+
 
 //Funktioner till Customer
 async function getAllCandy(socket, id) {
@@ -72,27 +86,35 @@ async function getFilteredList(socket, id, mongoId) {
 
 //Socket stuff
 io.on('connection', (socket) => {
-    socket.emit('onConnection', 'Connected to server')
-
-
-
-    // getAllEggs(socket)
-
-    // //Denna ska skicka med socket + inloggad producers id (2 är bara som exempel)
-    // getCandiesFromProducer(socket, 2)
-    // getAllCandy(socket)
 
     // Välkomst meddelande vid upprättande av kontakt
+    socket.emit('onConnection', 'Connected to server')
     console.log("A new connection is established")
+
+
+    // producer stuff
+
 
     socket.on('getProducerView', (id) => {
         console.log('ID på efterfrågad producer är: ' + id)
         getCandiesFromProducer(socket, id)
     })
 
-    socket.on('getFilteredCandyList', (id, mongoId) => {
-        getFilteredList(socket, id, mongoId)
+    socket.on('addnewCandySort', (newCandyData) => {
+
+        addCandySort(socket, newCandyData)
+
     })
+
+    socket.on('deleteCandySort', (id) => {
+
+        deleteCandySort(socket, id)
+
+    })
+
+
+    // customer and egg stuff
+
 
     socket.on('getEggs', (id) => {
         getAllEggs(socket, id)
@@ -101,6 +123,10 @@ io.on('connection', (socket) => {
     socket.on('showEgg', (id) => {
         console.log('Mongo id är ' + id)
         getAllCandy(socket, id)
+    })
+    
+    socket.on('getFilteredCandyList', (id, mongoId) => {
+        getFilteredList(socket, id, mongoId)
     })
 
     socket.on("deleteEgg", (id) => {
