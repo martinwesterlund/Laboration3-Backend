@@ -10,7 +10,7 @@ const router = express.Router()
 async function getProducersCandy(pId, category, sortBy) {
     return new Promise((resolve, reject) => {
         pool((err, connection) => {
-            let whereClause
+            let whereClause = `WHERE producer_id = ${pId}`
             if (pId == 0 && category == 0){
                 whereClause = 'WHERE 1'
             } else if (pId != 0 && (category != 0 && category != undefined)) {
@@ -22,6 +22,9 @@ async function getProducersCandy(pId, category, sortBy) {
 
             let sortByClause
             switch (sortBy) {
+                case undefined:
+                    sortByClause = 'candy.name'
+                    break
                 case 'candy1':
                     sortByClause = 'candy.name'
                     break
