@@ -45,16 +45,43 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             socket = io('http://localhost:8081');
+            socket.on('onConnection', (data) => {
+                console.log(data)
+                let session = sessionStorage.getItem('userLoggedIn')
+                console.log(session)
+
+                if (session !== null ){
+                    console.log("we are here")
+                    
+                    socket.emit('showEgg', sessionStorage.getItem('mongoId'))
+
+                    
+
+                } else {
+                    let candyList = document.getElementById('candyList')
+                    let load = document.getElementById('loader')
+                    h1.innerHTML = "Du är inte inloggad din n00b!"
+                    candyList.remove()  
+                    load.remove()                    
+                }
+            })
+
+            socket.on('showAllCandy', (candyData) => {
+                console.log('Connected to server from Customer page2')
+                createList(candyData)
+            })
+
             socket.on('showFilteredList', (filteredData) => {
 
                 console.log('Connected to server from Customer page')
                 createList(filteredData)
             })
-            socket.on('showAllCandy', (candyData) => {
-                console.log('Connected to server from Customer page2')
-                createList(candyData)
-            })
+            
         })
+
+        function showOnlyOneEgg(id){
+            socket.emit('showEgg', '5e7b2a4c30cc881860bee94f')
+        }
 
         function createList(candyData) {
             console.log(candyData.mongo)
