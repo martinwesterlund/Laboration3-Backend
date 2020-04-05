@@ -10,19 +10,20 @@
             socket = io('http://localhost:8081')
             socket.on('hello', (data) => {
                 console.log('Connected to server')
+                sessionStorage.removeItem('customerrLoggedIn')
+                sessionStorage.removeItem('producerLoggedIn')
             })
             socket.on('LoggedInAsCustomer', (data) => {
                 console.log("data: " + data)
-                sessionStorage.setItem('userLoggedIn', data.id)
+                sessionStorage.setItem('customerLoggedIn', data.id)
                 window.location.href = 'http://localhost:8081/eggs/'
                 
 
             })
             socket.on('LoggedInAsProducer', (data) => {
                 console.log("Data: " + data)
-                sessionStorage.setItem('userLoggedIn', data.id)
+                sessionStorage.setItem('producerLoggedIn', data.id)
                 window.location.href = 'http://localhost:8081/producer/'
-                // socket.emit('getProducerView', data.id)
             })
         })
         

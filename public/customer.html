@@ -48,7 +48,7 @@
             socket = io('http://localhost:8081');
             socket.on('onConnection', (data) => {
                 console.log(data)
-                let session = sessionStorage.getItem('userLoggedIn')
+                let session = sessionStorage.getItem('customerLoggedIn')
                 console.log(session)
 
                 if (session !== null) {
@@ -79,7 +79,14 @@
             })
 
         })
-
+        function logOut(){
+            try{
+                sessionStorage.removeItem('customerLoggedIn')
+                window.location.href = 'http://localhost:8081/'
+            } catch (err) {
+                console.log(err)
+            }
+        }
         // function showOnlyOneEgg(id) {
         //     socket.emit('showEgg', '5e7b2a4c30cc881860bee94f')
         // }
@@ -260,6 +267,7 @@
     <section id='candyList'></section>
 
     <button>Gå till konsument sidan</button>
+    <input type="button" onclick="logOut()" value="Logout!">
 </body>
 
 </html>

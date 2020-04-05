@@ -38,7 +38,7 @@
             socket = io('http://localhost:8081');
             socket.on('onConnection', (data) => {
                 console.log(data)
-                let id = sessionStorage.getItem('userLoggedIn')
+                let id = sessionStorage.getItem('producerLoggedIn')
                 console.log(id)
 
                 if (id !== null ){
@@ -64,7 +64,7 @@
         })
         function logOut(){
             try{
-                sessionStorage.removeItem('userLoggedIn')
+                sessionStorage.removeItem('producerLoggedIn')
                 window.location.href = 'http://localhost:8081/'
             } catch (err) {
                 console.log(err)
@@ -72,7 +72,7 @@
         }
         function addNewCandySort() {
             let newCandyData = {}
-            newCandyData.id = sessionStorage.getItem('userLoggedIn')
+            newCandyData.id = sessionStorage.getItem('producerLoggedIn')
             newCandyData.name = document.getElementById('name').value
             newCandyData.category = document.getElementById('category').value
             newCandyData.color = document.getElementById('color').value
@@ -89,7 +89,7 @@
         function deleteCandy(candyId){
             let id = {}
             id.candy = candyId
-            id.producer = sessionStorage.getItem('userLoggedIn')
+            id.producer = sessionStorage.getItem('producerLoggedIn')
             console.log(id)
             socket.emit('deleteCandySort', id)
         }
@@ -97,7 +97,7 @@
         function updateCandy(candyId){
             
             candyInfo.candyid = candyId
-            candyInfo.producerid = sessionStorage.getItem('userLoggedIn')
+            candyInfo.producerid = sessionStorage.getItem('producerLoggedIn')
             let modal = document.getElementById("updateModal")
 
             for(let i = 0; i < candiesLocal.length; i++ ){
@@ -117,10 +117,8 @@
             document.getElementById('colorModal').value =  candyInfo.color
             document.getElementById('priceModal').value =  candyInfo.price
             document.getElementById('balanceModal').value =  candyInfo.balance
+            console.log(candyInfo)
             modal.style.display = "block"
-            
-           
-
 
         }
 
@@ -138,11 +136,16 @@
         }
         
 
-        // window.onclick = (event) => {
-        //     if (event.target == modal) {
-        //         modal.style.display = "none";
-        //     }
-        // }
+        window.onclick = (event) => {
+            let modal = document.getElementById("updateModal")
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+        function addSpecialDeal(candyId){
+
+
+        }
 
 
         function createList(candies) {
@@ -169,6 +172,12 @@
                 updateCandy.innerHTML = "Update candy"
                 updateCandy.setAttribute('onclick', `updateCandy(${candies[i].id})`)
                 oneCandy.appendChild(updateCandy)
+                                 
+                //Skapa en "specialerbjudande"-knapp
+                let addSpecialDeal = document.createElement('button')
+                addSpecialDeal.innerHTML = "Update candy"
+                addSpecialDeal.setAttribute('onclick', `addSpecialDeal(${candies[i].id})`)
+                oneCandy.appendChild(addSpecialDeal)
 
                 //Namn på godissorten
                 let candy = document.createElement('div')
@@ -192,7 +201,15 @@
 
                 //Saldo
                 let balance = document.createElement('div')
-                balance.innerHTML = candies[i].balance
+                if ( candies[i].balance < 60 ) {
+                    balance.style.color = "red"
+                    let extra = document.createElement('p')
+                    extra.style.color = "red"
+                    extra.innerHTML = "Dags att fylla på med nytt godis!! Det är bara " +  candies[i].balance + " kvar!"
+                    oneCandy.appendChild(extra)
+                } else {
+                    balance.innerHTML = candies[i].balance
+                }
                 oneCandy.appendChild(balance)
                 
                 //Godisavskiljare
@@ -214,17 +231,15 @@
     <section id='addNewCandySort'>
         <h3>Lägg till en ny godis!</h3>
         <input type="text" id="name" value='namn'>
-        <select type="text" id="category" value='chocolate'>
+        <select type="text" id="category" value=''>
             <option value="chocolate">Chocolate</option>
-            <option value="Liquorice">Liquorice</option>
-            <option value="Marshmallow">Marshmallow</option>
-            <option value="Toffee">Toffee</option>
-            <option value="Bar">Bar</option>
-            <option value="Lollipop">Lollipop</option>
-        
-        
+            <option value="liquorice">Liquorice</option>
+            <option value="marshmallow">Marshmallow</option>
+            <option value="toffee">Toffee</option>
+            <option value="bar">Bar</option>
+            <option value="lollipop">Lollipop</option>
         </select>
-        <select type="text" id="color" value='red'>
+        <select type="text" id="color" value=''>
             <option value="red">red</option>
             <option value="blue">blue</option>
             <option value="green">green</option>
@@ -250,13 +265,13 @@
         <div class="modal-content">  
             <h3>Uppdatera godis!</h3>
             <input type="text" id="nameModal">
-            <select type="text" id="categoryModal" value='chocolate'>
+            <select type="text" id="categoryModal">
                 <option value="chocolate">Chocolate</option>
-                <option value="Liquorice">Liquorice</option>
-                <option value="Marshmallow">Marshmallow</option>
-                <option value="Toffee">Toffee</option>
-                <option value="Bar">Bar</option>
-                <option value="Lollipop">Lollipop</option>
+                <option value="liquorice">Liquorice</option>
+                <option value="marshmallow">Marshmallow</option>
+                <option value="toffee">Toffee</option>
+                <option value="bar">Bar</option>
+                <option value="lollipop">Lollipop</option>
             </select>
             <select type="text" id="colorModal">   
                 <option value="red">red</option>
