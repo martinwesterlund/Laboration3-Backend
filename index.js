@@ -91,6 +91,30 @@ async function getFilteredList(socket, id, category, sortBy, mongoId) {
     }
 }
 
+async function addCandyToEgg(socket, candyId, candy, mongoId){
+    
+    let candyAddedToEgg = await easterEggs.updateEgg(candy, mongoId)
+    
+    let balanceDecreased = await candy_producers.removeFromBalance(candyId)
+    
+    
+    if(balanceDecreased && candyAddedToEgg){
+        getAllCandy(socket, mongoId)
+    }
+}
+
+async function removeCandyFromEgg(socket, candyId, candy, mongoId){
+    
+    let candyRemovedFromEgg = await easterEggs.updateEgg(candy, mongoId)
+    
+    let balanceIncreased = await candy_producers.addToBalance(candyId)
+    
+    
+    if(balanceIncreased && candyRemovedFromEgg){
+        getAllCandy(socket, mongoId)
+    }
+}
+
 //Socket stuff
 io.on('connection', (socket) => {
 
@@ -151,6 +175,14 @@ io.on('connection', (socket) => {
         if (done) {
             io.emit('EggDeleted', eggdata)
         }
+    })
+
+    socket.on('addCandyToEgg', (candyId, candy, mongoId) => {
+        addCandyToEgg(socket, candyId, candy, mongoId)
+    })
+
+    socket.on('removeCandyFromEgg', (candyId, candy, mongoId) => {
+        removeCandyFromEgg(socket, candyId, candy, mongoId)
     })
 
 

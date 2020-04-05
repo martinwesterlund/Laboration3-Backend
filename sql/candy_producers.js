@@ -105,6 +105,38 @@ async function getSqlCandy(sortBy) {
     })
 }
 
+async function removeFromBalance(candyID){
+    return new Promise((resolve, reject) => {
+        pool((err, connection) => {
+            
+            connection.query(
+                `UPDATE candy_producers SET balance = balance - 1
+                WHERE candy_id = ${candyID}`, (error, result, fields) => {
+                connection.release()
+                if (error) throw reject(error)
+                resolve(true)
+            });
+
+        })
+    })
+}
+
+async function addToBalance(candyID){
+    return new Promise((resolve, reject) => {
+        pool((err, connection) => {
+            
+            connection.query(
+                `UPDATE candy_producers SET balance = balance + 1
+                WHERE candy_id = ${candyID}`, (error, result, fields) => {
+                connection.release()
+                if (error) throw reject(error)
+                resolve(true)
+            });
+
+        })
+    })
+}
+
 async function addNewCandySort(newCandyData) {
     return new Promise((resolve, reject) => {
         pool((err, connection) => {
@@ -354,4 +386,4 @@ router.route('/junction/:id')
 
 
 
-module.exports = { router, getProducersCandy, getPivotCandy, getFilteredCandy, addNewCandySort, deleteCandySort, updateCandySort }
+module.exports = { router, getProducersCandy, getPivotCandy, getFilteredCandy, addNewCandySort, deleteCandySort, updateCandySort, removeFromBalance, addToBalance }

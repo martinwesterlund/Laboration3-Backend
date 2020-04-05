@@ -80,9 +80,9 @@
 
         })
 
-        function showOnlyOneEgg(id) {
-            socket.emit('showEgg', '5e7b2a4c30cc881860bee94f')
-        }
+        // function showOnlyOneEgg(id) {
+        //     socket.emit('showEgg', '5e7b2a4c30cc881860bee94f')
+        // }
 
         function createList(candyData, sortBy) {
             console.log(candyData.mongo)
@@ -128,7 +128,9 @@
                     //Ta bort -
                     let remove = document.createElement('button')
                     remove.innerHTML = '-'
-                    remove.setAttribute('onclick', `removeCandy(${candyData.sql[i].id})`)
+                    remove.addEventListener('click', () => {
+                        removeCandy(candyData.sql[i].id, candyData.mongo)
+                    })
                     oneCandy.appendChild(remove)
 
                     //Antal
@@ -146,7 +148,9 @@
                     //Lägg till +
                     let add = document.createElement('button')
                     add.innerHTML = '+'
-                    add.setAttribute('onclick', `addCandy(${candyData.sql[i].id})`)
+                    add.addEventListener('click', () => {
+                        addCandy(candyData.sql[i].id, candyData.mongo)
+                    })
                     oneCandy.appendChild(add)
 
                     //Saldo
@@ -163,6 +167,52 @@
                     candyList.appendChild(oneCandy)
                 }
             }
+        }
+
+        function addCandy(candyId, mongoData){
+            console.log('Lägger till godis med id ' + candyId)
+            console.log('Mongo datan är ' + mongoData[0].candy_producers_id)
+            let mongoId = sessionStorage.getItem('mongoId')
+
+            let foundId
+            for(let i = 0; i < mongoData.length; i++ ){
+                if(candyId == mongoData[i].candy_producers_id){
+                    foundId = i
+                }
+            }
+
+            if(foundId != undefined){
+                mongoData[foundId].candy_producers_id = candyId
+                mongoData[foundId].amount ++
+            } else{
+                mongoData.push({"candy_producers_id" : candyId, "amount" : 1})
+            }
+
+            socket.emit('addCandyToEgg', candyId, mongoData, mongoId)
+        }
+
+        function removeCandy(candyId, mongoData){
+            let mongoId = sessionStorage.getItem('mongoId')
+
+            let foundId
+            for(let i = 0; i < mongoData.length; i++ ){
+                if(candyId == mongoData[i].candy_producers_id){
+                    foundId = i
+                }
+            }
+
+            if(foundId != undefined){
+                mongoData[foundId].candy_producers_id = candyId
+                mongoData[foundId].amount --
+                socket.emit('removeCandyFromEgg', candyId, mongoData, mongoId)
+            } 
+            // else{
+            //     mongoData.push({"candy_producers_id" : candyId, "amount" : 1})
+            // }
+
+            
+
+            
         }
 
         function updateList() {
