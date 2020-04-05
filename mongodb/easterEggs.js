@@ -14,10 +14,10 @@ function deleteEgg(id) {
     }, (err, client) => {
         if (err) throw err
         let db = client.db('Laboration3')
-        if(ObjectId.isValid(id)){
+        if (ObjectId.isValid(id)) {
             findAndDeleteDocument(db, id, (result) => {
                 client.close()
-            return true
+                return true
             })
         }
     })
@@ -25,23 +25,23 @@ function deleteEgg(id) {
 
 async function getEggs() {
 
-        return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
 
-            mongodbClient.connect(mongoUrl, {
-                useUnifiedTopology: true
-            }, (err, client) => {
-                if (!err) {
+        mongodbClient.connect(mongoUrl, {
+            useUnifiedTopology: true
+        }, (err, client) => {
+            if (!err) {
                 let db = client.db('Laboration3')
                 findDocument(db, null, (result) => {
                     client.close()
-        
+
                     resolve(result)
-                }) 
-                } else {
-                    reject(err)
-                }
-            })
+                })
+            } else {
+                reject(err)
+            }
         })
+    })
 }
 
 
@@ -54,16 +54,36 @@ async function getEggMongo(id) {
             useUnifiedTopology: true
         }, (err, client) => {
             if (!err) {
-            let db = client.db('Laboration3')
-            findDocument(db, id, (result) => {
-                
-                client.close()
-                // console.log(result)
-                resolve(result)
-            }) 
+                let db = client.db('Laboration3')
+                findDocument(db, id, (result) => {
+
+                    client.close()
+                    // console.log(result)
+                    resolve(result)
+                })
             } else {
                 reject(err)
             }
+        })
+    })
+}
+
+async function updateEgg(candy, mongoId) {
+    return new Promise((resolve, reject) => {
+        mongodbClient.connect(mongoUrl, {
+            useUnifiedTopology: true
+        }, (err, client) => {
+            if (err) throw err
+            let db = client.db('Laboration3')
+            if (ObjectId.isValid(mongoId)) {
+                
+                findAndUpdateDocument(db, mongoId, candy, (result) => {
+                    client.close()
+                    resolve(true)
+                })
+            }
+
+            
         })
     })
 }
@@ -81,8 +101,8 @@ router.route('/')
         //     let db = client.db('Laboration3')
         //     findDocument(db, null, (result) => {
         //         client.close()
-                // res.json(result)
-                res.sendFile("eggs.html", {root: './public'})
+        // res.json(result)
+        res.sendFile("eggs.html", { root: './public' })
         //     })
         // })
     })
@@ -120,7 +140,7 @@ router.route('/:eggId')
 
     //Get one easter egg
     .get((req, res) => {
-        res.sendFile("egg.html", {root: './public'})
+        res.sendFile("egg.html", { root: './public' })
     })
 
     //Delete one easter egg
@@ -130,7 +150,7 @@ router.route('/:eggId')
         }, (err, client) => {
             if (err) throw err
             let db = client.db('Laboration3')
-            if(ObjectId.isValid(req.params.eggId)){
+            if (ObjectId.isValid(req.params.eggId)) {
                 findAndDeleteDocument(db, req.params.eggId, (result) => {
                     client.close()
                     res.json(result)
@@ -146,7 +166,7 @@ router.route('/:eggId')
         }, (err, client) => {
             if (err) throw err
             let db = client.db('Laboration3')
-            if(ObjectId.isValid(req.params.eggId)){
+            if (ObjectId.isValid(req.params.eggId)) {
                 findAndUpdateDocument(db, req.params.eggId, req.body, (result) => {
                     client.close()
                     res.json(result)
@@ -171,16 +191,19 @@ const findDocument = function (db, eggId = null, callback) {
 }
 
 // Update document
-const findAndUpdateDocument = function(db, eggId, body, callback) {
+const findAndUpdateDocument = function (db, eggId, body, callback) {
     const collection = db.collection('easter_eggs')
+    
+
 
     let selectionCriteria = {
         _id: new ObjectId(eggId)
     }
 
-    let updatedData = { $set: {
-        candy : body.candy
-      }
+    let updatedData = {
+        $set: {
+            candy: body
+        }
     }
 
     collection.findOneAndUpdate(selectionCriteria, updatedData, (err, docs) => {
@@ -188,12 +211,13 @@ const findAndUpdateDocument = function(db, eggId, body, callback) {
         callback(docs)
     })
 }
+
 // Delete document
-const findAndDeleteDocument = function(db, eggId, callback) {
+const findAndDeleteDocument = function (db, eggId, callback) {
     const collection = db.collection('easter_eggs')
 
     let deleteQuery = {
-        _id : ObjectId(eggId)
+        _id: ObjectId(eggId)
     }
 
     collection.findOneAndDelete(deleteQuery, (err, docs) => {
@@ -206,4 +230,4 @@ const findAndDeleteDocument = function(db, eggId, callback) {
 
 
 
-module.exports = {router, deleteEgg, getEggs, getEggMongo}
+module.exports = { router, deleteEgg, getEggs, getEggMongo, updateEgg }
