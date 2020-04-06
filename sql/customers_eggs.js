@@ -82,10 +82,8 @@ async function getEggsSql(eggdata) {
     let data = []
     let candy = []
     let candydata = {}
-   
 
         for(let i = 0; i < eggdata.mongo.length; i++) {
-            
             for (let q = 0; q < eggdata.mongo[i][0].candy.length; q++) {
 
                 candydata =  await getEggsSqlQuery(eggdata.mongo, i, q) 

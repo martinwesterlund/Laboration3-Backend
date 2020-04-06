@@ -79,8 +79,8 @@
             })
 
         })
-        function logOut(){
-            try{
+        function logOut() {
+            try {
                 sessionStorage.removeItem('customerLoggedIn')
                 window.location.href = 'http://localhost:8081/'
             } catch (err) {
@@ -96,10 +96,41 @@
             console.log(candyData.sql)
             let candyList = document.getElementById('candyList')
             candyList.innerHTML = ''
+
+            let eggNames = sessionStorage.getItem('eggNames')
+            let mongoIds = sessionStorage.getItem('mongoIds')
+            mongoId = sessionStorage.getItem('mongoId')
+
+            console.log(eggNames)
+            console.log(mongoIds)
+            
+            eggNames = eggNames.split('##')
+            mongoIds = mongoIds.split('##')
+
+            let currentEgg = document.getElementById('currentEgg')
+            currentEgg.innerHTML = ''   
+            for (let i = 0; i < eggNames.length-1; i++){
+                let option = document.createElement('option')
+                option.setAttribute('value', mongoIds[i])
+                option.innerHTML = eggNames[i]   
+                currentEgg.appendChild(option)
+                if(mongoIds[i] == mongoId){
+                    currentEgg.selectedIndex = i
+                    console.log(currentEgg.selectedIndex)
+                }
+            }
+
+            let separation = document.createElement('div')
+                    separation.innerHTML = "-----------------------------------"
+                    candyList.appendChild(separation)
+
+
             if (candyData.sql.length < 1) {
                 candyList.innerHTML = 'No candies found with this filter'
                 document.getElementById('loader').innerHTML = ''
             } else {
+
+
 
                 for (let i = 0; i < candyData.sql.length; i++) {
 
@@ -176,53 +207,55 @@
             }
         }
 
-        function addCandy(candyId, mongoData){
+        function addCandy(candyId, mongoData) {
             console.log('Lägger till godis med id ' + candyId)
             console.log('Mongo datan är ' + mongoData[0].candy_producers_id)
             let mongoId = sessionStorage.getItem('mongoId')
 
             let foundId
-            for(let i = 0; i < mongoData.length; i++ ){
-                if(candyId == mongoData[i].candy_producers_id){
+            for (let i = 0; i < mongoData.length; i++) {
+                if (candyId == mongoData[i].candy_producers_id) {
                     foundId = i
                 }
             }
 
-            if(foundId != undefined){
+            if (foundId != undefined) {
                 mongoData[foundId].candy_producers_id = candyId
-                mongoData[foundId].amount ++
-            } else{
-                mongoData.push({"candy_producers_id" : candyId, "amount" : 1})
+                mongoData[foundId].amount++
+            } else {
+                mongoData.push({ "candy_producers_id": candyId, "amount": 1 })
             }
 
             socket.emit('addCandyToEgg', candyId, mongoData, mongoId)
         }
 
-        function removeCandy(candyId, mongoData){
+        function removeCandy(candyId, mongoData) {
             let mongoId = sessionStorage.getItem('mongoId')
 
             let foundId
-            for(let i = 0; i < mongoData.length; i++ ){
-                if(candyId == mongoData[i].candy_producers_id){
+            for (let i = 0; i < mongoData.length; i++) {
+                if (candyId == mongoData[i].candy_producers_id) {
                     foundId = i
                 }
             }
 
-            if(foundId != undefined){
+            if (foundId != undefined) {
                 mongoData[foundId].candy_producers_id = candyId
-                mongoData[foundId].amount --
+                mongoData[foundId].amount--
                 socket.emit('removeCandyFromEgg', candyId, mongoData, mongoId)
-            } 
-            // else{
-            //     mongoData.push({"candy_producers_id" : candyId, "amount" : 1})
-            // }
-
-            
-
+            }
             
         }
 
+        function switchEgg(){
+            mongoId = document.getElementById('currentEgg').value
+            sessionStorage.setItem('mongoId', mongoId)
+            updateList()
+
+        }
+
         function updateList() {
+            console.log('hej hej hej')
             document.getElementById('candyList').innerHTML = ''
             document.getElementById('loader').innerHTML = '<div class="loader"></div>'
             let producerId = document.getElementById('producer').value
@@ -260,10 +293,12 @@
         <option value="price1">Price - lowest first</option>
         <option value="price2">Price - highest first</option>
     </select>
+    <div>-----------------------------------</div>
+    <span>Valt ägg: </span>
+    <select id="currentEgg" onchange='switchEgg()'></select>
     <div id="loader">
         <div class="loader"></div>
     </div>
-    <div>-----------------------------------</div>
     <section id='candyList'></section>
 
     <button>Gå till konsument sidan</button>
