@@ -132,12 +132,6 @@
 
         }
 
-        // function showEgg(id){
-        //     // window.location.href = 'http://localhost:8081/customer'
-        //     socket.emit('showEgg', id)
-        //     console.log('båda har körts hääääär')
-        // }
-
         function delEgg(id) {
 
             console.log(id)
@@ -178,12 +172,14 @@
             while ( egg.firstChild ) {
                 egg.removeChild( egg.lastChild )
             }
+            let eggNames = ''
+            let mongoIds = ''
 
             for (let i = 0; i < eggs.mongo.length; i++) {
                 let oneEgg = document.createElement("section")
                 oneEgg.setAttribute("id", eggs.mongo[i][0]._id)
                 let totalPriceCandy = 0
-
+                mongoIds += `${eggs.mongo[i][0]._id}##`
 
                 let deleteEgg = document.createElement("button")
                 deleteEgg.innerHTML = "Radera ägg"
@@ -192,6 +188,8 @@
 
                 let name = document.createElement("div")
                 name.innerHTML = eggs.mongo[i][0].name
+
+                eggNames += `${eggs.mongo[i][0].name}##`
                 oneEgg.appendChild(name)
 
                 
@@ -223,9 +221,13 @@
                 getanEgg.innerHTML = "Gå till ägg"
                 getanEgg.addEventListener("click", () => {
                     sessionStorage.setItem('mongoId', eggs.mongo[i][0]._id)
-                    // showEgg(eggs.mongo[i]._id)
+                    sessionStorage.setItem('eggNames', eggNames)
+                    sessionStorage.setItem('mongoIds', mongoIds)
+                    
+                    sessionStorage.setItem('currentEggPrice', totalPriceCandy)
+                  
                     location.href = "http://localhost:8081/customer"
-                    // console.log('båda har körts')
+                    
                 })
                 oneEgg.appendChild(getanEgg)
                 document.getElementById('loader').innerHTML = ''

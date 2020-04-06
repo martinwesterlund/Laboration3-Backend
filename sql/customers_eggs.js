@@ -85,7 +85,6 @@ async function getEggsSql(eggdata) {
    
 
         for(let i = 0; i < eggdata.mongo.length; i++) {
-            console.log(eggdata)
             if(eggdata.mongo[i][0].candy) {
             
                 for (let q = 0; q < eggdata.mongo[i][0].candy.length; q++) {
@@ -107,7 +106,7 @@ async function getEggsSqlQuery(eggdata, i, q) {
         console.log(eggdata)
 
         if (eggdata[i][0].candy[q].candy_producers_id > 0) {
-            
+
             pool((err, connection) => {
 
                     connection.query(`SELECT * FROM candy 
