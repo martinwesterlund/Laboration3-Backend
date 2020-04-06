@@ -135,6 +135,7 @@
 
                     candy.innerHTML = eggs.Sql[i][q].name + ' ' + eggs.mongo[i][0].candy[q].amount + ' st'
                     totalPriceCandy = (eggs.Sql[i][q].price_per_unit * eggs.mongo[i][0].candy[q].amount) + totalPriceCandy
+                    
                     oneEgg.appendChild(candy)
 
                 }
@@ -149,6 +150,8 @@
                     sessionStorage.setItem('mongoId', eggs.mongo[i][0]._id)
                     sessionStorage.setItem('eggNames', eggNames)
                     sessionStorage.setItem('mongoIds', mongoIds)
+                    
+                    sessionStorage.setItem('currentEggPrice', totalPriceCandy)
                   
                     location.href = "http://localhost:8081/customer"
                     

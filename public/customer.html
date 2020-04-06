@@ -99,6 +99,10 @@
 
             let eggNames = sessionStorage.getItem('eggNames')
             let mongoIds = sessionStorage.getItem('mongoIds')
+            let totalEggPrice = 0
+
+            console.log('Priset är ' + eggPrice)
+            
             mongoId = sessionStorage.getItem('mongoId')
 
             console.log(eggNames)
@@ -106,6 +110,7 @@
             
             eggNames = eggNames.split('##')
             mongoIds = mongoIds.split('##')
+            
 
             let currentEgg = document.getElementById('currentEgg')
             currentEgg.innerHTML = ''   
@@ -119,6 +124,9 @@
                     console.log(currentEgg.selectedIndex)
                 }
             }
+
+
+            // document.getElementById('eggPrice').innerHTML = sessionStorage.getItem('currentEggPrice') 
 
             let separation = document.createElement('div')
                     separation.innerHTML = "-----------------------------------"
@@ -173,15 +181,19 @@
 
                     //Antal
                     let amount = document.createElement('span')
-                    amount.innerHTML = 'Amount : 0 '
+                    amount.innerHTML = '0'
                     for (let j = 0; j < candyData.mongo.length; j++) {
 
                         if (candyData.sql[i].id == candyData.mongo[j].candy_producers_id) {
-                            amount.innerHTML = 'Amount : ' + candyData.mongo[j].amount
+                            amount.innerHTML = candyData.mongo[j].amount
+                            totalEggPrice = (candyData.sql[i].price * candyData.mongo[j].amount) + totalEggPrice
                         }
 
                     }
                     oneCandy.appendChild(amount)
+
+                    //Totala äggpriset
+                    document.getElementById('eggPrice').innerHTML = `Total price: ${totalEggPrice} SEK `
 
                     //Lägg till +
                     let add = document.createElement('button')
@@ -247,15 +259,17 @@
             
         }
 
-        function switchEgg(){
-            mongoId = document.getElementById('currentEgg').value
-            sessionStorage.setItem('mongoId', mongoId)
-            updateList()
+        // function switchEgg(){
+        //     mongoId = document.getElementById('currentEgg').value
+        //     sessionStorage.setItem('mongoId', mongoId)
 
-        }
+        //     socket.emit('showEgg', mongoId)
+
+        // }
 
         function updateList() {
-            console.log('hej hej hej')
+            mongoId = document.getElementById('currentEgg').value
+            sessionStorage.setItem('mongoId', mongoId)
             document.getElementById('candyList').innerHTML = ''
             document.getElementById('loader').innerHTML = '<div class="loader"></div>'
             let producerId = document.getElementById('producer').value
@@ -295,7 +309,8 @@
     </select>
     <div>-----------------------------------</div>
     <span>Valt ägg: </span>
-    <select id="currentEgg" onchange='switchEgg()'></select>
+    <select id="currentEgg" onchange='updateList()'></select>
+    <span id="eggPrice"></span>
     <div id="loader">
         <div class="loader"></div>
     </div>
