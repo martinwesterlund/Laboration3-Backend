@@ -10,7 +10,7 @@
             socket = io('http://localhost:8081')
             socket.on('hello', (data) => {
                 console.log('Connected to server')
-                sessionStorage.removeItem('customerrLoggedIn')
+                sessionStorage.removeItem('customerLoggedIn')
                 sessionStorage.removeItem('producerLoggedIn')
             })
             socket.on('LoggedInAsCustomer', (data) => {

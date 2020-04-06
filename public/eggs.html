@@ -44,7 +44,7 @@
             socket = io('http://localhost:8081')
             socket.on('onConnection', (data) => {
                 console.log(data)
-                let id = sessionStorage.getItem('userLoggedIn')
+                let id = sessionStorage.getItem('customerLoggedIn')
                 console.log(id)
 
                 if (id !== null ){
