@@ -79,16 +79,11 @@
             })
 
         })
-<<<<<<< HEAD
         function goBack() {
             window.location.href = 'http://localhost:8081/eggs'
         }
         function logOut(){
             try{
-=======
-        function logOut() {
-            try {
->>>>>>> d016b1c8ef8ad6465ee32ca8f2388dfc97b71530
                 sessionStorage.removeItem('customerLoggedIn')
                 window.location.href = 'http://localhost:8081/'
             } catch (err) {
@@ -227,19 +222,14 @@
             }
         }
 
-<<<<<<< HEAD
         function addCandy(candyId, mongoData){
 
             
-=======
-        function addCandy(candyId, mongoData) {
->>>>>>> d016b1c8ef8ad6465ee32ca8f2388dfc97b71530
             console.log('Lägger till godis med id ' + candyId)
             console.log('Mongo datan är ' + mongoData[0].candy_producers_id)
             let mongoId = sessionStorage.getItem('mongoId')
 
             let foundId
-<<<<<<< HEAD
                     
             for(let i = 0; i < mongoData.length; i++ ){
                 if(candyId == mongoData[i].candy_producers_id){
@@ -248,15 +238,6 @@
             }
         
             if(foundId != undefined){
-=======
-            for (let i = 0; i < mongoData.length; i++) {
-                if (candyId == mongoData[i].candy_producers_id) {
-                    foundId = i
-                }
-            }
-
-            if (foundId != undefined) {
->>>>>>> d016b1c8ef8ad6465ee32ca8f2388dfc97b71530
                 mongoData[foundId].candy_producers_id = candyId
                 mongoData[foundId].amount++
             } else {
