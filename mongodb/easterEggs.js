@@ -7,7 +7,7 @@ let ObjectId = require('mongodb').ObjectId // Behövs för att söka efter _id.
 let mongoUrl = `mongodb+srv://labb3admin:labb3@labb3-r7qod.mongodb.net/test`
 
 
-function deleteEgg(id) {
+async function deleteEgg(id) {
 
     mongodbClient.connect(mongoUrl, {
         useUnifiedTopology: true
@@ -49,7 +49,6 @@ async function getEggs() {
 async function getEggMongo(id) {
 
     return new Promise((resolve, reject) => {
-
         mongodbClient.connect(mongoUrl, {
             useUnifiedTopology: true
         }, (err, client) => {
@@ -58,7 +57,7 @@ async function getEggMongo(id) {
                 findDocument(db, id, (result) => {
 
                     client.close()
-                    // console.log(result)
+                    
                     resolve(result)
                 })
             } else {
@@ -88,6 +87,22 @@ async function updateEgg(candy, mongoId) {
     })
 }
 
+async function createEgg(eggInfo) {
+    return new Promise((resolve, reject) => {
+        mongodbClient.connect(mongoUrl, {
+            useUnifiedTopology: true
+        }, (err, client) => {
+            if (err) throw err
+            let db = client.db('Laboration3')
+            const collection = db.collection('easter_eggs')
+
+            collection.insertOne({name: eggInfo.eggName, candy: [{ candy_producers_id: 0 , amount: 0 } ]}, (err, result) => {
+                if (err) reject(err)
+                resolve(result.ops[0]._id)
+            })
+        })
+    })
+}
 
 
 router.route('/')
@@ -109,30 +124,30 @@ router.route('/')
 
     //Create new egg
     .post((req, res) => {
-        mongodbClient.connect(mongoUrl, {
-            useUnifiedTopology: true
-        }, (err, client) => {
-            if (err) throw err
-            let db = client.db('Laboration3')
-            const collection = db.collection('easter_eggs')
+        // mongodbClient.connect(mongoUrl, {
+        //     useUnifiedTopology: true
+        // }, (err, client) => {
+        //     if (err) throw err
+        //     let db = client.db('Laboration3')
+        //     const collection = db.collection('easter_eggs')
 
-            let document = {}
-            for (const key of Object.keys(req.body)) {
+        //     let document = {}
+        //     for (const key of Object.keys(req.body)) {
 
-                if (key == "value") {
-                    document[key] = parseInt(req.body[key])
-                }
-                else {
-                    document[key] = req.body[key]
-                }
+        //         if (key == "value") {
+        //             document[key] = parseInt(req.body[key])
+        //         }
+        //         else {
+        //             document[key] = req.body[key]
+        //         }
 
-            }
+        //     }
 
-            collection.insertOne(document, (err, result) => {
-                if (err) throw err
-                res.send(result)
-            })
-        })
+        //     collection.insertOne(document, (err, result) => {
+        //         if (err) throw err
+        //         res.send(result)
+        //     })
+        // })
     })
 
 
@@ -230,4 +245,4 @@ const findAndDeleteDocument = function (db, eggId, callback) {
 
 
 
-module.exports = { router, deleteEgg, getEggs, getEggMongo, updateEgg }
+module.exports = { router, deleteEgg, getEggs, getEggMongo, updateEgg, createEgg }

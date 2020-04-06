@@ -66,7 +66,11 @@ async function getFilteredCandy(mongoData, id, category, sortBy) {
 
 async function getPivotCandy(mongoData, sortBy) {
     let candyData = {}
-    candyData.mongo = mongoData
+    if(mongoData) {
+        candyData.mongo = mongoData
+    } else {
+        candyData.mongo = []
+    }
     candyData.sql = await getSqlCandy(sortBy)
 
     return candyData
@@ -195,8 +199,6 @@ async function updateCandySort(candyInfo) {
         })
     })   
 }
-
-
 
 
 

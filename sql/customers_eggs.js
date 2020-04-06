@@ -64,17 +64,17 @@ router.route('/:id')
 
 
 // Add a new candy
-router.route('/egg/new')
+// router.route('/egg/new')
 
-    .post((req, res, next) => {     
-        pool((err, connection) => {
-            connection.query(`INSERT INTO easter_eggs (costumer_id, mongo_id) VALUES ( ?, ?)`, [req.body.costumer_id, req.body.mongo_id], (error, result, fields) => {
-                connection.release()
-                if (error) throw error
-                res.send("Added a new easter egg")
-            })
-        })
-    })
+//     .post((req, res, next) => {     
+//         pool((err, connection) => {
+//             connection.query(`INSERT INTO easter_eggs (costumer_id, mongo_id) VALUES ( ?, ?)`, [req.body.costumer_id, req.body.mongo_id], (error, result, fields) => {
+//                 connection.release()
+//                 if (error) throw error
+//                 res.send("Added a new easter egg")
+//             })
+//         })
+//     })
 
 
 async function getEggsSql(eggdata) {
@@ -85,12 +85,15 @@ async function getEggsSql(eggdata) {
    
 
         for(let i = 0; i < eggdata.mongo.length; i++) {
+            console.log(eggdata)
+            if(eggdata.mongo[i][0].candy) {
             
-            for (let q = 0; q < eggdata.mongo[i][0].candy.length; q++) {
+                for (let q = 0; q < eggdata.mongo[i][0].candy.length; q++) {
 
-                candydata =  await getEggsSqlQuery(eggdata.mongo, i, q) 
-                candy[q] = {...candydata}
-            }
+                    candydata =  await getEggsSqlQuery(eggdata.mongo, i, q) 
+                    candy[q] = {...candydata}
+                }
+            } 
             data[i] = candy.slice()
         }
         return data
@@ -101,25 +104,30 @@ async function getEggsSqlQuery(eggdata, i, q) {
     let data = {}
  
     return new Promise((resolve, reject) => {
+        console.log(eggdata)
+
+        if (eggdata[i][0].candy[q].candy_producers_id > 0) {
+            
+            pool((err, connection) => {
+
+                    connection.query(`SELECT * FROM candy 
+                                    JOIN candy_producers ON candy.id = candy_producers.candy_id
+                                    WHERE candy.id = ` + eggdata[i][0].candy[q].candy_producers_id, (error, result, fields) => {
         
-        pool((err, connection) => {
+                    if (error) throw error
+                    connection.release()
+                        data.id = result[0].id
+                        data.name = result[0].name
+                        data.category = result[0].category
+                        data.color = result[0].color
+                        data.price_per_unit = result[0].price_per_unit
+                    resolve(data)
+                })
 
-                connection.query(`SELECT * FROM candy 
-                                JOIN candy_producers ON candy.id = candy_producers.candy_id
-                                WHERE candy.id = ` + eggdata[i][0].candy[q].candy_producers_id, (error, result, fields) => {
-    
-                if (error) throw error
-                connection.release()
-                    data.id = result[0].id
-                    data.name = result[0].name
-                    data.category = result[0].category
-                    data.color = result[0].color
-                    data.price_per_unit = result[0].price_per_unit
-                resolve(data)
             })
-
-        })
-          
+        } else {
+            resolve(data)
+        }
     })
 }
     
@@ -152,7 +160,39 @@ async function getMongoIds(id) {
     })
 }
     
+async function createNewEgg(eggInfo) {
+ 
+    return new Promise((resolve, reject) => {
+        console.log(eggInfo)
+        eggInfo.newMongoId = String(eggInfo.newMongoId)
+        pool((err, connection) => {
 
+            connection.query(`INSERT INTO easter_eggs (customer_id, mongo_id) VALUES ( ?, ?)`, [eggInfo.customerId, eggInfo.newMongoId], (error, result, fields) => {
+                connection.release()
+                if (error) throw error
+    
+                resolve(eggInfo.newMongoId)
+            })
+
+        })
+          
+    })
+}
+
+async function deleteEgg(id) {
+    return new Promise((resolve, reject) => {
+        pool((err, connection) => {
+            connection.query(`DELETE FROM easter_eggs WHERE mongo_id = ` + connection.escape(id), (error, result, fields) => {
+                connection.release()
+                if (error) reject(error)   
+                resolve(true)
+            })
+        })
+    })
+}
+
+
+    
 
 
 
@@ -195,4 +235,4 @@ router.route('/egg/:id')
 
 
 
-module.exports = {router, getEggsSql, getMongoIds}
+module.exports = {router, getEggsSql, getMongoIds, createNewEgg, deleteEgg}

@@ -79,6 +79,9 @@
             })
 
         })
+        function goBack() {
+            window.location.href = 'http://localhost:8081/eggs'
+        }
         function logOut(){
             try{
                 sessionStorage.removeItem('customerLoggedIn')
@@ -177,17 +180,20 @@
         }
 
         function addCandy(candyId, mongoData){
+
+            
             console.log('Lägger till godis med id ' + candyId)
             console.log('Mongo datan är ' + mongoData[0].candy_producers_id)
             let mongoId = sessionStorage.getItem('mongoId')
 
             let foundId
+                    
             for(let i = 0; i < mongoData.length; i++ ){
                 if(candyId == mongoData[i].candy_producers_id){
                     foundId = i
                 }
             }
-
+        
             if(foundId != undefined){
                 mongoData[foundId].candy_producers_id = candyId
                 mongoData[foundId].amount ++
@@ -266,7 +272,7 @@
     <div>-----------------------------------</div>
     <section id='candyList'></section>
 
-    <button>Gå till konsument sidan</button>
+    <input type="button" onclick="goBack()" value="Tillbaka till dina egg">
     <input type="button" onclick="logOut()" value="Logout!">
 </body>
 
