@@ -77,8 +77,8 @@
                     let egg = document.getElementById('egg')
                     let load = document.getElementById('loader')
                     h1.innerHTML = "Du är inte inloggad din n00b!"
-                    egg.innerHTML = ''  
-                    load.remove()                    
+                    egg.innerHTML = ''
+                    load.innerHTML = ''                     
                 }
                 
             })
@@ -100,13 +100,15 @@
                 console.log('Eggs incomming!!')
                 if (egg === "You have no eggs") {
                     let eggSection = document.getElementById('egg')
+                    console.log(eggSection)
                     let load = document.getElementById('loader')
                     let newEggbutton = document.getElementById('newEggbutton')
                     h1.innerHTML = "You have no eggs!"
-                    eggSection.innerHTML = ''  
-                    load.remove() 
-                    // newEggbutton.remove()                 
+                    eggSection.innerHTML = "" 
+                    load.innerHTML = "" 
+                 
                 } else {
+                    h1.innerHTML = "Här har du dina aktuella påskägg"
                     createList(egg)
                 }
                
@@ -157,6 +159,8 @@
             eggInfo.eggName = document.getElementById('eggNameModal').value
             console.log(eggInfo)
             socket.emit("createNewEgg", eggInfo)
+            let modal = document.getElementById("createEggModal")
+            modal.style.display = "none"
         }
 
         function createRandomEgg(){
@@ -179,12 +183,10 @@
         function createList(eggs) {
             console.log(eggs)
             let egg = document.getElementById('egg')
-            let numberOfChilds = document.getElementById('egg').childElementCount
-            if ( numberOfChilds > 0 ) {
-                while ( egg.firstChild ) {
-                    egg.removeChild( egg.lastChild )
-                }
+            while ( egg.firstChild ) {
+                egg.removeChild( egg.lastChild )
             }
+            
             let eggNames = ''
             let mongoIds = ''
 

@@ -113,7 +113,7 @@ async function removeFromBalance(candyID, amount) {
 
             connection.query(
                 `UPDATE candy_producers SET balance = balance - ${amount}
-                WHERE candy_id = ${candyID}`, (error, result, fields) => {
+                WHERE candy_producers.id = ${candyID}`, (error, result, fields) => {
                 connection.release()
                 if (error) throw reject(error)
                 resolve(true)
@@ -169,7 +169,7 @@ async function addToBalance(candyID, amount) {
 
             connection.query(
                 `UPDATE candy_producers SET balance = balance + ${amount}
-                WHERE candy_id = ${candyID}`, (error, result, fields) => {
+                WHERE candy_producers.id = ${candyID}`, (error, result, fields) => {
                 connection.release()
                 if (error) throw reject(error)
                 resolve(true)
