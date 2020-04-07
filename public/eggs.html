@@ -77,8 +77,9 @@
                     let egg = document.getElementById('egg')
                     let load = document.getElementById('loader')
                     h1.innerHTML = "Du är inte inloggad din n00b!"
-                    egg.remove()  
-                    load.remove()                    
+                    egg.innerHTML = ''
+                    load.innerHTML = ''  
+                    // load.remove()                    
                 }
                 
             })
@@ -99,12 +100,14 @@
             socket.on('Eggs', (egg) => {
                 console.log('Eggs incomming!!')
                 if (egg === "You have no eggs") {
-                    let egg = document.getElementById('egg')
+                    let eggSection = document.getElementById('egg')
+                    console.log(eggSection)
                     let load = document.getElementById('loader')
                     let newEggbutton = document.getElementById('newEggbutton')
                     h1.innerHTML = "You have no eggs!"
-                    egg.remove()  
-                    load.remove() 
+                    eggSection.innerHTML = "" 
+                    load.innerHTML = "" 
+                    // load.remove() 
                     // newEggbutton.remove()                 
                 } else {
                     createList(egg)
@@ -157,6 +160,8 @@
             eggInfo.eggName = document.getElementById('eggNameModal').value
             console.log(eggInfo)
             socket.emit("createNewEgg", eggInfo)
+            let modal = document.getElementById("createEggModal")
+            modal.style.display = "none"
         }
 
         function createRandomEgg(){
