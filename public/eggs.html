@@ -203,9 +203,9 @@
                 oneEgg.appendChild(name)
 
                 
-                if (eggs.mongo[i][0].candy.length > 1 ){
+                if (eggs.mongo[i][0].candy.length > 1 || eggs.mongo[i][0].candy.length === 1 && eggs.mongo[i][0].candy[0].amount > 0){
                     console.log(eggs.mongo[i][0].candy[0].candy_producers_id)
-                    for (let q = 1; q < eggs.mongo[i][0].candy.length; q++) {
+                    for (let q = 0; q < eggs.mongo[i][0].candy.length; q++) {
 
                         let candy = document.createElement("div")
 
