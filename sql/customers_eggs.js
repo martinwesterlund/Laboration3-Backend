@@ -82,6 +82,8 @@ async function getEggsSql(eggdata) {
     let data = []
     let candy = []
     let candydata = {}
+
+    console.log('Antal ägg i mongo: ' + eggdata.mongo.length)
    
 
         for(let i = 0; i < eggdata.mongo.length; i++) {
@@ -103,7 +105,6 @@ async function getEggsSqlQuery(eggdata, i, q) {
     let data = {}
  
     return new Promise((resolve, reject) => {
-        console.log(eggdata)
 
         if (eggdata[i][0].candy[q].candy_producers_id > 0) {
 
@@ -111,8 +112,7 @@ async function getEggsSqlQuery(eggdata, i, q) {
 
                     connection.query(`SELECT * FROM candy 
                                     JOIN candy_producers ON candy.id = candy_producers.candy_id
-                                    WHERE candy.id = ` + eggdata[i][0].candy[q].candy_producers_id, (error, result, fields) => {
-        
+                                    WHERE candy_producers.id = ` + eggdata[i][0].candy[q].candy_producers_id, (error, result, fields) => {
                     if (error) throw error
                     connection.release()
                         data.id = result[0].id
@@ -162,7 +162,7 @@ async function getMongoIds(id) {
 async function createNewEgg(eggInfo) {
  
     return new Promise((resolve, reject) => {
-        console.log(eggInfo)
+        
         eggInfo.newMongoId = String(eggInfo.newMongoId)
         pool((err, connection) => {
 

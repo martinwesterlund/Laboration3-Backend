@@ -115,11 +115,12 @@
 
             socket.on('newEggCreated', (mongoId) => {
 
-                sessionStorage.setItem('mongoId', mongoId)
-                console.log("The new MongoId: " + mongoId)
+                // sessionStorage.setItem('mongoId', mongoId)
+                // console.log("The new MongoId: " + mongoId)
 
-                window.location.href = "http://localhost:8081/customer"
-
+                // window.location.href = "http://localhost:8081/customer"
+                let id = sessionStorage.getItem('customerLoggedIn')
+                socket.emit("getEggs", id)
             })
             socket.on('eggDeleted', (deleted) => {
 
@@ -156,9 +157,14 @@
             eggInfo.eggName = document.getElementById('eggNameModal').value
             console.log(eggInfo)
             socket.emit("createNewEgg", eggInfo)
+        }
 
-
-       
+        function createRandomEgg(){
+            let eggInfo = {}
+            eggInfo.customerId = Number(sessionStorage.getItem('customerLoggedIn'))
+            eggInfo.eggName = 'Random egg'
+            console.log(eggInfo)
+            socket.emit('createRandomEgg', eggInfo)
         }
 
         function logOut(){
@@ -263,6 +269,7 @@
 
     </section>
     <input id="newEggbutton" type="button" onclick="showCreateNewEggModal()" value="Skapa nytt påskägg">
+    <input id="randomEgg" type="button" onclick="createRandomEgg()" value="Create a random egg">
     <input type="button" onclick="logOut()" value="Logout!">
 
     <!-- Modal för att lägga till namn på sitt nya påskägg -->
@@ -273,6 +280,7 @@
             <h3>Ge ditt nya påskägg ett namn</h3>
             <input type="text" id="eggNameModal" value = "Namn">
             <input type="button" onclick="createNewEgg()" value="Skapa ägg!">
+            
         </div>
       
       </div>
