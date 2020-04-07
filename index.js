@@ -31,8 +31,8 @@ async function getAllEggs(socket, id) {
     if (eggdata.mongoIds === 0) {
         socket.emit('Eggs', "You have no eggs")
     } else {
-        for( let i = 0; i < eggdata.mongoIds.length; i++ ){
-        mongo[i] = await easterEggs.getEggMongo(eggdata.mongoIds[i])
+        for (let i = 0; i < eggdata.mongoIds.length; i++) {
+            mongo[i] = await easterEggs.getEggMongo(eggdata.mongoIds[i])
         }
         eggdata.mongo = mongo
         eggdata.Sql = await customers_eggs.getEggsSql(eggdata)
@@ -50,18 +50,18 @@ async function getCandiesFromProducer(socket, id) {
     socket.emit('onProducerEnter', producerCandies)
 }
 
-async function addCandySort(socket, newCandyData){
+async function addCandySort(socket, newCandyData) {
 
     let done = await candy_producers.addNewCandySort(newCandyData)
     getCandiesFromProducer(socket, newCandyData.id)
 }
-async function deleteCandySort(socket, id){
+async function deleteCandySort(socket, id) {
 
     let done = await candy_producers.deleteCandySort(id.candy)
     getCandiesFromProducer(socket, id.producer)
 }
-async function updateCandySort(socket, candyInfo){
-    console.log(candyInfo)
+async function updateCandySort(socket, candyInfo) {
+    // console.log(candyInfo)
 
     let done = await candy_producers.updateCandySort(candyInfo)
     getCandiesFromProducer(socket, candyInfo.producerid)
@@ -72,9 +72,9 @@ async function updateCandySort(socket, candyInfo){
 //Funktioner till Customer
 async function getAllCandy(socket, id) {
     let mongo = await easterEggs.getEggMongo(id)
-    
+
     let candyData = await candy_producers.getPivotCandy(mongo[0].candy)
-    //console.log(candyData)
+    // console.log(candyData)
 
     socket.emit('showAllCandy', candyData)
 }
@@ -100,6 +100,48 @@ async function createNewEgg(socket, eggInfo) {
     socket.emit('newEggCreated', newEggId)
 
 }
+
+async function createRandomEgg(socket, eggInfo) {
+    // Lägger tomt ägg i mongodatabasen
+    eggInfo.newMongoId = await easterEggs.createEgg(eggInfo)
+
+    // Kopplar det tomma ägget till en customer i tabellen easter_eggs. newEggId är mongoIdt
+    let newEggId = await customers_eggs.createNewEgg(eggInfo)
+    
+    //Hämtar antalet olika godissorter och saldo
+    let candyIds = await candy_producers.getAllCandyIds()
+
+    console.log("Antal godisar: " + candyIds.length)
+    
+    // Skapar random godis
+    let randomCandy = []
+    let candyData = []
+    for (let i = 0; i < 10; i++) {
+        let randomElement = Math.floor(Math.random() * candyIds.length)
+        let randomAmount
+        if (candyIds[randomElement].balance < 5) {
+            randomAmount = 2 + Math.floor(Math.random() * candyIds[randomElement].balance)
+        } else {
+            randomAmount = 2 + Math.floor(Math.random() * 5)
+        }
+        randomCandy.push({ "candy_producers_id": candyIds[randomElement].id, "amount": randomAmount })
+        candyData.push({"id": candyIds[randomElement].id, "newBalance": candyIds[randomElement].balance-randomAmount })
+        candyIds.splice(randomElement, 1)
+    }
+
+    // Lägger in random godis i mongo-ägget
+    let candyAddedToEgg = await easterEggs.updateEgg(randomCandy, newEggId)
+
+    //Ändrar saldot
+    let updated = await candy_producers.removeFromBalanceMultiple(candyData)
+
+    if(updated && candyAddedToEgg){
+        console.log('Random ägget skapat och saldot ändrat')
+        
+    }
+    socket.emit('newEggCreated', newEggId)
+
+}
 async function deleteEgg(socket, id) {
 
 
@@ -111,26 +153,26 @@ async function deleteEgg(socket, id) {
 }
 
 
-async function addCandyToEgg(socket, candyId, candy, mongoId){
-    
+async function addCandyToEgg(socket, candyId, candy, mongoId) {
+
     let candyAddedToEgg = await easterEggs.updateEgg(candy, mongoId)
-    
-    let balanceDecreased = await candy_producers.removeFromBalance(candyId)
-    
-    
-    if(balanceDecreased && candyAddedToEgg){
+
+    let balanceDecreased = await candy_producers.removeFromBalance(candyId, 1)
+
+
+    if (balanceDecreased && candyAddedToEgg) {
         getAllCandy(socket, mongoId)
     }
 }
 
-async function removeCandyFromEgg(socket, candyId, candy, mongoId){
-    
+async function removeCandyFromEgg(socket, candyId, candy, mongoId) {
+    console.log(candy)
     let candyRemovedFromEgg = await easterEggs.updateEgg(candy, mongoId)
-    
-    let balanceIncreased = await candy_producers.addToBalance(candyId)
-    
-    
-    if(balanceIncreased && candyRemovedFromEgg){
+
+    let balanceIncreased = await candy_producers.addToBalance(candyId, 1)
+
+
+    if (balanceIncreased && candyRemovedFromEgg) {
         getAllCandy(socket, mongoId)
     }
 }
@@ -193,6 +235,10 @@ io.on('connection', (socket) => {
 
         createNewEgg(socket, eggInfo)
 
+    })
+
+    socket.on('createRandomEgg', (eggInfo) => {
+        createRandomEgg(socket, eggInfo)
     })
 
     socket.on("deleteEgg", (id) => {

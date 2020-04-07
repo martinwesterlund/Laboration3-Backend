@@ -11,14 +11,14 @@ async function getProducersCandy(pId, category, sortBy) {
     return new Promise((resolve, reject) => {
         pool((err, connection) => {
             let whereClause = `WHERE producer_id = ${pId}`
-            if (pId == 0 && category == 0){
+            if (pId == 0 && category == 0) {
                 whereClause = 'WHERE 1'
             } else if (pId != 0 && (category != 0 && category != undefined)) {
                 whereClause = `WHERE producer_id = ${pId} AND category = "${category}"`
             } else if (pId == 0 && category != 0) {
                 whereClause = `WHERE category = "${category}"`
             }
-            
+
 
             let sortByClause
             switch (sortBy) {
@@ -37,7 +37,7 @@ async function getProducersCandy(pId, category, sortBy) {
                 case 'price2':
                     sortByClause = 'candy_producers.price_per_unit DESC'
             }
-            console.log(whereClause)
+
             connection.query(
                 `SELECT candy.id AS "id", candy.name AS "name", candy.category AS "category", candy.color AS "color", producers.name as "producer", candy_producers.price_per_unit AS "price", candy_producers.balance as "balance"  
                 FROM candy
@@ -56,17 +56,15 @@ async function getProducersCandy(pId, category, sortBy) {
 async function getFilteredCandy(mongoData, id, category, sortBy) {
     let candyData = {}
     candyData.mongo = mongoData
-    console.log(id + ' ------ ' + category + '------' + sortBy)
     candyData.sql = await getProducersCandy(id, category, sortBy)
 
-    console.log(candyData.sql)
     return candyData
 
 }
 
 async function getPivotCandy(mongoData, sortBy) {
     let candyData = {}
-    if(mongoData) {
+    if (mongoData) {
         candyData.mongo = mongoData
     } else {
         candyData.mongo = []
@@ -109,12 +107,12 @@ async function getSqlCandy(sortBy) {
     })
 }
 
-async function removeFromBalance(candyID){
+async function removeFromBalance(candyID, amount) {
     return new Promise((resolve, reject) => {
         pool((err, connection) => {
-            
+
             connection.query(
-                `UPDATE candy_producers SET balance = balance - 1
+                `UPDATE candy_producers SET balance = balance - ${amount}
                 WHERE candy_id = ${candyID}`, (error, result, fields) => {
                 connection.release()
                 if (error) throw reject(error)
@@ -125,12 +123,52 @@ async function removeFromBalance(candyID){
     })
 }
 
-async function addToBalance(candyID){
+async function removeFromBalanceMultiple(candyData) {
     return new Promise((resolve, reject) => {
         pool((err, connection) => {
+            let values = []
+            let whenClause = ''
+            let whereClause = ''
+
+
+            for (let row in candyData) {
+                values.push(candyData[row])
+            }
+
+            for (let i = 0; i < values.length; i++) {
+                whenClause += `WHEN ${values[i].id} THEN ${values[i].newBalance} `
+                if (i == values.length - 1) {
+                    whereClause += `${values[i].id}`
+                } else {
+                    whereClause += `${values[i].id}, `
+                }
+
+            }
+
+            let sql =
+                `UPDATE candy_producers SET balance = CASE id
+			    ${whenClause}
+			    ELSE balance
+		        END
+                WHERE id IN (${whereClause})`
             
             connection.query(
-                `UPDATE candy_producers SET balance = balance + 1
+                sql, (error, result, fields) => {
+                connection.release()
+                if (error) throw reject(error)
+                resolve(true)
+            });
+
+        })
+    })
+}
+
+async function addToBalance(candyID, amount) {
+    return new Promise((resolve, reject) => {
+        pool((err, connection) => {
+
+            connection.query(
+                `UPDATE candy_producers SET balance = balance + ${amount}
                 WHERE candy_id = ${candyID}`, (error, result, fields) => {
                 connection.release()
                 if (error) throw reject(error)
@@ -140,6 +178,8 @@ async function addToBalance(candyID){
         })
     })
 }
+
+
 
 async function addNewCandySort(newCandyData) {
     return new Promise((resolve, reject) => {
@@ -190,14 +230,26 @@ async function updateCandySort(candyInfo) {
 
                     connection.query("UPDATE candy_producers SET `price_per_unit` = ?, `balance` = ? WHERE candy_id = " + connection.escape(candyInfo.candyid),
                         [candyInfo.price, candyInfo.balance], (error, result, fields) => {
-                        connection.release()
-                    if (error) throw reject(error)
+                            connection.release()
+                            if (error) throw reject(error)
 
-                    resolve(true)  
-                })  
+                            resolve(true)
+                        })
+                })
+        })
+    })
+}
+
+async function getAllCandyIds() {
+    return new Promise((resolve, reject) => {
+        pool((err, connection) => {
+            connection.query(`SELECT id, balance FROM candy_producers WHERE 1`, (error, result, fields) => {
+                connection.release()
+                if (error) reject(error)
+                resolve(result)
             })
         })
-    })   
+    })
 }
 
 
@@ -388,4 +440,4 @@ router.route('/junction/:id')
 
 
 
-module.exports = { router, getProducersCandy, getPivotCandy, getFilteredCandy, addNewCandySort, deleteCandySort, updateCandySort, removeFromBalance, addToBalance }
+module.exports = { router, getProducersCandy, getPivotCandy, getFilteredCandy, addNewCandySort, deleteCandySort, updateCandySort, removeFromBalance, addToBalance, getAllCandyIds, removeFromBalanceMultiple }
