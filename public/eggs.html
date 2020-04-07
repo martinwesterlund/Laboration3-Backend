@@ -77,7 +77,7 @@
                     let egg = document.getElementById('egg')
                     let load = document.getElementById('loader')
                     h1.innerHTML = "Du är inte inloggad din n00b!"
-                    egg.remove()  
+                    egg.innerHTML = ''  
                     load.remove()                    
                 }
                 
@@ -99,11 +99,11 @@
             socket.on('Eggs', (egg) => {
                 console.log('Eggs incomming!!')
                 if (egg === "You have no eggs") {
-                    let egg = document.getElementById('egg')
+                    let eggSection = document.getElementById('egg')
                     let load = document.getElementById('loader')
                     let newEggbutton = document.getElementById('newEggbutton')
                     h1.innerHTML = "You have no eggs!"
-                    egg.remove()  
+                    eggSection.innerHTML = ''  
                     load.remove() 
                     // newEggbutton.remove()                 
                 } else {
@@ -179,8 +179,11 @@
         function createList(eggs) {
             console.log(eggs)
             let egg = document.getElementById('egg')
-            while ( egg.firstChild ) {
-                egg.removeChild( egg.lastChild )
+            let numberOfChilds = document.getElementById('egg').childElementCount
+            if ( numberOfChilds > 0 ) {
+                while ( egg.firstChild ) {
+                    egg.removeChild( egg.lastChild )
+                }
             }
             let eggNames = ''
             let mongoIds = ''
