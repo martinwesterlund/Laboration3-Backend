@@ -137,10 +137,25 @@ async function removeCandyFromEgg(socket, candyId, candy, mongoId){
 
 //Socket stuff
 io.on('connection', (socket) => {
+    console.log(socket.handshake.headers.referer)
 
     // Välkomst meddelande vid upprättande av kontakt
     socket.emit('onConnection', 'Connected to server')
-    console.log("A new connection is established")
+    if(socket.handshake.headers.referer === "http://localhost:8081/producer/") {
+        socket.join('producer')
+        console.log("A new connection is established, joined Producer Room")
+    }
+    if(socket.handshake.headers.referer === "http://localhost:8081/eggs/" || socket.handshake.headers.referer === "http://localhost:8081/customer/" ) {
+        socket.join('customer')
+        console.log("A new connection is established, joined Customer Room")
+    }
+
+    socket.on('deal', (data) => {
+
+        socket.to('customer').emit('newDeal', data)
+
+
+    })
 
 
     // producer stuff

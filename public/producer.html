@@ -35,11 +35,12 @@
     <script>
         let candiesLocal
         document.addEventListener("DOMContentLoaded", () => {
-            socket = io('http://localhost:8081');
+            socket = io('http://localhost:8081')
+            
             socket.on('onConnection', (data) => {
-                console.log(data)
+
+
                 let id = sessionStorage.getItem('producerLoggedIn')
-                console.log(id)
 
                 if (id !== null ){
                     console.log("we are here")
@@ -142,11 +143,40 @@
                 modal.style.display = "none";
             }
         }
-        function addSpecialDeal(candyId){
-
+        function openDealModal(){
+            let modal = document.getElementById("dealModal")
+            let text = document.getElementById("dealH3Text")
+            let input = document.getElementById("dealTextModal")
+            input.value = ''
+            text.innerHTML = "Skicka ett erbjudade tiil dina potentiella kunder!"
+            modal.style.display = "block"
 
         }
 
+        function sendDealModal(){
+            let modal = document.getElementById("dealModal")
+            let prodName = document.getElementById("producerName")
+            let data = document.getElementById("dealTextModal").value
+            let text = document.getElementById("dealH3Text")
+            text.innerHTML = "Ditt erbjudade har skickats!"
+
+            let deal = "Erbjudande från " + prodName.innerHTML + "\n \n" + data
+            
+            socket.emit('deal', deal)
+
+            setTimeout(() =>{
+                modal.style.display = "none"
+            }, 2000)
+            
+
+        }
+
+        window.onclick = (event) => {
+            let modal = document.getElementById("dealModal")
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
 
         function createList(candies) {
             console.log(candies)
@@ -173,12 +203,6 @@
                 updateCandy.setAttribute('onclick', `updateCandy(${candies[i].id})`)
                 oneCandy.appendChild(updateCandy)
                                  
-                //Skapa en "specialerbjudande"-knapp
-                let addSpecialDeal = document.createElement('button')
-                addSpecialDeal.innerHTML = "Add special deal"
-                addSpecialDeal.setAttribute('onclick', `addSpecialDeal(${candies[i].id})`)
-                oneCandy.appendChild(addSpecialDeal)
-
                 //Namn på godissorten
                 let candy = document.createElement('div')
                 candy.innerHTML = candies[i].name
@@ -255,7 +279,7 @@
         <input type="button" onclick="addNewCandySort()" value="Add New Candy">
     </section>
     <input type="button" onclick="logOut()" value="Logout!">
-
+    <input type="button" onclick="openDealModal()" value="Skicka erbjudande">
 
 
     <!-- Modal för att ändra en godis, because resons -->
@@ -287,6 +311,18 @@
             <input type="number" id="balanceModal">
             <input type="number" id="priceModal">
             <input type="button" onclick="updateCandyModal()" value="Spara">
+        </div>
+      
+      </div>
+      
+    <!-- Modal för att ändra en godis, because resons -->
+    <div id="dealModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">  
+            <h3 id="dealH3Text">Skicka ett erbjudade tiil dina potentiella kunder!</h3>
+            <input type="text" id="dealTextModal">
+            <input type="button" onclick="sendDealModal()" value="Skicka">
         </div>
       
       </div>

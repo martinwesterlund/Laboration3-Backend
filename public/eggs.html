@@ -65,9 +65,8 @@
         document.addEventListener("DOMContentLoaded", () => {
             socket = io('http://localhost:8081')
             socket.on('onConnection', (data) => {
-                console.log(data)
                 let id = sessionStorage.getItem('customerLoggedIn')
-                console.log(id)
+
 
                 if (id !== null ){
                     console.log("we are here")
@@ -82,6 +81,11 @@
                     load.remove()                    
                 }
                 
+            })
+            socket.on('newDeal', (data) => {
+
+                alert(data)
+
             })
 
             socket.on('LoggedInAsCustomer', (data) => {
