@@ -77,9 +77,9 @@ async function createRandomEgg(socket, eggInfo) {
         let randomElement = Math.floor(Math.random() * candyIds.length)
         let randomAmount
         if (candyIds[randomElement].balance < 5) {
-            randomAmount = 2 + Math.floor(Math.random() * candyIds[randomElement].balance)
+            randomAmount = Math.floor(Math.random() * candyIds[randomElement].balance)
         } else {
-            randomAmount = 2 + Math.floor(Math.random() * 5)
+            randomAmount = 2 + Math.floor(Math.random() * 4)
         }
         randomCandy.push({ "candy_producers_id": candyIds[randomElement].id, "amount": randomAmount })
         candyData.push({"id": candyIds[randomElement].id, "newBalance": candyIds[randomElement].balance-randomAmount })
