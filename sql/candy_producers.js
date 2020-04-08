@@ -39,7 +39,7 @@ async function getProducersCandy(pId, category, sortBy) {
             }
 
             connection.query(
-                `SELECT candy_producers.candy_id AS "id", candy.name AS "name", candy.category AS "category", candy.color AS "color", producers.name as "producer", candy_producers.price_per_unit AS "price", candy_producers.balance as "balance"  
+                `SELECT candy.id AS "id", candy.name AS "name", candy.category AS "category", candy.color AS "color", producers.name as "producer", candy_producers.price_per_unit AS "price", candy_producers.balance as "balance"  
                 FROM candy
                 LEFT JOIN candy_producers ON candy.id = candy_producers.candy_id
                 LEFT JOIN producers on producers.id = candy_producers.producer_id 
@@ -70,7 +70,7 @@ async function getPivotCandy(mongoData, sortBy) {
         candyData.mongo = []
     }
     candyData.sql = await getSqlCandy(sortBy)
-
+    console.log('swl som hämtats i pivot = ' + candyData.sql)
     return candyData
 
 }
@@ -93,7 +93,7 @@ async function getSqlCandy(sortBy) {
                     sortByClause = 'candy_producers.price_per_unit DESC'
             }
             connection.query(
-                `SELECT candy_producers.id AS "id", candy.name AS "name", candy.category AS "category", candy.color AS "color", producers.name as "producer", candy_producers.price_per_unit AS "price", candy_producers.balance as "balance"  
+                `SELECT candy.id AS "id", candy_producers.id AS "cpid", candy.name AS "name", candy.category AS "category", candy.color AS "color", producers.name as "producer", candy_producers.price_per_unit AS "price", candy_producers.balance as "balance"  
                 FROM candy
                 LEFT JOIN candy_producers ON candy.id = candy_producers.candy_id
                 LEFT JOIN producers on producers.id = candy_producers.producer_id
@@ -113,7 +113,7 @@ async function removeFromBalance(candyID, amount) {
 
             connection.query(
                 `UPDATE candy_producers SET balance = balance - ${amount}
-                WHERE candy_producers.id = ${candyID}`, (error, result, fields) => {
+                WHERE candy_id = ${candyID}`, (error, result, fields) => {
                 connection.release()
                 if (error) throw reject(error)
                 resolve(true)
@@ -169,7 +169,7 @@ async function addToBalance(candyID, amount) {
 
             connection.query(
                 `UPDATE candy_producers SET balance = balance + ${amount}
-                WHERE candy_producers.id = ${candyID}`, (error, result, fields) => {
+                WHERE candy_id = ${candyID}`, (error, result, fields) => {
                 connection.release()
                 if (error) throw reject(error)
                 resolve(true)
@@ -244,7 +244,7 @@ async function updateCandySort(candyInfo) {
 async function getAllCandyIds() {
     return new Promise((resolve, reject) => {
         pool((err, connection) => {
-            connection.query(`SELECT id, balance FROM candy_producers WHERE 1`, (error, result, fields) => {
+            connection.query(`SELECT id, candy_id, balance FROM candy_producers WHERE 1`, (error, result, fields) => {
                 connection.release()
                 if (error) reject(error)
                 resolve(result)

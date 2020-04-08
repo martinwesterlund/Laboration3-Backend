@@ -75,6 +75,7 @@
 
             socket.on('showAllCandy', (candyData, sortBy) => {
                 console.log('Connected to server from Customer page2')
+                console.log(candyData)
                 createList(candyData, sortBy)
             })
 
@@ -101,8 +102,8 @@
         // }
 
         function createList(candyData, sortBy) {
-            console.log(candyData.mongo)
-            console.log(candyData.sql)
+            console.log(candyData.mongo)// Innehåller alla godisar (candy_producers_id + amount)
+            console.log(candyData.sql) // Innehåller alla godisar som finns (candy_id AS id, name, category...)
             let candyList = document.getElementById('candyList')
             candyList.innerHTML = ''
 
@@ -193,7 +194,7 @@
                     amount.innerHTML = '0'
                     for (let j = 0; j < candyData.mongo.length; j++) {
 
-                        if (candyData.sql[i].id == candyData.mongo[j].candy_producers_id) {
+                        if (candyData.sql[i].cpid == candyData.mongo[j].candy_producers_id) {
                             amount.innerHTML = candyData.mongo[j].amount
                             totalEggPrice = (candyData.sql[i].price * candyData.mongo[j].amount) + totalEggPrice
                         }

@@ -26,8 +26,9 @@ async function getAllEggs(socket, id) {
 //Funktioner till Customer
 async function getAllCandy(socket, id) {
     let mongo = await easterEggs.getEggMongo(id)
-
+    console.log('mongo hämtat' + mongo[0].candy)
     let candyData = await candy_producers.getPivotCandy(mongo[0].candy)
+    console.log('candydata from pivot hämtat')
     // console.log(candyData)
 
     socket.emit('showAllCandy', candyData)
@@ -70,8 +71,8 @@ async function createRandomEgg(socket, eggInfo) {
     console.log("Antal godisar: " + candyIds.length)
     
     // Skapar random godis
-    let randomCandy = []
-    let candyData = []
+    let randomCandy = [] // Ska in i mongo
+    let candyData = [] // Ska in 
     for (let i = 0; i < 10; i++) {
         let randomElement = Math.floor(Math.random() * candyIds.length)
         let randomAmount
