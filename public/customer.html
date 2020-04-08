@@ -185,7 +185,7 @@
                     let remove = document.createElement('button')
                     remove.innerHTML = '-'
                     remove.addEventListener('click', () => {
-                        removeCandy(candyData.sql[i].id, candyData.mongo)
+                        removeCandy(candyData.sql[i].id, candyData.mongo, candyData.sql[i].cpid)
                     })
                     oneCandy.appendChild(remove)
 
@@ -209,7 +209,7 @@
                     let add = document.createElement('button')
                     add.innerHTML = '+'
                     add.addEventListener('click', () => {
-                        addCandy(candyData.sql[i].id, candyData.mongo)
+                        addCandy(candyData.sql[i].id, candyData.mongo, candyData.sql[i].cpid)
                     })
                     oneCandy.appendChild(add)
 
@@ -229,43 +229,40 @@
             }
         }
 
-        function addCandy(candyId, mongoData){
+        function addCandy(candyId, mongoData, cpid){
 
-            
-            console.log('Lägger till godis med id ' + candyId)
-            console.log('Mongo datan är ' + mongoData[0].candy_producers_id)
             let mongoId = sessionStorage.getItem('mongoId')
 
             let foundId
                     
             for(let i = 0; i < mongoData.length; i++ ){
-                if(candyId == mongoData[i].candy_producers_id){
+                if(cpid == mongoData[i].candy_producers_id){
                     foundId = i
                 }
             }
         
             if(foundId != undefined){
-                mongoData[foundId].candy_producers_id = candyId
+                mongoData[foundId].candy_producers_id = cpid
                 mongoData[foundId].amount++
             } else {
-                mongoData.push({ "candy_producers_id": candyId, "amount": 1 })
+                mongoData.push({ "candy_producers_id": cpid, "amount": 1 })
             }
 
             socket.emit('addCandyToEgg', candyId, mongoData, mongoId)
         }
 
-        function removeCandy(candyId, mongoData) {
+        function removeCandy(candyId, mongoData, cpid) {
             let mongoId = sessionStorage.getItem('mongoId')
 
             let foundId
             for (let i = 0; i < mongoData.length; i++) {
-                if (candyId == mongoData[i].candy_producers_id) {
+                if (cpid == mongoData[i].candy_producers_id) {
                     foundId = i
                 }
             }
 
             if (foundId != undefined) {
-                mongoData[foundId].candy_producers_id = candyId
+                mongoData[foundId].candy_producers_id = cpid
                 mongoData[foundId].amount--
                 socket.emit('removeCandyFromEgg', candyId, mongoData, mongoId)
             }
