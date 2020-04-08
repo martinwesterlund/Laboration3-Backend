@@ -1,7 +1,8 @@
 const candy_producers = require('./sql/candy_producers.js')
 const customers_eggs = require('./sql/customers_eggs.js')
 const easterEggs = require('./mongodb/easterEggs.js')
-const auth = require('./sql/auth.js')
+const auth = require('./src/auth.js')
+const functions = require('./src/functions.js')
 
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -40,32 +41,6 @@ async function getAllEggs(socket, id) {
     }
 }
 
-
-//Funktioner till Producer
-
-async function getCandiesFromProducer(socket, id) {
-    let producerCandies = await candy_producers.getProducersCandy(id)
-    console.log('Id är ' + id)
-    console.log('Datan är : ' + producerCandies)
-    socket.emit('onProducerEnter', producerCandies)
-}
-
-async function addCandySort(socket, newCandyData) {
-
-    let done = await candy_producers.addNewCandySort(newCandyData)
-    getCandiesFromProducer(socket, newCandyData.id)
-}
-async function deleteCandySort(socket, id) {
-
-    let done = await candy_producers.deleteCandySort(id.candy)
-    getCandiesFromProducer(socket, id.producer)
-}
-async function updateCandySort(socket, candyInfo) {
-    // console.log(candyInfo)
-
-    let done = await candy_producers.updateCandySort(candyInfo)
-    getCandiesFromProducer(socket, candyInfo.producerid)
-}
 
 
 
@@ -204,22 +179,22 @@ io.on('connection', (socket) => {
 
     socket.on('getProducerView', (id) => {
         console.log('ID på efterfrågad producer är: ' + id)
-        getCandiesFromProducer(socket, id)
+        functions.getCandiesFromProducer(socket, id)
     })
 
     socket.on('addnewCandySort', (newCandyData) => {
 
-        addCandySort(socket, newCandyData)
+        functions.addCandySort(socket, newCandyData)
 
     })
 
     socket.on('deleteCandySort', (id) => {
 
-        deleteCandySort(socket, id)
+        functions.deleteCandySort(socket, id)
     })
     socket.on('updateCandySort', (candyinfo) => {
 
-        updateCandySort(socket, candyinfo)
+        functions.updateCandySort(socket, candyinfo)
 
     })
 
@@ -271,41 +246,18 @@ io.on('connection', (socket) => {
 
     socket.on('loginCustomer', (loginData) => {
 
-        loginCustomer(loginData, socket)
+        auth.loginCustomer(loginData, socket)
 
 
     })
     socket.on('loginProducer', (loginData) => {
 
-        loginProducer(loginData, socket)
+        auth.loginProducer(loginData, socket)
 
     })
 
 })
 
-async function loginCustomer(loginData, socket) {
-    try {
-        let data = await auth.loginCustomer(loginData)
-        console.log(data)
-
-        socket.emit('LoggedInAsCustomer', data)
-    } catch (err) {
-        console.log(err)
-        socket.emit('LoggedInAsCustomer', err)
-    }
-
-}
-async function loginProducer(loginData, socket) {
-    try {
-        let data = await auth.loginProducer(loginData)
-        console.log(data)
-        socket.emit('LoggedInAsProducer', data)
-    } catch (err) {
-        console.log(err)
-        socket.emit('LoggedInAsProducer', err)
-    }
-
-}
 
 server.listen(8081, () => {
     console.log("MongoDB på 8081")

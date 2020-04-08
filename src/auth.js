@@ -1,11 +1,11 @@
 // Add connection details
-const pool = require('./connectionPool.js')
+const pool = require('../sql/connectionPool.js')
 
 
 
 
 
-async function loginCustomer(loginData){
+async function loginCust(loginData){
 
     
     let userDetails = {}
@@ -49,7 +49,7 @@ async function loginCustomer(loginData){
 
 }
 
-async function loginProducer(loginData){
+async function loginProd(loginData){
     let userDetails = {}
     return new Promise((resolve, reject) => {
         
@@ -89,14 +89,32 @@ async function loginProducer(loginData){
         })
     })
 
+}
 
+async function loginCustomer(loginData, socket) {
+    try {
+        let data = await loginCust(loginData)
+        console.log(data)
 
-
-
-
-
+        socket.emit('LoggedInAsCustomer', data)
+    } catch (err) {
+        console.log(err)
+        socket.emit('LoggedInAsCustomer', err)
+    }
 
 }
+async function loginProducer(loginData, socket) {
+    try {
+        let data = await loginProd(loginData)
+        console.log(data)
+        socket.emit('LoggedInAsProducer', data)
+    } catch (err) {
+        console.log(err)
+        socket.emit('LoggedInAsProducer', err)
+    }
+
+}
+
 
 
 module.exports = {loginCustomer, loginProducer}

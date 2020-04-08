@@ -39,7 +39,7 @@ async function getProducersCandy(pId, category, sortBy) {
             }
 
             connection.query(
-                `SELECT candy_producers.id AS "id", candy.name AS "name", candy.category AS "category", candy.color AS "color", producers.name as "producer", candy_producers.price_per_unit AS "price", candy_producers.balance as "balance"  
+                `SELECT candy_producers.candy_id AS "id", candy.name AS "name", candy.category AS "category", candy.color AS "color", producers.name as "producer", candy_producers.price_per_unit AS "price", candy_producers.balance as "balance"  
                 FROM candy
                 LEFT JOIN candy_producers ON candy.id = candy_producers.candy_id
                 LEFT JOIN producers on producers.id = candy_producers.producer_id 
@@ -223,6 +223,7 @@ async function deleteCandySort(id) {
 async function updateCandySort(candyInfo) {
     return new Promise((resolve, reject) => {
         pool((err, connection) => {
+            console.log(candyInfo)
 
             connection.query("UPDATE candy SET `name` = ?, `category` = ?, `color` = ? WHERE id = " + connection.escape(candyInfo.candyid),
                 [candyInfo.name, candyInfo.category, candyInfo.color], (error, result, fields) => {
