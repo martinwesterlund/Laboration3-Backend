@@ -83,7 +83,6 @@ io.on('connection', (socket) => {
     })
 
     socket.on('showEgg', (id) => {
-        console.log('Mongo id är ' + id)
         functions_customer.getAllCandy(socket, id)
     })
     socket.on('getFilteredCandyList', (producerId, category, sortBy, mongoId) => {

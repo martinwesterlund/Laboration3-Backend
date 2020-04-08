@@ -26,10 +26,8 @@ async function getAllEggs(socket, id) {
 //Funktioner till Customer
 async function getAllCandy(socket, id) {
     let mongo = await easterEggs.getEggMongo(id)
-    console.log('mongo hämtat' + mongo[0].candy)
     let candyData = await candy_producers.getPivotCandy(mongo[0].candy)
-    console.log('candydata from pivot hämtat')
-    // console.log(candyData)
+    
 
     socket.emit('showAllCandy', candyData)
 }

@@ -70,7 +70,6 @@ async function getPivotCandy(mongoData, sortBy) {
         candyData.mongo = []
     }
     candyData.sql = await getSqlCandy(sortBy)
-    console.log('swl som hämtats i pivot = ' + candyData.sql)
     return candyData
 
 }
