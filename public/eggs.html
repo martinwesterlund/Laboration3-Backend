@@ -68,8 +68,8 @@
                 let id = sessionStorage.getItem('customerLoggedIn')
 
 
-                if (id !== null ){
-                    console.log("we are here")
+                if ( data.loggedIn ){
+                    console.log("we are here " + id)
 
                     getEggs(id)
 

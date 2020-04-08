@@ -109,47 +109,10 @@ router.route('/')
 
     // //Get all easter eggs
     .get((req, res) => {
-        // mongodbClient.connect(mongoUrl, {
-        //     useUnifiedTopology: true
-        // }, (err, client) => {
-        //     if (err) throw err
-        //     let db = client.db('Laboration3')
-        //     findDocument(db, null, (result) => {
-        //         client.close()
-        // res.json(result)
+
         res.sendFile("eggs.html", { root: './public' })
-        //     })
-        // })
+
     })
-
-    //Create new egg
-    .post((req, res) => {
-        // mongodbClient.connect(mongoUrl, {
-        //     useUnifiedTopology: true
-        // }, (err, client) => {
-        //     if (err) throw err
-        //     let db = client.db('Laboration3')
-        //     const collection = db.collection('easter_eggs')
-
-        //     let document = {}
-        //     for (const key of Object.keys(req.body)) {
-
-        //         if (key == "value") {
-        //             document[key] = parseInt(req.body[key])
-        //         }
-        //         else {
-        //             document[key] = req.body[key]
-        //         }
-
-        //     }
-
-        //     collection.insertOne(document, (err, result) => {
-        //         if (err) throw err
-        //         res.send(result)
-        //     })
-        // })
-    })
-
 
 router.route('/:eggId')
 

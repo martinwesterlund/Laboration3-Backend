@@ -179,8 +179,7 @@ async function removeCandyFromEgg(socket, candyId, candy, mongoId) {
 
 //Socket stuff
 io.on('connection', (socket) => {
-    console.log(socket.handshake.headers.referer)
-
+   
     // Välkomst meddelande vid upprättande av kontakt
     socket.emit('onConnection', 'Connected to server')
     if(socket.handshake.headers.referer === "http://localhost:8081/producer/") {
@@ -241,9 +240,6 @@ io.on('connection', (socket) => {
         getFilteredList(socket, producerId, category, sortBy, mongoId)
     })
 
-    // socket.on('getFilteredCandyList', (id, mongoId) => {
-    //     getFilteredList(socket, id, mongoId)
-    // })
 
 
     socket.on("createNewEgg", (eggInfo) => {

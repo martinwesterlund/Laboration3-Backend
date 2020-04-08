@@ -14,16 +14,33 @@
                 sessionStorage.removeItem('producerLoggedIn')
             })
             socket.on('LoggedInAsCustomer', (data) => {
-                console.log("data: " + data)
-                sessionStorage.setItem('customerLoggedIn', data.id)
-                window.location.href = 'http://localhost:8081/eggs/'
                 
+                console.log(data)
+                if ( data.loggedIn ) {
+
+                    sessionStorage.setItem('customerLoggedIn', data.id)
+                    window.location.href = 'http://localhost:8081/eggs/'
+                
+                } else {
+
+                    alert("Fel användarnamn eller lösenord")
+
+                }
 
             })
             socket.on('LoggedInAsProducer', (data) => {
-                console.log("Data: " + data)
+                console.log(data)
+                if ( data.loggedIn ){
+
                 sessionStorage.setItem('producerLoggedIn', data.id)
                 window.location.href = 'http://localhost:8081/producer/'
+
+                } else {
+
+                    alert("Fel användarnamn eller lösenord")
+
+                }
+
             })
         })
         
