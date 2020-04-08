@@ -1,4 +1,6 @@
 const candy_producers = require('../sql/candy_producers.js')
+
+
 //Funktioner till Producer
 
 async function getCandiesFromProducer(socket, id) {
