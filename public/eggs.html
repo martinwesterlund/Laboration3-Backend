@@ -161,9 +161,15 @@
             socket.emit("createNewEgg", eggInfo)
             let modal = document.getElementById("createEggModal")
             modal.style.display = "none"
+            let bodyElement = document.getElementsByTagName('body')[0]
+            bodyElement.style.opacity = "0.2"
+            bodyElement.style.pointerEvents = "none"
         }
 
         function createRandomEgg(){
+            let bodyElement = document.getElementsByTagName('body')[0]
+            bodyElement.style.opacity = "0.2"
+            bodyElement.style.pointerEvents = "none"
             let eggInfo = {}
             eggInfo.customerId = Number(sessionStorage.getItem('customerLoggedIn'))
             eggInfo.eggName = 'Random egg'
@@ -182,6 +188,9 @@
 
         function createList(eggs) {
             console.log(eggs)
+            let bodyElement = document.getElementsByTagName('body')[0]
+            bodyElement.style.opacity = "1"
+            bodyElement.style.pointerEvents = "auto"
             let egg = document.getElementById('egg')
             while ( egg.firstChild ) {
                 egg.removeChild( egg.lastChild )
