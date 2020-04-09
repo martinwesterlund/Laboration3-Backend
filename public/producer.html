@@ -57,6 +57,13 @@
                 
             })
 
+            socket.on('updateCandyList', (notUsed) => {
+                let id = sessionStorage.getItem('producerLoggedIn')
+                console.log(id)
+                
+                socket.emit('getProducerView', id)
+            })
+
             socket.on('onProducerEnter', (candies) => {
                 console.log('Connected to server from Producer page')
                 candiesLocal = candies

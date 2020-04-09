@@ -49,6 +49,7 @@
 
             socket.on('onConnection', (data) => {
                 let session = sessionStorage.getItem('customerLoggedIn')
+                console.log("at costumer site")
 
 
                 if (session !== null) {
@@ -77,6 +78,11 @@
                 console.log('Connected to server from Customer page2')
                 console.log(candyData)
                 createList(candyData, sortBy)
+            })
+
+            socket.on('updateCandyList', (mongoId) => {
+                
+                socket.emit('showEgg', sessionStorage.getItem('mongoId'))
             })
 
             socket.on('showFilteredList', (filteredData) => {

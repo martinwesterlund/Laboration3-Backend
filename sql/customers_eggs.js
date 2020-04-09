@@ -103,7 +103,7 @@ async function getEggsSqlQuery(eggdata, i, q) {
     let data = {}
  
     return new Promise((resolve, reject) => {
-        // console.log(eggdata)
+    
 
         if (eggdata[i][0].candy[q].candy_producers_id > 0) {
 

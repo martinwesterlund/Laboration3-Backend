@@ -29,18 +29,22 @@ app.use('/', candy_producers.router)
 
 //Socket stuff
 io.on('connection', (socket) => {
-   
     // Välkomst meddelande vid upprättande av kontakt
     socket.emit('onConnection', 'Connected to server')
     if(socket.handshake.headers.referer === "http://localhost:8081/producer/") {
         socket.join('producer')
         console.log("A new connection is established, joined Producer Room")
     }
-    if(socket.handshake.headers.referer === "http://localhost:8081/eggs/" || socket.handshake.headers.referer === "http://localhost:8081/customer/" ) {
+
+    if(socket.handshake.headers.referer === "http://localhost:8081/eggs" ) {
         socket.join('customer')
         console.log("A new connection is established, joined Customer Room")
     }
-
+    
+    if(socket.handshake.headers.referer === "http://localhost:8081/customer" ) {
+        socket.join('customer')
+        console.log("A new connection is established, joined Customer Room")
+    }
     socket.on('deal', (data) => {
 
         socket.to('customer').emit('newDeal', data)
@@ -69,7 +73,7 @@ io.on('connection', (socket) => {
     })
     socket.on('updateCandySort', (candyinfo) => {
 
-        functions_producer.updateCandySort(socket, candyinfo)
+        functions_producer.updateCandySort(socket, candyinfo, io)
 
     })
 
@@ -83,10 +87,11 @@ io.on('connection', (socket) => {
     })
 
     socket.on('showEgg', (id) => {
-        functions_customer.getAllCandy(socket, id)
+        functions_customer.getAllCandy(socket, id, io)
+        
     })
     socket.on('getFilteredCandyList', (producerId, category, sortBy, mongoId) => {
-        functions_customer.getFilteredList(socket, producerId, category, sortBy, mongoId)
+        functions_customer.getFilteredList(socket, producerId, category, sortBy, mongoId, io)
     })
 
 
@@ -108,11 +113,11 @@ io.on('connection', (socket) => {
     })
 
     socket.on('addCandyToEgg', (candyId, candy, mongoId) => {
-        functions_customer.addCandyToEgg(socket, candyId, candy, mongoId)
+        functions_customer.addCandyToEgg(socket, candyId, candy, mongoId, io)
     })
 
     socket.on('removeCandyFromEgg', (candyId, candy, mongoId) => {
-        functions_customer.removeCandyFromEgg(socket, candyId, candy, mongoId)
+        functions_customer.removeCandyFromEgg(socket, candyId, candy, mongoId, io)
     })
 
 
