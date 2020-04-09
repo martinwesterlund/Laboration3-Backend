@@ -54,8 +54,10 @@
 
                 if (session !== null) {
                     console.log("we are here")
-
-                    socket.emit('showEgg', sessionStorage.getItem('mongoId'))
+                    let producerId = document.getElementById('producer').value
+                    let category = document.getElementById('category').value
+                    let sortBy = document.getElementById('sortBy').value
+                    socket.emit('showEgg', producerId, category, sortBy, sessionStorage.getItem('mongoId'))
 
 
 
@@ -76,13 +78,20 @@
 
             socket.on('showAllCandy', (candyData, sortBy) => {
                 console.log('Connected to server from Customer page2')
-                console.log(candyData)
                 createList(candyData, sortBy)
             })
 
+            socket.on('showTotalPrice', (totalEggPrice) => {
+                let eggPrice = document.getElementById('eggPrice')
+                eggPrice.innerHTML = `Totalt pris: ${totalEggPrice} kr`
+
+            })
+
             socket.on('updateCandyList', (mongoId) => {
-                
-                socket.emit('showEgg', sessionStorage.getItem('mongoId'))
+                let producerId = document.getElementById('producer').value
+                let category = document.getElementById('category').value
+                let sortBy = document.getElementById('sortBy').value
+                socket.emit('showEgg', producerId, category, sortBy, sessionStorage.getItem('mongoId'))
             })
 
             socket.on('showFilteredList', (filteredData) => {
@@ -95,8 +104,8 @@
         function goBack() {
             window.location.href = 'http://localhost:8081/eggs'
         }
-        function logOut(){
-            try{
+        function logOut() {
+            try {
                 sessionStorage.removeItem('customerLoggedIn')
                 window.location.href = 'http://localhost:8081/'
             } catch (err) {
@@ -115,38 +124,45 @@
 
             let eggNames = sessionStorage.getItem('eggNames')
             let mongoIds = sessionStorage.getItem('mongoIds')
-            let totalEggPrice = 0
+
+
+
+
+
+            // totalEggPrice = (candyData.sql[i].price * candyData.mongo[j].amount) + totalEggPrice
 
             console.log('Priset är ' + eggPrice)
-            
+
             mongoId = sessionStorage.getItem('mongoId')
 
             console.log(eggNames)
             console.log(mongoIds)
-            
+
             eggNames = eggNames.split('##')
             mongoIds = mongoIds.split('##')
-            
+
 
             let currentEgg = document.getElementById('currentEgg')
-            currentEgg.innerHTML = ''   
-            for (let i = 0; i < eggNames.length-1; i++){
+            currentEgg.innerHTML = ''
+            for (let i = 0; i < eggNames.length - 1; i++) {
                 let option = document.createElement('option')
                 option.setAttribute('value', mongoIds[i])
-                option.innerHTML = eggNames[i]   
+                option.innerHTML = eggNames[i]
                 currentEgg.appendChild(option)
-                if(mongoIds[i] == mongoId){
+                if (mongoIds[i] == mongoId) {
                     currentEgg.selectedIndex = i
                     console.log(currentEgg.selectedIndex)
                 }
             }
 
+           
+
 
             // document.getElementById('eggPrice').innerHTML = sessionStorage.getItem('currentEggPrice') 
 
             let separation = document.createElement('div')
-                    separation.innerHTML = "-----------------------------------"
-                    candyList.appendChild(separation)
+            separation.innerHTML = "-----------------------------------"
+            candyList.appendChild(separation)
 
 
             if (candyData.sql.length < 1) {
@@ -202,14 +218,13 @@
 
                         if (candyData.sql[i].cpid == candyData.mongo[j].candy_producers_id) {
                             amount.innerHTML = candyData.mongo[j].amount
-                            totalEggPrice = (candyData.sql[i].price * candyData.mongo[j].amount) + totalEggPrice
+                            // totalEggPrice = (candyData.sql[i].price * candyData.mongo[j].amount) + totalEggPrice
                         }
 
                     }
                     oneCandy.appendChild(amount)
 
-                    //Totala äggpriset
-                    document.getElementById('eggPrice').innerHTML = `Total price: ${totalEggPrice} SEK `
+
 
                     //Lägg till +
                     let add = document.createElement('button')
@@ -235,19 +250,19 @@
             }
         }
 
-        function addCandy(candyId, mongoData, cpid){
+        function addCandy(candyId, mongoData, cpid) {
 
             let mongoId = sessionStorage.getItem('mongoId')
 
             let foundId
-                    
-            for(let i = 0; i < mongoData.length; i++ ){
-                if(cpid == mongoData[i].candy_producers_id){
+
+            for (let i = 0; i < mongoData.length; i++) {
+                if (cpid == mongoData[i].candy_producers_id) {
                     foundId = i
                 }
             }
-        
-            if(foundId != undefined){
+
+            if (foundId != undefined) {
                 mongoData[foundId].candy_producers_id = cpid
                 mongoData[foundId].amount++
             } else {
@@ -272,7 +287,7 @@
                 mongoData[foundId].amount--
                 socket.emit('removeCandyFromEgg', candyId, mongoData, mongoId)
             }
-            
+
         }
 
         // function switchEgg(){
