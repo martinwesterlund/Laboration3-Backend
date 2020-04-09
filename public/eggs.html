@@ -109,6 +109,7 @@
                  
                 } else {
                     h1.innerHTML = "Här har du dina aktuella påskägg"
+                    
                     createList(egg)
                 }
                
@@ -140,7 +141,9 @@
         }
 
         function delEgg(id) {
-
+            let bodyElement = document.getElementsByTagName('body')[0]
+            bodyElement.style.opacity = "0.2"
+            bodyElement.style.pointerEvents = "none"
             console.log(id)
 
             socket.emit("deleteEgg", id)
