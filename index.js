@@ -86,9 +86,10 @@ io.on('connection', (socket) => {
         functions_customer.getAllEggs(socket, id)
     })
 
-    socket.on('showEgg', (id) => {
-        functions_customer.getAllCandy(socket, id, io)
-        
+    socket.on('showEgg', (producerId, category, sortBy, mongoId) => {
+        console.log(`PId= ${producerId} category= ${category} sortBy= ${sortBy} mongoId = ${mongoId}`)
+        // functions_customer.getAllCandy(socket, id, io)
+        functions_customer.getFilteredList(socket, producerId, category, sortBy, mongoId, io)
     })
     socket.on('getFilteredCandyList', (producerId, category, sortBy, mongoId) => {
         functions_customer.getFilteredList(socket, producerId, category, sortBy, mongoId, io)

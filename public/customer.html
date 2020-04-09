@@ -54,8 +54,10 @@
 
                 if (session !== null) {
                     console.log("we are here")
-
-                    socket.emit('showEgg', sessionStorage.getItem('mongoId'))
+                    let producerId = document.getElementById('producer').value
+                    let category = document.getElementById('category').value
+                    let sortBy = document.getElementById('sortBy').value
+                    socket.emit('showEgg', producerId, category, sortBy, sessionStorage.getItem('mongoId'))
 
 
 
@@ -81,8 +83,10 @@
             })
 
             socket.on('updateCandyList', (mongoId) => {
-                
-                socket.emit('showEgg', sessionStorage.getItem('mongoId'))
+                let producerId = document.getElementById('producer').value
+                    let category = document.getElementById('category').value
+                    let sortBy = document.getElementById('sortBy').value
+                    socket.emit('showEgg', producerId, category, sortBy, sessionStorage.getItem('mongoId'))
             })
 
             socket.on('showFilteredList', (filteredData) => {
