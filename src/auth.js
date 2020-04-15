@@ -2,12 +2,35 @@
 const pool = require('../sql/connectionPool.js')
 
 
+// Logga in antingen costumer eller producer, enda skillnaden är SQL-frågan, i övrigt anropas samma kod.
 
+async function loginCustomer(loginData, socket) {
+    try {
+        const sqlQuery = `SELECT * FROM customers WHERE 1 `
+        let data = await login(loginData, sqlQuery)
+
+        socket.emit('LoggedInAsCustomer', data)
+    } catch (err) {
+        console.log(err)
+        socket.emit('LoggedInAsCustomer', err)
+    }
+
+}
+async function loginProducer(loginData, socket) {
+    try {
+        const sqlQuery = `SELECT * FROM producers WHERE 1 `
+        let data = await login(loginData, sqlQuery)
+        socket.emit('LoggedInAsProducer', data)
+    } catch (err) {
+        console.log(err)
+        socket.emit('LoggedInAsProducer', err)
+    }
+
+}
 
 
 async function login(loginData, sqlQuery){
 
-    
     let userDetails = {}
     return new Promise((resolve, reject) => {
         
@@ -49,33 +72,4 @@ async function login(loginData, sqlQuery){
 
 }
 
-
-async function loginCustomer(loginData, socket) {
-    try {
-        const sqlQuery = `SELECT * FROM customers WHERE 1 `
-        let data = await login(loginData, sqlQuery)
-        console.log(data)
-
-        socket.emit('LoggedInAsCustomer', data)
-    } catch (err) {
-        console.log(err)
-        socket.emit('LoggedInAsCustomer', err)
-    }
-
-}
-async function loginProducer(loginData, socket) {
-    try {
-        const sqlQuery = `SELECT * FROM producers WHERE 1 `
-        let data = await login(loginData, sqlQuery)
-        console.log(data)
-        socket.emit('LoggedInAsProducer', data)
-    } catch (err) {
-        console.log(err)
-        socket.emit('LoggedInAsProducer', err)
-    }
-
-}
-
-
-
-module.exports = {loginCustomer, loginProducer}
+module.exports = { loginCustomer, loginProducer }

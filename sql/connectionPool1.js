@@ -1,6 +1,6 @@
 const mysql = require('mysql')
 
-
+// Skapa en ny connection-pool
 let pool = mysql.createPool({
     connectionLimit: 5,
     host: 'remotemysql.com',

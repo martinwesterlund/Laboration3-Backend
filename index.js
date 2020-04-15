@@ -20,7 +20,6 @@ app.use(express.urlencoded({
 
 app.use('/eggs', easterEggs.router)
 app.use('/producer', candy_producers.router)
-app.use('/customer', customers_eggs.router)
 app.use('/', candy_producers.router)
 
 //Socket stuff
