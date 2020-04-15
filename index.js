@@ -91,13 +91,15 @@ io.on('connection', (socket) => {
         functions_customer.getFilteredList(socket, producerId, category, sortBy, mongoId, io)
     })
 
+    socket.on('removeCandyFromEgg', (candyId, candy, mongoId) => {
+        functions_customer.removeCandyFromEgg(socket, candyId, candy, mongoId, io)
+    })
+    
     socket.on('showEgg', (producerId, category, sortBy, mongoId) => {
         functions_customer.getFilteredList(socket, producerId, category, sortBy, mongoId, io)
     })
 
-    socket.on('removeCandyFromEgg', (candyId, candy, mongoId) => {
-        functions_customer.removeCandyFromEgg(socket, candyId, candy, mongoId, io)
-    })
+    
 
     // Authentication stuff
 
