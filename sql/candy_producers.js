@@ -6,6 +6,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const router = express.Router()
 
+// Hämta alla godisar för en producent
 
 async function getProducersCandy(pId, category, sortBy) {
     return new Promise((resolve, reject) => {
@@ -53,6 +54,8 @@ async function getProducersCandy(pId, category, sortBy) {
     })
 }
 
+// Hämta filtrerade godisar från SQL-databasen 
+
 async function getFilteredCandy(mongoData, id, category, sortBy) {
     let candyData = {}
     candyData.mongo = mongoData
@@ -62,6 +65,7 @@ async function getFilteredCandy(mongoData, id, category, sortBy) {
 
 }
 
+// Hämtar en filtrerad lista med godis.
 async function getPivotCandy(mongoData, sortBy) {
     let candyData = {}
     if (mongoData) {
@@ -73,6 +77,7 @@ async function getPivotCandy(mongoData, sortBy) {
     return candyData
 
 }
+// Hämta alla godisar för en konsument 
 
 async function getSqlCandy(sortBy) {
     return new Promise((resolve, reject) => {
@@ -106,6 +111,23 @@ async function getSqlCandy(sortBy) {
     })
 }
 
+// Öka lagersaldot på en godis.
+async function addToBalance(candyID, amount) {
+    return new Promise((resolve, reject) => {
+        pool((err, connection) => {
+
+            connection.query(
+                `UPDATE candy_producers SET balance = balance + ${amount}
+                WHERE candy_id = ${candyID}`, (error, result, fields) => {
+                connection.release()
+                if (error) throw reject(error)
+                resolve(true)
+            });
+
+        })
+    })
+}
+// Minska lagersaldot på en godis.
 async function removeFromBalance(candyID, amount) {
     return new Promise((resolve, reject) => {
         pool((err, connection) => {
@@ -121,7 +143,7 @@ async function removeFromBalance(candyID, amount) {
         })
     })
 }
-
+// Änvänds när man gör ett autogenererat ägg. Minskar saldot på alla de godisar som autofunktionen har lägg till.
 async function removeFromBalanceMultiple(candyData) {
     return new Promise((resolve, reject) => {
         pool((err, connection) => {
@@ -162,24 +184,8 @@ async function removeFromBalanceMultiple(candyData) {
     })
 }
 
-async function addToBalance(candyID, amount) {
-    return new Promise((resolve, reject) => {
-        pool((err, connection) => {
 
-            connection.query(
-                `UPDATE candy_producers SET balance = balance + ${amount}
-                WHERE candy_id = ${candyID}`, (error, result, fields) => {
-                connection.release()
-                if (error) throw reject(error)
-                resolve(true)
-            });
-
-        })
-    })
-}
-
-
-
+// Lägg till godis i SQL-databasen
 async function addNewCandySort(newCandyData) {
     return new Promise((resolve, reject) => {
         pool((err, connection) => {
@@ -200,7 +206,7 @@ async function addNewCandySort(newCandyData) {
         })
     })
 }
-
+// Ta bort godis i SQL-databasen
 async function deleteCandySort(id) {
     return new Promise((resolve, reject) => {
         pool((err, connection) => {
@@ -219,6 +225,8 @@ async function deleteCandySort(id) {
         })
     })
 }
+
+// Uppdatera godissort i SQL-databasen
 async function updateCandySort(candyInfo) {
     return new Promise((resolve, reject) => {
         pool((err, connection) => {
@@ -240,6 +248,7 @@ async function updateCandySort(candyInfo) {
     })
 }
 
+// Hämta IDn för godis i SQL-databasen
 async function getAllCandyIds() {
     return new Promise((resolve, reject) => {
         pool((err, connection) => {
@@ -253,29 +262,8 @@ async function getAllCandyIds() {
 }
 
 
-
-// async function getAllCandy(mongoData) {
-
-//     // console.log("från async: " + mongoData)
-//     return new Promise((resolve, reject) => {
-//         pool((err, connection) => {
-//             connection.query(
-//                 `SELECT candy.id AS ID, candy.name AS "Candy", candy.category AS "Category", candy.color AS "Color", producers.name as "Producer", candy_producers.price_per_unit AS "Price" 
-//                 FROM candy
-//                 LEFT JOIN candy_producers ON candy.id = candy_producers.candy_id
-//                 LEFT JOIN producers on producers.id = candy_producers.producer_id
-//                 WHERE 1`, (error, result, fields) => {
-//                 connection.release()
-//                 if (error) throw reject(error)
-//                 resolve(result)
-//             });
-
-//         })
-//     })
-// }
-
 // ------------------------- Candy table ---------------------------------
-
+// Serverar HTML-filerna 
 
 router.route('/producer')
     .get((req, res) => {

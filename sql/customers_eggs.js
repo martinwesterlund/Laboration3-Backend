@@ -1,12 +1,8 @@
 // Add connection details
 const pool = require('./connectionPool.js')
 
-// Fix Express 
-const express = require('express')
-const bodyParser = require('body-parser')
-const router = express.Router()
 
-
+// Hämta ägg från SQL-databasen
 async function getEggsSql(eggdata) {
 
     let data = []
@@ -62,7 +58,7 @@ async function getEggsSqlQuery(eggdata, i, q) {
 }
     
 
-// Get MongoID:s for all eggs with customer id of *
+// Hämta alla MongoID från SQL-Databasen
 
 async function getMongoIds(id) {
     let data = []
@@ -90,6 +86,7 @@ async function getMongoIds(id) {
     })
 }
     
+// Skapa nytt ägg i SQL-databasen
 async function createNewEgg(eggInfo) {
  
     return new Promise((resolve, reject) => {
@@ -109,6 +106,7 @@ async function createNewEgg(eggInfo) {
     })
 }
 
+// Ta bort Ägg i SQL-databasen
 async function deleteEgg(id) {
     return new Promise((resolve, reject) => {
         pool((err, connection) => {
@@ -122,4 +120,4 @@ async function deleteEgg(id) {
 }
 
 
-module.exports = {router, getEggsSql, getMongoIds, createNewEgg, deleteEgg}
+module.exports = {getEggsSql, getMongoIds, createNewEgg, deleteEgg}
