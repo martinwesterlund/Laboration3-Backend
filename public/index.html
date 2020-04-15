@@ -8,68 +8,56 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             socket = io('http://localhost:8081')
+
             socket.on('hello', (data) => {
                 console.log('Connected to server')
                 sessionStorage.removeItem('customerLoggedIn')
                 sessionStorage.removeItem('producerLoggedIn')
             })
-            socket.on('LoggedInAsCustomer', (data) => {
-                
-                console.log(data)
-                if ( data.loggedIn ) {
 
+            socket.on('LoggedInAsCustomer', (data) => {
+                if ( data.loggedIn ) {
                     sessionStorage.setItem('customerLoggedIn', data.id)
                     window.location.href = 'http://localhost:8081/eggs/'
-                
                 } else {
-
-                    alert("Fel användarnamn eller lösenord")
-
+                    alert("Wrong username or password!")
                 }
-
             })
+
             socket.on('LoggedInAsProducer', (data) => {
                 console.log(data)
                 if ( data.loggedIn ){
 
                 sessionStorage.setItem('producerLoggedIn', data.id)
                 window.location.href = 'http://localhost:8081/producer/'
-
                 } else {
-
-                    alert("Fel användarnamn eller lösenord")
-
+                    alert("Wrong username or password!")
                 }
-
             })
         })
         
         function loginCustomer() {
-
           let loginData = {}
           loginData.username =  document.getElementById("userNameCustomer").value
           loginData.password =  document.getElementById("passwordCustomer").value
-          console.log(loginData)
-
           socket.emit('loginCustomer', loginData)
         }
+
         function loginProducer() {
-        
           let loginData = {}
           loginData.username =  document.getElementById("userNameProducer").value
           loginData.password =  document.getElementById("passwordProducer").value
-          console.log(loginData)
           socket.emit('loginProducer', loginData)
         }
+
     </script>
 </head>
 <body>
-    <h1>Hej och välkommen till påskäggsköparsidan!</h1>
-    <h2>Logga in och gör nått vettigt med ditt liv!</h2>
+    <h1>Welcome to the easter egg candy shop!</h1>
+    <h2>Please login and do something useful in your life.</h2>
     
     <section>
         <h3>Log in as a customer</h3>
-
         Username: <input type="text" id="userNameCustomer"><br><br>
         Password : <input type="password" id="passwordCustomer"><br><br>
         <input type="button" onclick="loginCustomer()" value="Submit">
@@ -78,11 +66,9 @@
 
     <section>
         <h3>Log in as a producer</h3>
-
         Username: <input type="text" id="userNameProducer"><br><br>
         Password : <input type="password" id="passwordProducer"><br><br>
         <input type="button" onclick="loginProducer()" value="Submit">
-
     </section>
 
 </body>
