@@ -41,7 +41,7 @@
             }
         }
     </style>
-    <title>Välkommen till påskäggsköparsidan!</title>
+    <title>Welcome to the easter candy shop!</title>
     <script src="/socket.io/socket.io.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -49,18 +49,12 @@
 
             socket.on('onConnection', (data) => {
                 let session = sessionStorage.getItem('customerLoggedIn')
-                console.log("at costumer site")
-
 
                 if (session !== null) {
-                    console.log("we are here")
                     let producerId = document.getElementById('producer').value
                     let category = document.getElementById('category').value
                     let sortBy = document.getElementById('sortBy').value
                     socket.emit('showEgg', producerId, category, sortBy, sessionStorage.getItem('mongoId'))
-
-
-
                 } else {
                     let candyList = document.getElementById('candyList')
                     let load = document.getElementById('loader')
@@ -71,20 +65,20 @@
             })
 
             socket.on('newDeal', (data) => {
-
                 alert(data)
-
             })
 
             socket.on('showAllCandy', (candyData, sortBy) => {
-                console.log('Connected to server from Customer page2')
                 createList(candyData, sortBy)
+            })
+
+            socket.on('showFilteredList', (filteredData) => {
+                createList(filteredData)
             })
 
             socket.on('showTotalPrice', (totalEggPrice) => {
                 let eggPrice = document.getElementById('eggPrice')
                 eggPrice.innerHTML = `Totalt pris: ${totalEggPrice} kr`
-
             })
 
             socket.on('updateCandyList', (mongoId) => {
@@ -93,17 +87,12 @@
                 let sortBy = document.getElementById('sortBy').value
                 socket.emit('showEgg', producerId, category, sortBy, sessionStorage.getItem('mongoId'))
             })
-
-            socket.on('showFilteredList', (filteredData) => {
-
-                console.log('Connected to server from Customer page')
-                createList(filteredData)
-            })
-
         })
+
         function goBack() {
             window.location.href = 'http://localhost:8081/eggs'
         }
+
         function logOut() {
             try {
                 sessionStorage.removeItem('customerLoggedIn')
@@ -112,38 +101,21 @@
                 console.log(err)
             }
         }
-        // function showOnlyOneEgg(id) {
-        //     socket.emit('showEgg', '5e7b2a4c30cc881860bee94f')
-        // }
 
         function createList(candyData, sortBy) {
-            console.log(candyData.mongo)// Innehåller alla godisar (candy_producers_id + amount)
-            console.log(candyData.sql) // Innehåller alla godisar som finns (candy_id AS id, name, category...)
             let candyList = document.getElementById('candyList')
             candyList.innerHTML = ''
-
             let eggNames = sessionStorage.getItem('eggNames')
             let mongoIds = sessionStorage.getItem('mongoIds')
 
-
-
-
-
-            // totalEggPrice = (candyData.sql[i].price * candyData.mongo[j].amount) + totalEggPrice
-
-            console.log('Priset är ' + eggPrice)
-
             mongoId = sessionStorage.getItem('mongoId')
-
-            console.log(eggNames)
-            console.log(mongoIds)
 
             eggNames = eggNames.split('##')
             mongoIds = mongoIds.split('##')
 
-
             let currentEgg = document.getElementById('currentEgg')
             currentEgg.innerHTML = ''
+
             for (let i = 0; i < eggNames.length - 1; i++) {
                 let option = document.createElement('option')
                 option.setAttribute('value', mongoIds[i])
@@ -151,27 +123,17 @@
                 currentEgg.appendChild(option)
                 if (mongoIds[i] == mongoId) {
                     currentEgg.selectedIndex = i
-                    console.log(currentEgg.selectedIndex)
                 }
             }
-
-           
-
-
-            // document.getElementById('eggPrice').innerHTML = sessionStorage.getItem('currentEggPrice') 
 
             let separation = document.createElement('div')
             separation.innerHTML = "-----------------------------------"
             candyList.appendChild(separation)
 
-
             if (candyData.sql.length < 1) {
                 candyList.innerHTML = 'No candies found with this filter'
                 document.getElementById('loader').innerHTML = ''
             } else {
-
-
-
                 for (let i = 0; i < candyData.sql.length; i++) {
 
                     //En godiswrapper
@@ -185,17 +147,17 @@
 
                     //Kategori
                     let category = document.createElement('div')
-                    category.innerHTML = candyData.sql[i].category
+                    category.innerHTML = `Category: ${candyData.sql[i].category}`
                     oneCandy.appendChild(category)
 
                     //Färg
                     let color = document.createElement('div')
-                    color.innerHTML = candyData.sql[i].color
+                    color.innerHTML = `Color: ${candyData.sql[i].color}`
                     oneCandy.appendChild(color)
 
                     //Producent
                     let producer = document.createElement('div')
-                    producer.innerHTML = candyData.sql[i].producer
+                    producer.innerHTML = `Producer: ${candyData.sql[i].producer}`
                     oneCandy.appendChild(producer)
 
                     //Price
@@ -215,16 +177,11 @@
                     let amount = document.createElement('span')
                     amount.innerHTML = '0'
                     for (let j = 0; j < candyData.mongo.length; j++) {
-
                         if (candyData.sql[i].cpid == candyData.mongo[j].candy_producers_id) {
                             amount.innerHTML = candyData.mongo[j].amount
-                            // totalEggPrice = (candyData.sql[i].price * candyData.mongo[j].amount) + totalEggPrice
                         }
-
                     }
                     oneCandy.appendChild(amount)
-
-
 
                     //Lägg till +
                     let add = document.createElement('button')
@@ -253,7 +210,6 @@
         function addCandy(candyId, mongoData, cpid) {
 
             let mongoId = sessionStorage.getItem('mongoId')
-
             let foundId
 
             for (let i = 0; i < mongoData.length; i++) {
@@ -268,13 +224,11 @@
             } else {
                 mongoData.push({ "candy_producers_id": cpid, "amount": 1 })
             }
-
             socket.emit('addCandyToEgg', candyId, mongoData, mongoId)
         }
 
         function removeCandy(candyId, mongoData, cpid) {
             let mongoId = sessionStorage.getItem('mongoId')
-
             let foundId
             for (let i = 0; i < mongoData.length; i++) {
                 if (cpid == mongoData[i].candy_producers_id) {
@@ -287,16 +241,7 @@
                 mongoData[foundId].amount--
                 socket.emit('removeCandyFromEgg', candyId, mongoData, mongoId)
             }
-
         }
-
-        // function switchEgg(){
-        //     mongoId = document.getElementById('currentEgg').value
-        //     sessionStorage.setItem('mongoId', mongoId)
-
-        //     socket.emit('showEgg', mongoId)
-
-        // }
 
         function updateList() {
             mongoId = document.getElementById('currentEgg').value
@@ -312,7 +257,7 @@
 </head>
 
 <body>
-    <h1>Hej och välkommen till customer-sidan!</h1>
+    <h1>Hello and welcome to customer page!</h1>
     <h2 id='customerName'></h2>
 
     <select id="producer" onchange="updateList()">
@@ -339,7 +284,7 @@
         <option value="price2">Price - highest first</option>
     </select>
     <div>-----------------------------------</div>
-    <span>Valt ägg: </span>
+    <span>Current egg: </span>
     <select id="currentEgg" onchange='updateList()'></select>
     <span id="eggPrice"></span>
     <div id="loader">
@@ -347,8 +292,8 @@
     </div>
     <section id='candyList'></section>
 
-    <input type="button" onclick="goBack()" value="Tillbaka till dina egg">
-    <input type="button" onclick="logOut()" value="Logout!">
+    <input type="button" onclick="goBack()" value="Go back to your eggs">
+    <input type="button" onclick="logOut()" value="Log out!">
 </body>
 
 </html>
