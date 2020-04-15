@@ -179,6 +179,13 @@
                 
                 })
                 oneEgg.appendChild(getanEgg)
+
+                //Äggavskiljare
+                let separation = document.createElement('div')
+                    separation.innerHTML = "-----------------------------------"
+                    oneEgg.appendChild(separation)
+
+                
                 document.getElementById('loader').innerHTML = ''
                 document.getElementById("egg").appendChild(oneEgg)
             }

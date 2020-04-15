@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tillverkarsidan</title>
+    <title>Welcome to the easter egg candy shop! - Producer</title>
     <style>
         /* The Modal */
         .modal {
@@ -104,17 +104,17 @@
 
                 //Kategori
                 let category = document.createElement('div')
-                category.innerHTML = candies[i].category
+                category.innerHTML = `Category: ${candies[i].category}`
                 oneCandy.appendChild(category)
 
                 //Färg
                 let color = document.createElement('div')
-                color.innerHTML = candies[i].color
+                color.innerHTML = `Color: ${candies[i].color}`
                 oneCandy.appendChild(color)
 
                 //Pris
                 let price = document.createElement('div')
-                price.innerHTML = candies[i].price
+                price.innerHTML = `Price: ${candies[i].price}`
                 oneCandy.appendChild(price)
 
                 //Saldo
@@ -126,7 +126,7 @@
                     extra.innerHTML = "Time to add some candy!! Only " +  candies[i].balance + " left!"
                     oneCandy.appendChild(extra)
                 } else {
-                    balance.innerHTML = candies[i].balance
+                    balance.innerHTML = `Balance: ${candies[i].balance}`
                 }
                 oneCandy.appendChild(balance)
                 

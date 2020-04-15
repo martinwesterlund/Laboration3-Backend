@@ -41,7 +41,7 @@
             }
         }
     </style>
-    <title>Welcome to the easter candy shop!</title>
+    <title>Welcome to the easter egg candy shop! - Customer</title>
     <script src="/socket.io/socket.io.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -78,7 +78,7 @@
 
             socket.on('showTotalPrice', (totalEggPrice) => {
                 let eggPrice = document.getElementById('eggPrice')
-                eggPrice.innerHTML = `Totalt pris: ${totalEggPrice} kr`
+                eggPrice.innerHTML = `Total price: ${totalEggPrice} kr`
             })
 
             socket.on('updateCandyList', (mongoId) => {
