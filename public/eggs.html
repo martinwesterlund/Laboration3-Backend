@@ -66,7 +66,6 @@
             socket = io('http://localhost:8081')
             socket.on('onConnection', (data) => {
                 let id = sessionStorage.getItem('customerLoggedIn')
-                console.log(id)
 
                 if ( id > 0 ){
                     getEggs(id)
@@ -83,14 +82,12 @@
                 alert(data)
             })
 
-            socket.on('LoggedInAsCustomer', (data) => {
-                console.log("data: " + data) 
+            socket.on('LoggedInAsCustomer', (data) => { 
                 window.location.href = 'http://localhost:8081/customer'
             })
 
             // Gets one egg 
             socket.on('Eggs', (egg) => {
-                console.log('Eggs incoming!!')
                 if (egg === "You have no eggs") {
                     let eggSection = document.getElementById('egg')
                     let load = document.getElementById('loader')
