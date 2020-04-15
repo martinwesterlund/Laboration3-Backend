@@ -2,9 +2,12 @@ const express = require('express')
 const router = express.Router()
 const mongodbClient = require('mongodb').MongoClient
 const bodyParser = require('body-parser')
+const loginDetails = require('../src/mongo_user.js')
 
-let ObjectId = require('mongodb').ObjectId // Behövs för att söka efter _id.
-let mongoUrl = `mongodb+srv://labb3admin:labb3@labb3-r7qod.mongodb.net/test`
+let ObjectId = require('mongodb').ObjectId
+
+
+let mongoUrl = `mongodb+srv://${loginDetails.user}:${loginDetails.password}@labb3-r7qod.mongodb.net/test`
 
 
 
