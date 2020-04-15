@@ -38,15 +38,9 @@
             socket = io('http://localhost:8081')
             
             socket.on('onConnection', (data) => {
-
-
                 let id = sessionStorage.getItem('producerLoggedIn')
-
                 if (id > 0 ){
-                    console.log("we are here")
-
                     getList(id)
-
                 } else {
                     let name = document.getElementById('producerName')
                     let candy = document.getElementById('producerCandies')
@@ -54,30 +48,19 @@
                     name.remove()  
                     candy.remove()                    
                 }
-                
             })
 
             socket.on('updateCandyList', (notUsed) => {
-                let id = sessionStorage.getItem('producerLoggedIn')
-                console.log(id)
-                
+                let id = sessionStorage.getItem('producerLoggedIn')                
                 socket.emit('getProducerView', id)
             })
 
             socket.on('onProducerEnter', (candies) => {
-                console.log('Connected to server from Producer page')
                 candiesLocal = candies
                 createList(candies)
             })
         })
-        function logOut(){
-            try{
-                sessionStorage.removeItem('producerLoggedIn')
-                window.location.href = 'http://localhost:8081/'
-            } catch (err) {
-                console.log(err)
-            }
-        }
+
         function addNewCandySort() {
             let newCandyData = {}
             newCandyData.id = sessionStorage.getItem('producerLoggedIn')
@@ -86,103 +69,7 @@
             newCandyData.color = document.getElementById('color').value
             newCandyData.amount = document.getElementById('amount').value
             newCandyData.price = document.getElementById('price').value
-            console.log(newCandyData)
-
             socket.emit('addnewCandySort', newCandyData)
-        }
-
-        function getList(id){
-            socket.emit('getProducerView', id)
-        }
-        function deleteCandy(candyId){
-            let id = {}
-            id.candy = candyId
-            id.producer = sessionStorage.getItem('producerLoggedIn')
-            console.log(id)
-            socket.emit('deleteCandySort', id)
-        }
-        let candyInfo = {}
-        function updateCandy(candyId){
-            
-            candyInfo.candyid = candyId
-            candyInfo.producerid = sessionStorage.getItem('producerLoggedIn')
-            let modal = document.getElementById("updateModal")
-
-            for(let i = 0; i < candiesLocal.length; i++ ){
-
-                if ( candyId === candiesLocal[i].id) {
-
-                    candyInfo.name = candiesLocal[i].name
-                    candyInfo.category = candiesLocal[i].category
-                    candyInfo.color = candiesLocal[i].color
-                    candyInfo.price = candiesLocal[i].price
-                    candyInfo.balance = candiesLocal[i].balance
-                    break
-                }
-            }
-            document.getElementById('nameModal').value =  candyInfo.name
-            document.getElementById('categoryModal').value =  candyInfo.category
-            document.getElementById('colorModal').value =  candyInfo.color
-            document.getElementById('priceModal').value =  candyInfo.price
-            document.getElementById('balanceModal').value =  candyInfo.balance
-            console.log(candyInfo)
-            modal.style.display = "block"
-
-        }
-
-        function updateCandyModal(candyinfo){
-            let modal = document.getElementById("updateModal")
-            candyInfo.name = document.getElementById('nameModal').value 
-            candyInfo.category = document.getElementById('categoryModal').value
-            candyInfo.color = document.getElementById('colorModal').value
-            candyInfo.price = document.getElementById('priceModal').value
-            candyInfo.balance = document.getElementById('balanceModal').value
-
-            socket.emit('updateCandySort', candyInfo)
-            modal.style.display = "none"
-
-        }
-        
-
-        window.onclick = (event) => {
-            let modal = document.getElementById("updateModal")
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
-        function openDealModal(){
-            let modal = document.getElementById("dealModal")
-            let text = document.getElementById("dealH3Text")
-            let input = document.getElementById("dealTextModal")
-            input.value = ''
-            text.innerHTML = "Skicka ett erbjudade tiil dina potentiella kunder!"
-            modal.style.display = "block"
-
-        }
-
-        function sendDealModal(){
-            let modal = document.getElementById("dealModal")
-            let prodName = document.getElementById("producerName")
-            let data = document.getElementById("dealTextModal").value
-            let text = document.getElementById("dealH3Text")
-            text.innerHTML = "Ditt erbjudade har skickats!"
-
-            let deal = "Erbjudande från " + prodName.innerHTML + "\n \n" + data
-            
-            socket.emit('deal', deal)
-
-            setTimeout(() =>{
-                modal.style.display = "none"
-            }, 2000)
-            
-
-        }
-
-        window.onclick = (event) => {
-            let modal = document.getElementById("dealModal")
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
         }
 
         function createList(candies) {
@@ -236,7 +123,7 @@
                     balance.style.color = "red"
                     let extra = document.createElement('p')
                     extra.style.color = "red"
-                    extra.innerHTML = "Dags att fylla på med nytt godis!! Det är bara " +  candies[i].balance + " kvar!"
+                    extra.innerHTML = "Time to add some candy!! Only " +  candies[i].balance + " left!"
                     oneCandy.appendChild(extra)
                 } else {
                     balance.innerHTML = candies[i].balance
@@ -247,21 +134,115 @@
                 let separation = document.createElement('div')
                 separation.innerHTML = "-----------------------------------"
                 oneCandy.appendChild(separation)
-
                 producer.appendChild(oneCandy)
             }
-
         }
-    </script>
+    
+        function deleteCandy(candyId){
+            let id = {}
+            id.candy = candyId
+            id.producer = sessionStorage.getItem('producerLoggedIn')
+            socket.emit('deleteCandySort', id)
+        }
+
+        function getList(id){
+            socket.emit('getProducerView', id)
+        }
+
+        function logOut(){
+            try{
+                sessionStorage.removeItem('producerLoggedIn')
+                window.location.href = 'http://localhost:8081/'
+            } catch (err) {
+                console.log(err)
+            }
+        }
+
+        function openDealModal(){
+            let modal = document.getElementById("dealModal")
+            let text = document.getElementById("dealH3Text")
+            let input = document.getElementById("dealTextModal")
+            input.value = ''
+            text.innerHTML = "Send a deal to potential customers!"
+            modal.style.display = "block"
+        }
+       
+        function sendDealModal(){
+            let modal = document.getElementById("dealModal")
+            let prodName = document.getElementById("producerName")
+            let data = document.getElementById("dealTextModal").value
+            let text = document.getElementById("dealH3Text")
+            text.innerHTML = "Your deal has been sent!"
+            let deal = "Deal from " + prodName.innerHTML + "\n \n" + data
+            
+            socket.emit('deal', deal)
+
+            setTimeout(() =>{
+                modal.style.display = "none"
+            }, 2000)
+        }
+
+        function updateCandy(candyId){
+            let candyInfo = {}
+            candyInfo.candyid = candyId
+            candyInfo.producerid = sessionStorage.getItem('producerLoggedIn')
+            let modal = document.getElementById("updateModal")
+
+            for(let i = 0; i < candiesLocal.length; i++ ){
+
+                if ( candyId === candiesLocal[i].id) {
+                    candyInfo.name = candiesLocal[i].name
+                    candyInfo.category = candiesLocal[i].category
+                    candyInfo.color = candiesLocal[i].color
+                    candyInfo.price = candiesLocal[i].price
+                    candyInfo.balance = candiesLocal[i].balance
+                    break
+                }
+            }
+
+            document.getElementById('nameModal').value =  candyInfo.name
+            document.getElementById('categoryModal').value =  candyInfo.category
+            document.getElementById('colorModal').value =  candyInfo.color
+            document.getElementById('priceModal').value =  candyInfo.price
+            document.getElementById('balanceModal').value =  candyInfo.balance
+            modal.style.display = "block"
+        }
+
+        function updateCandyModal(candyinfo){
+            let modal = document.getElementById("updateModal")
+            candyInfo.name = document.getElementById('nameModal').value 
+            candyInfo.category = document.getElementById('categoryModal').value
+            candyInfo.color = document.getElementById('colorModal').value
+            candyInfo.price = document.getElementById('priceModal').value
+            candyInfo.balance = document.getElementById('balanceModal').value
+            socket.emit('updateCandySort', candyInfo)
+            modal.style.display = "none"
+        }
+        
+        window.onclick = (event) => {
+            let modal = document.getElementById("updateModal")
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+        
+        window.onclick = (event) => {
+            let modal = document.getElementById("dealModal")
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        </script>
 </head>
 
 <body>
-    <h1 id= "h1">Hej och välkommen till producentsidan</h1>
+    <h1 id= "h1">Hello and welcome to the producer page</h1>
     <h2 id='producerName'></h2>
     <section id="producerCandies"></section>
     <section id='addNewCandySort'>
-        <h3>Lägg till en ny godis!</h3>
-        <input type="text" id="name" value='namn'>
+        <h3>Add new candy!</h3>
+        <input type="text" id="name" value='Name'>
         <select type="text" id="category" value=''>
             <option value="chocolate">Chocolate</option>
             <option value="liquorice">Liquorice</option>
@@ -281,12 +262,14 @@
             <option value="pink">pink</option>
             <option value="various">various</option>
         </select>
+        <label for="amount">Amount: </label>
         <input type="number" id="amount" value='10'>
+        <label for="price">Price per unit: </label>
         <input type="number" id="price" value='5'>
         <input type="button" onclick="addNewCandySort()" value="Add New Candy">
     </section>
     <input type="button" onclick="logOut()" value="Logout!">
-    <input type="button" onclick="openDealModal()" value="Skicka erbjudande">
+    <input type="button" onclick="openDealModal()" value="Send deal!">
 
 
     <!-- Modal för att ändra en godis, because resons -->
@@ -294,7 +277,7 @@
 
         <!-- Modal content -->
         <div class="modal-content">  
-            <h3>Uppdatera godis!</h3>
+            <h3>Update candy!</h3>
             <input type="text" id="nameModal">
             <select type="text" id="categoryModal">
                 <option value="chocolate">Chocolate</option>
@@ -315,9 +298,11 @@
                 <option value="pink">pink</option>
                 <option value="various">various</option>
             </select>
+            <label for="balanceModal">Balance: </label>
             <input type="number" id="balanceModal">
+            <label for="priceModal">Price: </label>
             <input type="number" id="priceModal">
-            <input type="button" onclick="updateCandyModal()" value="Spara">
+            <input type="button" onclick="updateCandyModal()" value="Save changes">
         </div>
       
       </div>
@@ -327,9 +312,9 @@
 
         <!-- Modal content -->
         <div class="modal-content">  
-            <h3 id="dealH3Text">Skicka ett erbjudade tiil dina potentiella kunder!</h3>
+            <h3 id="dealH3Text">Send a deal to potential customers!</h3>
             <input type="text" id="dealTextModal">
-            <input type="button" onclick="sendDealModal()" value="Skicka">
+            <input type="button" onclick="sendDealModal()" value="Send">
         </div>
       
       </div>
