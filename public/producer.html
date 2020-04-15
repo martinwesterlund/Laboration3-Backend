@@ -84,6 +84,11 @@
                 let oneCandy = document.createElement('section')
                 oneCandy.setAttribute('id', candies[i].id)
 
+                //Godisavskiljare
+                let separation1 = document.createElement('div')
+                separation1.innerHTML = "----------------------------------------------------------------------"
+                oneCandy.appendChild(separation1)
+
                 //Skapa en "ta bort godis"-knapp
                 let deleteCandy = document.createElement('button')
                 deleteCandy.innerHTML = "Delete candy"
@@ -130,9 +135,9 @@
                 oneCandy.appendChild(balance)
                 
                 //Godisavskiljare
-                let separation = document.createElement('div')
-                separation.innerHTML = "-----------------------------------"
-                oneCandy.appendChild(separation)
+                let separation2 = document.createElement('div')
+                separation2.innerHTML = "----------------------------------------------------------------------"
+                oneCandy.appendChild(separation2)
                 producer.appendChild(oneCandy)
             }
         }
