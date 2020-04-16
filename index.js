@@ -27,12 +27,12 @@ app.use('/', candy_producers.router)
 io.on('connection', (socket) => {
     socket.emit('onConnection', 'Connected to server')
 
-    if(socket.handshake.headers.referer === "http://localhost:8081/customer" ) {
+    if(socket.handshake.headers.referer === "http://localhost:8081/customer/" ) {
         socket.join('customer')
         console.log("A new connection is established, joined Customer Room")
     }
-
-    if(socket.handshake.headers.referer === "http://localhost:8081/eggs" ) {
+    console.log(socket.handshake.headers.referer)
+    if(socket.handshake.headers.referer === "http://localhost:8081/eggs/" ) {
         socket.join('customer')
         console.log("A new connection is established, joined Customer Room")
     }

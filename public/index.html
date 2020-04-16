@@ -13,6 +13,10 @@
                 console.log('Connected to server')
                 sessionStorage.removeItem('customerLoggedIn')
                 sessionStorage.removeItem('producerLoggedIn')
+                sessionStorage.removeItem('currentEggPrice')
+                sessionStorage.removeItem('mongoId')
+                sessionStorage.removeItem('mongoIds')
+                sessionStorage.removeItem('eggNames')
             })
 
             socket.on('LoggedInAsCustomer', (data) => {
