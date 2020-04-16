@@ -5,11 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-
-        .newName, .newNameSubmit{
+        .newName,
+        .newNameSubmit {
             display: none;
             /* color: blue; */
         }
+
         /* The Modal */
         .modal {
             display: none;
@@ -33,11 +34,18 @@
         }
 
         .loader {
-            border: 10px solid #f3f3f3;
-            border-radius: 50%;
-            border-top: 10px solid #3498db;
-            width: 50px;
-            height: 50px;
+            width: 125px;
+            height: 200px;
+            margin: 20px auto 30px;
+
+            -webkit-border-radius: 50%/60% 60% 40% 40%;
+            -moz-border-radius: 50%/60% 60% 40% 40%;
+            border-radius: 50%/60% 60% 40% 40%;
+
+            -webkit-box-shadow: 0px 0px 20px #D5D3D3, 0px 0px 20px #D5D3D3;
+            -moz-box-shadow: 0px 0px 20px #D5D3D3, 0px 0px 20px #D5D3D3;
+            box-shadow: 0px 0px 20px #D5D3D3, 0px 0px 20px #D5D3D3;
+            
             -webkit-animation: spin 2s linear infinite;
             /* Safari */
             animation: spin 2s linear infinite;
@@ -87,7 +95,7 @@
                 alert(data)
             })
 
-            socket.on('LoggedInAsCustomer', (data) => { 
+            socket.on('LoggedInAsCustomer', (data) => {
                 window.location.href = 'http://localhost:8081/customer/'
 
             })
@@ -210,7 +218,7 @@
                     sessionStorage.setItem('currentEggPrice', totalPriceCandy)
 
                     location.href = "http://localhost:8081/customer/"
-                
+
                 })
                 oneEgg.appendChild(getanEgg)
 
