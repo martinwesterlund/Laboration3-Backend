@@ -125,6 +125,26 @@ async function deleteEgg(id) {
     })
 }
 
+async function updateEggName(newNameData){
+    return new Promise((resolve, reject) => {
+        mongodbClient.connect(mongoUrl, {
+            useUnifiedTopology: true
+        }, (err, client) => {
+            if (err) throw err
+            let db = client.db('Laboration3')
+            if (ObjectId.isValid(newNameData.id)) {
+                
+                findAndUpdateName(db, newNameData, (result) => {
+                    client.close()
+                    resolve(true)
+                })
+            }
+
+            
+        })
+    })
+}
+
 
 
 // Hämta data i Mongo
@@ -163,6 +183,27 @@ const findAndUpdateDocument = function (db, eggId, body, callback) {
     })
 }
 
+const findAndUpdateName = function (db, newNameData, callback) {
+    const collection = db.collection('easter_eggs')
+    
+
+
+    let selectionCriteria = {
+        _id: new ObjectId(newNameData.id)
+    }
+
+    let updatedData = {
+        $set: {
+            name: newNameData.name
+        }
+    }
+
+    collection.findOneAndUpdate(selectionCriteria, updatedData, (err, docs) => {
+        if (err) throw err
+        callback(docs)
+    })
+}
+
 // Ta bort i Mongo
 const findAndDeleteDocument = function (db, eggId, callback) {
     const collection = db.collection('easter_eggs')
@@ -181,4 +222,4 @@ const findAndDeleteDocument = function (db, eggId, callback) {
 
 
 
-module.exports = { router, deleteEgg, getEggs, getEggMongo, updateEgg, createEgg }
+module.exports = { router, deleteEgg, getEggs, getEggMongo, updateEgg, createEgg, updateEggName }
