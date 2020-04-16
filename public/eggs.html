@@ -142,7 +142,7 @@
 
                 eggNames += `${eggs.mongo[i][0].name}##`
                 oneEgg.appendChild(name)
-
+                
                 if (eggs.mongo[i][0].candy.length > 1 || (eggs.mongo[i][0].candy.length === 1 && eggs.mongo[i][0].candy[0].amount > 0)){
                     for (let q = 0; q < eggs.mongo[i][0].candy.length; q++) {
 
@@ -153,8 +153,10 @@
                         totalPriceCandy = (eggs.Sql[i][q].price_per_unit * eggs.mongo[i][0].candy[q].amount) + totalPriceCandy
                         oneEgg.appendChild(candy)
                         }
-                    }
 
+                    }
+                }
+                if ( totalPriceCandy > 0 ) {
                     let totalPrice = document.createElement("div")
                     totalPrice.innerHTML = "Price for this egg: " + totalPriceCandy + " kr"
                     oneEgg.appendChild(totalPrice)
@@ -164,6 +166,7 @@
                     emptyEgg.innerHTML = "This egg is empty!"
                     oneEgg.appendChild(emptyEgg)
                 }
+                
 
                 let getanEgg = document.createElement("button")
                 getanEgg.innerHTML = "Go to egg"
