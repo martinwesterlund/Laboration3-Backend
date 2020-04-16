@@ -256,7 +256,7 @@
                     let add = document.createElement('button')
                     add.innerHTML = '+'
                     add.addEventListener('click', () => {
-                        addCandy(candyData.sql[i].id, candyData.mongo, candyData.sql[i].cpid)
+                        addCandy(candyData.sql[i].id, candyData.mongo, candyData.sql[i].cpid, candyData.sql[i].balance)
                     })
                     oneCandy.appendChild(add)
 
@@ -273,9 +273,8 @@
             }
         }
 
-        function addCandy(candyId, mongoData, cpid) {
-
-            if (document.getElementById(`balance${candyId}`).value > 0) {
+        function addCandy(candyId, mongoData, cpid, balance) {
+            if (balance > 0) {
                 let mongoId = sessionStorage.getItem('mongoId')
                 let foundId
 
@@ -295,6 +294,8 @@
             }
 
         }
+
+
 
         function removeCandy(candyId, mongoData, cpid) {
             let mongoId = sessionStorage.getItem('mongoId')
