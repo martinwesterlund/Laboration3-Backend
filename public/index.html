@@ -4,6 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Välkommen till påskäggsköparsidan!</title>
+    <style>
+        body {
+            margin-left: auto;
+            margin-right: auto;
+            width: 70%;
+
+        }
+        h1 {
+            text-align: center;
+        }
+        h2 {
+            text-align: center;
+        }
+        h3 {
+            text-align: center;
+        }
+        div {
+            text-align: center;
+        }
+
+    </style>
     <script src="/socket.io/socket.io.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -62,17 +83,22 @@
     
     <section>
         <h3>Log in as a customer</h3>
-        Username: <input type="text" id="userNameCustomer"><br><br>
-        Password : <input type="password" id="passwordCustomer"><br><br>
-        <input type="button" onclick="loginCustomer()" value="Submit">
+        <div>
+            Username: <input type="text" id="userNameCustomer"><br><br>
+            Password : <input type="password" id="passwordCustomer"><br><br>
+            <input type="button" onclick="loginCustomer()" value="Submit">
+        </div>
 
     </section>
 
     <section>
         <h3>Log in as a producer</h3>
-        Username: <input type="text" id="userNameProducer"><br><br>
-        Password : <input type="password" id="passwordProducer"><br><br>
-        <input type="button" onclick="loginProducer()" value="Submit">
+        <div>
+            Username: <input type="text" id="userNameProducer"><br><br>
+            Password : <input type="password" id="passwordProducer"><br><br>
+            <input type="button" onclick="loginProducer()" value="Submit">
+        </div>
+
     </section>
 
 </body>

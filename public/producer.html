@@ -28,6 +28,8 @@
         width: 80%; 
         }
 
+
+
     </style>
 
 
@@ -246,7 +248,9 @@
     <section id="producerCandies"></section>
     <section id='addNewCandySort'>
         <h3>Add new candy!</h3>
-        <input type="text" id="name" value='Name'>
+        <label for="name">Name: </label>
+        <input type="text" id="name" value=''> <br>
+        <label for="category">Type: </label>
         <select type="text" id="category" value=''>
             <option value="chocolate">Chocolate</option>
             <option value="liquorice">Liquorice</option>
@@ -254,7 +258,8 @@
             <option value="toffee">Toffee</option>
             <option value="bar">Bar</option>
             <option value="lollipop">Lollipop</option>
-        </select>
+        </select><br>
+        <label for="color">Color: </label>
         <select type="text" id="color" value=''>
             <option value="red">red</option>
             <option value="blue">blue</option>
@@ -265,13 +270,13 @@
             <option value="yellow">yellow</option>
             <option value="pink">pink</option>
             <option value="various">various</option>
-        </select>
+        </select><br>
         <label for="amount">Amount: </label>
-        <input type="number" id="amount" value='10'>
+        <input type="number" id="amount" value='10'><br>
         <label for="price">Price per unit: </label>
-        <input type="number" id="price" value='5'>
+        <input type="number" id="price" value='5'><br><br>
         <input type="button" onclick="addNewCandySort()" value="Add New Candy">
-    </section>
+    </section><br>
     <input type="button" onclick="logOut()" value="Logout!">
     <input type="button" onclick="openDealModal()" value="Send deal!">
 
