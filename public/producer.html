@@ -6,30 +6,110 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to the easter egg candy shop! - Producer</title>
     <style>
+        body {
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 18px;
+            background-color: lightyellow;
+        }
+
+        .top-btn{
+            font-size: 18px;
+            margin: 5px;
+            padding: 10px;
+            background-color: aliceblue;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            cursor: pointer;
+        }
+
+        .top-btn:hover {
+            background-color: rgb(158, 207, 250);
+        }
+
+        .candy {
+            border: 1px solid black;
+            margin: 10px auto;
+            padding: 10px;
+            background-color: aliceblue;
+            width: 400px;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12), 0 2px 2px rgba(0, 0, 0, 0.12),
+                0 4px 4px rgba(0, 0, 0, 0.12), 0 8px 8px rgba(0, 0, 0, 0.12),
+                0 16px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .name {
+            font-weight: bold;
+            font-size: 22px;
+            margin-top: 20px;
+        }
+
+        .balance{
+            font-weight: bold;
+        }
+
+        button {
+            font-size: 18px;
+            margin: 10px;
+            padding: 5px 20px;
+            background-color: lightyellow;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: rgb(248, 248, 168);
+        }
+
+        #addNewCandySort{
+            background-color: rgb(255, 172, 172);
+            width: 500px;
+            margin: 40px auto;
+            padding: 20px;
+            border: 1px solid black;
+            text-align: center;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12), 0 2px 2px rgba(0, 0, 0, 0.12),
+                0 4px 4px rgba(0, 0, 0, 0.12), 0 8px 8px rgba(0, 0, 0, 0.12),
+                0 16px 16px rgba(0, 0, 0, 0.12);
+
+        }
+
+        input, select{
+            width: 200px;
+            font-size: 18px;
+            margin: 5px;
+            padding: 5px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            
+        }
+
+        input{
+            max-width: 200px;
+
+        }
+
         /* The Modal */
         .modal {
-        display: none;
-        position: fixed; 
-        z-index: 1; 
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto; 
-        background-color: rgba(0,0,0,0.4); 
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
         }
 
         /* Modal Content/Box */
         .modal-content {
-        background-color: #fefefe;
-        margin: 15% auto; 
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%; 
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
         }
-
-
-
     </style>
 
 
@@ -38,22 +118,22 @@
         let candiesLocal
         document.addEventListener("DOMContentLoaded", () => {
             socket = io('http://localhost:8081')
-            
+
             socket.on('onConnection', (data) => {
                 let id = sessionStorage.getItem('producerLoggedIn')
-                if (id > 0 ){
+                if (id > 0) {
                     getList(id)
                 } else {
                     let name = document.getElementById('producerName')
                     let candy = document.getElementById('producerCandies')
                     h1.innerHTML = "Du är inte inloggad din n00b!"
-                    name.remove()  
-                    candy.remove()                    
+                    name.remove()
+                    candy.remove()
                 }
             })
 
             socket.on('updateCandyList', (notUsed) => {
-                let id = sessionStorage.getItem('producerLoggedIn')                
+                let id = sessionStorage.getItem('producerLoggedIn')
                 socket.emit('getProducerView', id)
             })
 
@@ -76,8 +156,8 @@
 
         function createList(candies) {
             let producer = document.getElementById('producerCandies')
-            while ( producer.firstChild ) {
-                producer.removeChild( producer.lastChild )
+            while (producer.firstChild) {
+                producer.removeChild(producer.lastChild)
             }
             producerName.innerHTML = candies[0].producer
             for (let i = 0; i < candies.length; i++) {
@@ -85,11 +165,13 @@
                 //Skapa en sektion per godissort
                 let oneCandy = document.createElement('section')
                 oneCandy.setAttribute('id', candies[i].id)
+                oneCandy.setAttribute('class', 'candy')
 
-                //Godisavskiljare
-                let separation1 = document.createElement('div')
-                separation1.innerHTML = "----------------------------------------------------------------------"
-                oneCandy.appendChild(separation1)
+                //Namn på godissorten
+                let candy = document.createElement('div')
+                candy.innerHTML = candies[i].name
+                candy.setAttribute('class', 'name')
+                oneCandy.appendChild(candy)
 
                 //Skapa en "ta bort godis"-knapp
                 let deleteCandy = document.createElement('button')
@@ -97,16 +179,11 @@
                 deleteCandy.setAttribute('onclick', `deleteCandy(${candies[i].id})`)
                 oneCandy.appendChild(deleteCandy)
 
-                 //Skapa en "updatera godis"-knapp
+                //Skapa en "updatera godis"-knapp
                 let updateCandy = document.createElement('button')
                 updateCandy.innerHTML = "Update candy"
                 updateCandy.setAttribute('onclick', `updateCandy(${candies[i].id})`)
                 oneCandy.appendChild(updateCandy)
-                                 
-                //Namn på godissorten
-                let candy = document.createElement('div')
-                candy.innerHTML = candies[i].name
-                oneCandy.appendChild(candy)
 
                 //Kategori
                 let category = document.createElement('div')
@@ -125,38 +202,36 @@
 
                 //Saldo
                 let balance = document.createElement('div')
-                if ( candies[i].balance < 60 ) {
+                if (candies[i].balance < 60) {
                     balance.style.color = "red"
                     let extra = document.createElement('p')
                     extra.style.color = "red"
-                    extra.innerHTML = "Time to add some candy!! Only " +  candies[i].balance + " left!"
+                    extra.innerHTML = "Time to add some candy!! Only " + candies[i].balance + " left!"
+                    extra.setAttribute('class', 'balance')
                     oneCandy.appendChild(extra)
                 } else {
                     balance.innerHTML = `Balance: ${candies[i].balance}`
+                    balance.setAttribute('class', 'balance')
                 }
                 oneCandy.appendChild(balance)
-                
-                //Godisavskiljare
-                let separation2 = document.createElement('div')
-                separation2.innerHTML = "----------------------------------------------------------------------"
-                oneCandy.appendChild(separation2)
+
                 producer.appendChild(oneCandy)
             }
         }
-    
-        function deleteCandy(candyId){
+
+        function deleteCandy(candyId) {
             let id = {}
             id.candy = candyId
             id.producer = sessionStorage.getItem('producerLoggedIn')
             socket.emit('deleteCandySort', id)
         }
 
-        function getList(id){
+        function getList(id) {
             socket.emit('getProducerView', id)
         }
 
-        function logOut(){
-            try{
+        function logOut() {
+            try {
                 sessionStorage.removeItem('producerLoggedIn')
                 window.location.href = 'http://localhost:8081/'
             } catch (err) {
@@ -164,7 +239,7 @@
             }
         }
 
-        function openDealModal(){
+        function openDealModal() {
             let modal = document.getElementById("dealModal")
             let text = document.getElementById("dealH3Text")
             let input = document.getElementById("dealTextModal")
@@ -172,31 +247,31 @@
             text.innerHTML = "Send a deal to potential customers!"
             modal.style.display = "block"
         }
-       
-        function sendDealModal(){
+
+        function sendDealModal() {
             let modal = document.getElementById("dealModal")
             let prodName = document.getElementById("producerName")
             let data = document.getElementById("dealTextModal").value
             let text = document.getElementById("dealH3Text")
             text.innerHTML = "Your deal has been sent!"
             let deal = "Deal from " + prodName.innerHTML + "\n \n" + data
-            
+
             socket.emit('deal', deal)
 
-            setTimeout(() =>{
+            setTimeout(() => {
                 modal.style.display = "none"
             }, 2000)
         }
         let candyInfo = {}
-        function updateCandy(candyId){
-            
+        function updateCandy(candyId) {
+
             candyInfo.candyid = candyId
             candyInfo.producerid = sessionStorage.getItem('producerLoggedIn')
             let modal = document.getElementById("updateModal")
 
-            for(let i = 0; i < candiesLocal.length; i++ ){
+            for (let i = 0; i < candiesLocal.length; i++) {
 
-                if ( candyId === candiesLocal[i].id) {
+                if (candyId === candiesLocal[i].id) {
                     candyInfo.name = candiesLocal[i].name
                     candyInfo.category = candiesLocal[i].category
                     candyInfo.color = candiesLocal[i].color
@@ -206,17 +281,17 @@
                 }
             }
 
-            document.getElementById('nameModal').value =  candyInfo.name
-            document.getElementById('categoryModal').value =  candyInfo.category
-            document.getElementById('colorModal').value =  candyInfo.color
-            document.getElementById('priceModal').value =  candyInfo.price
-            document.getElementById('balanceModal').value =  candyInfo.balance
+            document.getElementById('nameModal').value = candyInfo.name
+            document.getElementById('categoryModal').value = candyInfo.category
+            document.getElementById('colorModal').value = candyInfo.color
+            document.getElementById('priceModal').value = candyInfo.price
+            document.getElementById('balanceModal').value = candyInfo.balance
             modal.style.display = "block"
         }
 
-        function updateCandyModal(candyinfo){
+        function updateCandyModal(candyinfo) {
             let modal = document.getElementById("updateModal")
-            candyInfo.name = document.getElementById('nameModal').value 
+            candyInfo.name = document.getElementById('nameModal').value
             candyInfo.category = document.getElementById('categoryModal').value
             candyInfo.color = document.getElementById('colorModal').value
             candyInfo.price = document.getElementById('priceModal').value
@@ -224,14 +299,14 @@
             socket.emit('updateCandySort', candyInfo)
             modal.style.display = "none"
         }
-        
+
         window.onclick = (event) => {
             let modal = document.getElementById("updateModal")
             if (event.target == modal) {
                 modal.style.display = "none";
             }
         }
-        
+
         window.onclick = (event) => {
             let modal = document.getElementById("dealModal")
             if (event.target == modal) {
@@ -239,12 +314,14 @@
             }
         }
 
-        </script>
+    </script>
 </head>
 
 <body>
-    <h1 id= "h1">Hello and welcome to the producer page</h1>
+    <h1 id="h1">Hello and welcome to the producer page</h1>
     <h2 id='producerName'></h2>
+    <input class='top-btn' type="button" onclick="logOut()" value="Logout!">
+    <input class='top-btn' type="button" onclick="openDealModal()" value="Send deal!">
     <section id="producerCandies"></section>
     <section id='addNewCandySort'>
         <h3>Add new candy!</h3>
@@ -277,15 +354,14 @@
         <input type="number" id="price" value='5'><br><br>
         <input type="button" onclick="addNewCandySort()" value="Add New Candy">
     </section><br>
-    <input type="button" onclick="logOut()" value="Logout!">
-    <input type="button" onclick="openDealModal()" value="Send deal!">
+    
 
 
     <!-- Modal för att ändra en godis, because resons -->
     <div id="updateModal" class="modal">
 
         <!-- Modal content -->
-        <div class="modal-content">  
+        <div class="modal-content">
             <h3>Update candy!</h3>
             <input type="text" id="nameModal">
             <select type="text" id="categoryModal">
@@ -296,7 +372,7 @@
                 <option value="bar">Bar</option>
                 <option value="lollipop">Lollipop</option>
             </select>
-            <select type="text" id="colorModal">   
+            <select type="text" id="colorModal">
                 <option value="red">red</option>
                 <option value="blue">blue</option>
                 <option value="green">green</option>
@@ -313,20 +389,20 @@
             <input type="number" id="priceModal">
             <input type="button" onclick="updateCandyModal()" value="Save changes">
         </div>
-      
-      </div>
-      
+
+    </div>
+
     <!-- Modal för att ändra en godis, because resons -->
     <div id="dealModal" class="modal">
 
         <!-- Modal content -->
-        <div class="modal-content">  
+        <div class="modal-content">
             <h3 id="dealH3Text">Send a deal to potential customers!</h3>
             <input type="text" id="dealTextModal">
             <input type="button" onclick="sendDealModal()" value="Send">
         </div>
-      
-      </div>
+
+    </div>
 </body>
 
 </html>

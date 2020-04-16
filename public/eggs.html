@@ -5,10 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        .newName,
-        .newNameSubmit {
-            display: none;
-            /* color: blue; */
+        body {
+            text-align: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 18px;
+            background-color: lightyellow;
+        }
+
+        .new-name-wrapper {
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
         }
 
         /* The Modal */
@@ -37,6 +44,7 @@
             width: 125px;
             height: 200px;
             margin: 20px auto 30px;
+            background-color: white;
 
             -webkit-border-radius: 50%/60% 60% 40% 40%;
             -moz-border-radius: 50%/60% 60% 40% 40%;
@@ -45,10 +53,73 @@
             -webkit-box-shadow: 0px 0px 20px #D5D3D3, 0px 0px 20px #D5D3D3;
             -moz-box-shadow: 0px 0px 20px #D5D3D3, 0px 0px 20px #D5D3D3;
             box-shadow: 0px 0px 20px #D5D3D3, 0px 0px 20px #D5D3D3;
-            
+
             -webkit-animation: spin 2s linear infinite;
             /* Safari */
             animation: spin 2s linear infinite;
+        }
+
+        .egg {
+            border: 1px solid black;
+            margin: 10px auto;
+            padding: 10px;
+            background-color: aliceblue;
+            width: 400px;
+            
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12), 0 2px 2px rgba(0, 0, 0, 0.12),
+                0 4px 4px rgba(0, 0, 0, 0.12), 0 8px 8px rgba(0, 0, 0, 0.12),
+                0 16px 16px rgba(0, 0, 0, 0.12);
+            
+          
+            display:flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .name {
+            font-weight: bold;
+            font-size: 22px;
+            margin-top: 20px;
+        }
+
+        .price {
+            font-weight: bold;
+            margin: 10px;
+        }
+
+        button {
+            font-size: 18px;
+            margin: 10px;
+            padding: 5px;
+            background-color: lightyellow;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            cursor: pointer;
+
+        }
+
+        button:hover {
+            background-color: rgb(248, 248, 168);
+        }
+
+        .top-btn {
+            font-size: 18px;
+            margin: 5px;
+            padding: 10px;
+            background-color: aliceblue;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            cursor: pointer;
+        }
+
+        .top-btn:hover {
+            background-color: rgb(158, 207, 250);
+        }
+
+        input{
+            font-size: 18px;
+            margin: 5px;
+            padding: 5px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         /* Safari */
@@ -110,7 +181,7 @@
                     eggSection.innerHTML = ""
                     load.innerHTML = ""
                 } else {
-                    h1.innerHTML = "Your current eggs"
+                    h1.innerHTML = "Your easter eggs"
                     createList(egg)
                 }
             })
@@ -147,16 +218,15 @@
 
             for (let i = 0; i < eggs.mongo.length; i++) {
                 let oneEgg = document.createElement("section")
+                oneEgg.setAttribute('class', 'egg')
                 oneEgg.setAttribute("id", eggs.mongo[i][0]._id)
                 let totalPriceCandy = 0
                 mongoIds += `${eggs.mongo[i][0]._id}##`
 
-                let deleteEgg = document.createElement("button")
-                deleteEgg.innerHTML = "Delete egg"
-                deleteEgg.setAttribute("onclick", `delEgg("${eggs.mongo[i][0]._id}")`)
-                oneEgg.appendChild(deleteEgg)
+
 
                 let name = document.createElement("div")
+                name.setAttribute('class', 'name')
                 name.innerHTML = eggs.mongo[i][0].name
 
                 eggNames += `${eggs.mongo[i][0].name}##`
@@ -167,22 +237,28 @@
                 updateName.setAttribute('onclick', `showUpdateField('${eggs.mongo[i][0]._id}')`)
                 oneEgg.appendChild(updateName)
 
+                let newNameWrapper = document.createElement('div')
+                newNameWrapper.setAttribute('class', 'new-name-wrapper')
+
                 let newName = document.createElement('input')
                 newName.setAttribute('type', 'text')
                 newName.setAttribute('class', 'newName')
                 newName.setAttribute('id', `'newName${eggs.mongo[i][0]._id}'`)
+                newName.style.display = 'none'
                 newName.value = name.innerHTML
 
                 let newNameSubmit = document.createElement('input')
                 newNameSubmit.setAttribute('type', 'button')
                 newNameSubmit.setAttribute('class', 'newNameSubmit')
                 newNameSubmit.setAttribute('id', `'newNameSubmit${eggs.mongo[i][0]._id}'`)
+                newNameSubmit.style.display = 'none'
                 newNameSubmit.value = 'OK'
-
-                oneEgg.appendChild(newName)
-                oneEgg.appendChild(newNameSubmit)
-
                 newNameSubmit.setAttribute('onclick', `updateEggName("${eggs.mongo[i][0]._id}")`)
+
+                newNameWrapper.appendChild(newName)
+                newNameWrapper.appendChild(newNameSubmit)
+
+                oneEgg.appendChild(newNameWrapper)
 
                 if (eggs.mongo[i][0].candy.length > 1 || (eggs.mongo[i][0].candy.length === 1 && eggs.mongo[i][0].candy[0].amount > 0)) {
                     for (let q = 0; q < eggs.mongo[i][0].candy.length; q++) {
@@ -199,6 +275,7 @@
                 }
                 if (totalPriceCandy > 0) {
                     let totalPrice = document.createElement("div")
+                    totalPrice.setAttribute('class', 'price')
                     totalPrice.innerHTML = "Price for this egg: " + totalPriceCandy + " kr"
                     oneEgg.appendChild(totalPrice)
 
@@ -222,11 +299,10 @@
                 })
                 oneEgg.appendChild(getanEgg)
 
-                //Äggavskiljare
-                let separation = document.createElement('div')
-                separation.innerHTML = "-----------------------------------"
-                oneEgg.appendChild(separation)
-
+                let deleteEgg = document.createElement("button")
+                deleteEgg.innerHTML = "Delete egg"
+                deleteEgg.setAttribute("onclick", `delEgg("${eggs.mongo[i][0]._id}")`)
+                oneEgg.appendChild(deleteEgg)
 
                 document.getElementById('loader').innerHTML = ''
                 document.getElementById("egg").appendChild(oneEgg)
@@ -294,8 +370,15 @@
         function showUpdateField(mongoid) {
             let newName = document.getElementById(`'newName${mongoid}'`)
             let newNameSubmit = document.getElementById(`'newNameSubmit${mongoid}'`)
-            newName.style.display = 'block'
-            newNameSubmit.style.display = 'block'
+            
+            if (newName.style.display == 'none') {
+                newName.style.display = 'block'
+                newNameSubmit.style.display = 'block'
+            } else {
+                newName.style.display = 'none'
+                newNameSubmit.style.display = 'none'
+            }
+
         }
 
         function updateEggName(id) {
@@ -316,14 +399,15 @@
 </head>
 
 <body>
-    <h1 id="h1">Here are your current easter eggs:</h1>
+    <h1 id="h1">Your easter eggs</h1>
+    <input id="newEggbutton" class='top-btn' type="button" onclick="showCreateNewEggModal()" value="Create new egg">
+    <input id="randomEgg" class='top-btn' type="button" onclick="createRandomEgg()" value="Create a random egg">
+    <input type="button" class='top-btn' onclick="logOut()" value="Logout!">
     <div id="loader">
         <div class="loader"></div>
     </div>
     <section id="egg"></section>
-    <input id="newEggbutton" type="button" onclick="showCreateNewEggModal()" value="Create new egg">
-    <input id="randomEgg" type="button" onclick="createRandomEgg()" value="Create a random egg">
-    <input type="button" onclick="logOut()" value="Logout!">
+
 
     <!-- Modal för att lägga till namn på sitt nya påskägg -->
     <div id="createEggModal" class="modal">
