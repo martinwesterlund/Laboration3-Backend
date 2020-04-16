@@ -31,7 +31,7 @@ io.on('connection', (socket) => {
         socket.join('customer')
         console.log("A new connection is established, joined Customer Room")
     }
-    console.log(socket.handshake.headers.referer)
+    
     if(socket.handshake.headers.referer === "http://localhost:8081/eggs/" ) {
         socket.join('customer')
         console.log("A new connection is established, joined Customer Room")
