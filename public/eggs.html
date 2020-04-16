@@ -5,26 +5,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+
+        .newName, .newNameSubmit{
+            display: none;
+            /* color: blue; */
+        }
         /* The Modal */
         .modal {
-        display: none;
-        position: fixed; 
-        z-index: 1; 
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto; 
-        background-color: rgba(0,0,0,0.4); 
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
         }
 
         /* Modal Content/Box */
         .modal-content {
-        background-color: #fefefe;
-        margin: 15% auto; 
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%; 
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
         }
 
         .loader {
@@ -67,16 +72,16 @@
             socket.on('onConnection', (data) => {
                 let id = sessionStorage.getItem('customerLoggedIn')
 
-                if ( id > 0 ){
+                if (id > 0) {
                     getEggs(id)
                 } else {
                     let egg = document.getElementById('egg')
                     let load = document.getElementById('loader')
                     h1.innerHTML = "Du är inte inloggad din n00b!"
                     egg.innerHTML = ''
-                    load.innerHTML = ''                     
+                    load.innerHTML = ''
                 }
-                
+
             })
             socket.on('newDeal', (data) => {
                 alert(data)
@@ -84,6 +89,7 @@
 
             socket.on('LoggedInAsCustomer', (data) => { 
                 window.location.href = 'http://localhost:8081/customer/'
+
             })
 
             // Gets one egg 
@@ -93,8 +99,8 @@
                     let load = document.getElementById('loader')
                     let newEggbutton = document.getElementById('newEggbutton')
                     h1.innerHTML = "You have no eggs!"
-                    eggSection.innerHTML = "" 
-                    load.innerHTML = "" 
+                    eggSection.innerHTML = ""
+                    load.innerHTML = ""
                 } else {
                     h1.innerHTML = "Your current eggs"
                     createList(egg)
@@ -110,6 +116,11 @@
                 let id = sessionStorage.getItem('customerLoggedIn')
                 socket.emit("getEggs", id)
             })
+
+            socket.on('eggNameUpdated', (updated) => {
+                let id = sessionStorage.getItem('customerLoggedIn')
+                socket.emit("getEggs", id)
+            })
         })
 
         // Funktioner
@@ -117,12 +128,12 @@
             let bodyElement = document.getElementsByTagName('body')[0]
             bodyElement.style.opacity = "1"
             bodyElement.style.pointerEvents = "auto"
-            
+
             let egg = document.getElementById('egg')
-            while ( egg.firstChild ) {
-                egg.removeChild( egg.lastChild )
+            while (egg.firstChild) {
+                egg.removeChild(egg.lastChild)
             }
-            
+
             let eggNames = ''
             let mongoIds = ''
 
@@ -142,21 +153,43 @@
 
                 eggNames += `${eggs.mongo[i][0].name}##`
                 oneEgg.appendChild(name)
-                
-                if (eggs.mongo[i][0].candy.length > 1 || (eggs.mongo[i][0].candy.length === 1 && eggs.mongo[i][0].candy[0].amount > 0)){
+
+                let updateName = document.createElement('button')
+                updateName.innerHTML = 'Update name'
+                updateName.setAttribute('onclick', `showUpdateField('${eggs.mongo[i][0]._id}')`)
+                oneEgg.appendChild(updateName)
+
+                let newName = document.createElement('input')
+                newName.setAttribute('type', 'text')
+                newName.setAttribute('class', 'newName')
+                newName.setAttribute('id', `'newName${eggs.mongo[i][0]._id}'`)
+                newName.value = name.innerHTML
+
+                let newNameSubmit = document.createElement('input')
+                newNameSubmit.setAttribute('type', 'button')
+                newNameSubmit.setAttribute('class', 'newNameSubmit')
+                newNameSubmit.setAttribute('id', `'newNameSubmit${eggs.mongo[i][0]._id}'`)
+                newNameSubmit.value = 'OK'
+
+                oneEgg.appendChild(newName)
+                oneEgg.appendChild(newNameSubmit)
+
+                newNameSubmit.setAttribute('onclick', `updateEggName("${eggs.mongo[i][0]._id}")`)
+
+                if (eggs.mongo[i][0].candy.length > 1 || (eggs.mongo[i][0].candy.length === 1 && eggs.mongo[i][0].candy[0].amount > 0)) {
                     for (let q = 0; q < eggs.mongo[i][0].candy.length; q++) {
 
-                        if( eggs.mongo[i][0].candy[q].candy_producers_id !== 0 && eggs.mongo[i][0].candy[q].amount !== 0 ){
-                        let candy = document.createElement("div")
+                        if (eggs.mongo[i][0].candy[q].candy_producers_id !== 0 && eggs.mongo[i][0].candy[q].amount !== 0) {
+                            let candy = document.createElement("div")
 
-                        candy.innerHTML = eggs.Sql[i][q].name + ' ' + eggs.mongo[i][0].candy[q].amount + ' pieces'
-                        totalPriceCandy = (eggs.Sql[i][q].price_per_unit * eggs.mongo[i][0].candy[q].amount) + totalPriceCandy
-                        oneEgg.appendChild(candy)
+                            candy.innerHTML = eggs.Sql[i][q].name + ' ' + eggs.mongo[i][0].candy[q].amount + ' pieces'
+                            totalPriceCandy = (eggs.Sql[i][q].price_per_unit * eggs.mongo[i][0].candy[q].amount) + totalPriceCandy
+                            oneEgg.appendChild(candy)
                         }
 
                     }
                 }
-                if ( totalPriceCandy > 0 ) {
+                if (totalPriceCandy > 0) {
                     let totalPrice = document.createElement("div")
                     totalPrice.innerHTML = "Price for this egg: " + totalPriceCandy + " kr"
                     oneEgg.appendChild(totalPrice)
@@ -166,7 +199,7 @@
                     emptyEgg.innerHTML = "This egg is empty!"
                     oneEgg.appendChild(emptyEgg)
                 }
-                
+
 
                 let getanEgg = document.createElement("button")
                 getanEgg.innerHTML = "Go to egg"
@@ -175,6 +208,7 @@
                     sessionStorage.setItem('eggNames', eggNames)
                     sessionStorage.setItem('mongoIds', mongoIds)
                     sessionStorage.setItem('currentEggPrice', totalPriceCandy)
+
                     location.href = "http://localhost:8081/customer/"
                 
                 })
@@ -182,10 +216,10 @@
 
                 //Äggavskiljare
                 let separation = document.createElement('div')
-                    separation.innerHTML = "-----------------------------------"
-                    oneEgg.appendChild(separation)
+                separation.innerHTML = "-----------------------------------"
+                oneEgg.appendChild(separation)
 
-                
+
                 document.getElementById('loader').innerHTML = ''
                 document.getElementById("egg").appendChild(oneEgg)
             }
@@ -196,7 +230,7 @@
                 modal.style.display = "none";
             }
         }
-        function createNewEgg(){
+        function createNewEgg() {
             let eggInfo = {}
             eggInfo.customerId = sessionStorage.getItem('customerLoggedIn')
             eggInfo.customerId = Number(eggInfo.customerId)
@@ -209,7 +243,7 @@
             bodyElement.style.pointerEvents = "none"
         }
 
-        function createRandomEgg(){
+        function createRandomEgg() {
             let bodyElement = document.getElementsByTagName('body')[0]
             bodyElement.style.opacity = "0.2"
             bodyElement.style.pointerEvents = "none"
@@ -230,8 +264,8 @@
             socket.emit("getEggs", id)
         }
 
-        function logOut(){
-            try{
+        function logOut() {
+            try {
                 sessionStorage.removeItem('customerLoggedIn')
                 sessionStorage.removeItem('currentEggPrice')
                 sessionStorage.removeItem('mongoId')
@@ -243,12 +277,33 @@
             }
         }
 
-        function showCreateNewEggModal(){
+        function showCreateNewEggModal() {
             let modal = document.getElementById("createEggModal")
-            document.getElementById('eggNameModal').value = 'Namn'
+            document.getElementById('eggNameModal').value = 'Name'
             modal.style.display = "block"
         }
-        
+
+        function showUpdateField(mongoid) {
+            let newName = document.getElementById(`'newName${mongoid}'`)
+            let newNameSubmit = document.getElementById(`'newNameSubmit${mongoid}'`)
+            newName.style.display = 'block'
+            newNameSubmit.style.display = 'block'
+        }
+
+        function updateEggName(id) {
+            let newNameData = {}
+            newNameData.id = id
+            newNameData.name = document.getElementById(`'newName${id}'`).value
+            socket.emit('updateEggName', newNameData)
+            let newName = document.getElementById(`'newName${id}'`)
+            let newNameSubmit = document.getElementById(`'newNameSubmit${id}'`)
+            newName.style.display = 'none'
+            newNameSubmit.style.display = 'none'
+            let bodyElement = document.getElementsByTagName('body')[0]
+            bodyElement.style.opacity = "0.2"
+            bodyElement.style.pointerEvents = "none"
+        }
+
     </script>
 </head>
 
@@ -264,16 +319,14 @@
 
     <!-- Modal för att lägga till namn på sitt nya påskägg -->
     <div id="createEggModal" class="modal">
-
         <!-- Modal content -->
-        <div class="modal-content">  
+        <div class="modal-content">
             <h3>Give your new egg a name</h3>
-            <input type="text" id="eggNameModal" value = "Name">
+            <input type="text" id="eggNameModal" value="Name">
             <input type="button" onclick="createNewEgg()" value="Create egg!">
-            
         </div>
-      
-      </div>
+    </div>
+
 </body>
 
 </html>

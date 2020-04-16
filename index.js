@@ -98,6 +98,10 @@ io.on('connection', (socket) => {
         functions_customer.getFilteredList(socket, producerId, category, sortBy, mongoId, io)
     })
 
+    socket.on('updateEggName', (newNameData) =>{
+        functions_customer.updateEggName(socket, newNameData)
+    })
+
     
 
     // Authentication stuff

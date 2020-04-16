@@ -128,4 +128,10 @@ async function removeCandyFromEgg(socket, candyId, candy, mongoId, io) {
     }
 }
 
-module.exports = { getAllEggs, getAllCandy, getFilteredList, createNewEgg, createRandomEgg, deleteEgg, addCandyToEgg, removeCandyFromEgg }
+// Uppdatera namnet på ditt ägg
+async function updateEggName(socket, newNameData){
+    await easterEggs.updateEggName(newNameData)
+    socket.emit('eggNameUpdated', true)
+}
+
+module.exports = { getAllEggs, getAllCandy, getFilteredList, createNewEgg, createRandomEgg, deleteEgg, addCandyToEgg, removeCandyFromEgg, updateEggName }
