@@ -87,8 +87,9 @@
                 alert(data)
             })
 
-            socket.on('LoggedInAsCustomer', (data) => {
-                window.location.href = 'http://localhost:8081/customer'
+            socket.on('LoggedInAsCustomer', (data) => { 
+                window.location.href = 'http://localhost:8081/customer/'
+
             })
 
             // Gets one egg 
@@ -207,8 +208,9 @@
                     sessionStorage.setItem('eggNames', eggNames)
                     sessionStorage.setItem('mongoIds', mongoIds)
                     sessionStorage.setItem('currentEggPrice', totalPriceCandy)
-                    location.href = "http://localhost:8081/customer"
 
+                    location.href = "http://localhost:8081/customer/"
+                
                 })
                 oneEgg.appendChild(getanEgg)
 
@@ -265,6 +267,10 @@
         function logOut() {
             try {
                 sessionStorage.removeItem('customerLoggedIn')
+                sessionStorage.removeItem('currentEggPrice')
+                sessionStorage.removeItem('mongoId')
+                sessionStorage.removeItem('mongoIds')
+                sessionStorage.removeItem('eggNames')
                 window.location.href = 'http://localhost:8081/'
             } catch (err) {
                 console.log(err)

@@ -90,12 +90,16 @@
         })
 
         function goBack() {
-            window.location.href = 'http://localhost:8081/eggs'
+            window.location.href = 'http://localhost:8081/eggs/'
         }
 
         function logOut() {
             try {
                 sessionStorage.removeItem('customerLoggedIn')
+                sessionStorage.removeItem('currentEggPrice')
+                sessionStorage.removeItem('mongoId')
+                sessionStorage.removeItem('mongoIds')
+                sessionStorage.removeItem('eggNames')
                 window.location.href = 'http://localhost:8081/'
             } catch (err) {
                 console.log(err)
