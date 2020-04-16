@@ -14,7 +14,7 @@
             background-color: lightyellow;
         }
 
-        .select-bar{
+        .select-bar {
             display: flex;
             justify-content: center;
             align-items: center;
@@ -262,6 +262,7 @@
 
                     //Saldo
                     let balance = document.createElement('div')
+                    balance.setAttribute('id', `balance${candyData.sql[i].id}`)
                     balance.innerHTML = 'Balance: ' + candyData.sql[i].balance
                     oneCandy.appendChild(balance)
 
@@ -274,22 +275,25 @@
 
         function addCandy(candyId, mongoData, cpid) {
 
-            let mongoId = sessionStorage.getItem('mongoId')
-            let foundId
+            if (document.getElementById(`balance${candyId}`).value > 0) {
+                let mongoId = sessionStorage.getItem('mongoId')
+                let foundId
 
-            for (let i = 0; i < mongoData.length; i++) {
-                if (cpid == mongoData[i].candy_producers_id) {
-                    foundId = i
+                for (let i = 0; i < mongoData.length; i++) {
+                    if (cpid == mongoData[i].candy_producers_id) {
+                        foundId = i
+                    }
                 }
+
+                if (foundId != undefined) {
+                    mongoData[foundId].candy_producers_id = cpid
+                    mongoData[foundId].amount++
+                } else {
+                    mongoData.push({ "candy_producers_id": cpid, "amount": 1 })
+                }
+                socket.emit('addCandyToEgg', candyId, mongoData, mongoId)
             }
 
-            if (foundId != undefined) {
-                mongoData[foundId].candy_producers_id = cpid
-                mongoData[foundId].amount++
-            } else {
-                mongoData.push({ "candy_producers_id": cpid, "amount": 1 })
-            }
-            socket.emit('addCandyToEgg', candyId, mongoData, mongoId)
         }
 
         function removeCandy(candyId, mongoData, cpid) {
